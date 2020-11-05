@@ -5,6 +5,21 @@ using System.Threading;
 
 namespace Forest
 {
+    enum Location
+    {
+        Nowhere,
+        Inventory,
+        Den,
+        Forest
+    }
+
+    class LocationData
+    {
+        public Location ID;
+        public string Name;
+        public string Description;
+    }
+
     class Program
     {
         const ConsoleColor NarrativeColor = ConsoleColor.Gray;
@@ -70,15 +85,62 @@ namespace Forest
                     // TODO
                     break;
 
+                case "take":
+                case "pick":
+                    //TODO
+                    break;
+                case "give":
+                    //TODO
+                    break;
+                case "drop":
+                    //TODO
+                    break;
+                case "combine":
+                    //TODO
+                    break;
+                case "inventory":
+                case "i":
+                    // TODO show list if whats in the inventory
+                    break;
+                case "talk":
+                    //TODO
+                    break;
+                case "look":
+                    //TODO
+                    break;
+                case "shift":
+                    //TODO need to figure out what command I want to use for this
+                    break;
+                case "sleep":
+                    //TODO
+                    break;
+                case "read":
+                    //TODO
+                    break;
+
+                // TODO interacting verbs, probably need more of them
+                case "eat":
+                    //TODO
+                    break;
+
+
                 case "quit":
                 case "q":
                 case "end":
                 case "exit":
-                    // TODO
+                    // TODO ask if the player really wants to quit and if they want to save
                     {
+                        Reply("Thanks for playing!");
                         quitGame = true;
                     }
                     break;
+                case "save":
+                    //TODO
+                    break;
+                case "load":
+                    //TODO
+                    break;
+
                 default:
                     // TODO
                     Reply("I don't understand");
@@ -88,9 +150,21 @@ namespace Forest
 
         static void Main(string[] args)
         {
-            // Displaying title art
+            // Initialization
+
+            // Reading title art information
             string titleArtPath = "ForestTitleArt.txt";
             string[] title = File.ReadAllLines(titleArtPath);
+
+            // Reading all the text for the games story
+            string storyPath = "ForestGameStory.txt";
+            string[] gameStory = File.ReadAllLines(storyPath);
+
+            // Reading location data
+            string locationDataPath = "ForestLocations.txt";
+            string[] locationData = File.ReadAllLines(locationDataPath);
+
+            // Displaying title art
             foreach (string line in title)
             {
                 Console.WriteLine(line);
@@ -100,8 +174,6 @@ namespace Forest
 
             // Displaying the introduction/first part of the games story
             Console.ForegroundColor = NarrativeColor;
-            string storyPath = "ForestGameStory.txt";
-            string[] gameStory = File.ReadAllLines(storyPath);
             Print(gameStory[0]);
             Console.WriteLine();
 
