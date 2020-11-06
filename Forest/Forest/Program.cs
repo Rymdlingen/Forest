@@ -164,6 +164,15 @@ namespace Forest
             string locationDataPath = "ForestLocations.txt";
             string[] locationData = File.ReadAllLines(locationDataPath);
 
+            // Creating location objects
+            string[] locationNames = Enum.GetNames(typeof(Location));
+            for (var line = 0; line < locationData.Length; line++)
+            {
+                var locationEntry = new LocationData();
+
+                if (locationData[0 + line] == )
+            }
+
             // Displaying title art
             foreach (string line in title)
             {
