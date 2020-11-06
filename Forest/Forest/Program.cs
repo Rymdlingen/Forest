@@ -2,10 +2,11 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Forest
 {
-    enum Location
+    enum LocationID
     {
         Nowhere,
         Inventory,
@@ -13,11 +14,20 @@ namespace Forest
         Forest
     }
 
+    enum Direction
+    {
+        North,
+        South,
+        Weast,
+        East
+    }
+
     class LocationData
     {
-        public Location ID;
+        public LocationID ID;
         public string Name;
         public string Description;
+        public Dictionary<Direction, LocationID> Directions;
     }
 
     class Program
@@ -25,6 +35,13 @@ namespace Forest
         const ConsoleColor NarrativeColor = ConsoleColor.Gray;
         const ConsoleColor PromptColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
+
+        // Data dictionaries
+        static Dictionary<LocationID, LocationData> LocationsData = new Dictionary<LocationID, LocationData>();
+
+        // Current state
+        static LocationID CurrentLocationID = LocationID.Den;
+
 
         static bool quitGame = false;
 
@@ -62,8 +79,12 @@ namespace Forest
             // Split the command into words.
             string[] words = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            // Assuming the first word in the command is a verb.
-            string verb = words[0];
+            // Assuming the first word in the command is a verb. If there is no entered words the verb string stays empty.
+            string verb = "";
+            if (command != "")
+            {
+                verb = words[0];
+            }
 
             // Call the right handler for the given verb.
             switch (verb)
@@ -148,6 +169,15 @@ namespace Forest
             }
         }
 
+        static void DisplayLocation()
+        {
+            Console.Clear();
+
+            // Display current location description.
+            LocationData currentLocationData = LocationsData[CurrentLocationID];
+            Print(currentLocationData.Description);
+        }
+
         static void Main(string[] args)
         {
             // Initialization
@@ -165,12 +195,21 @@ namespace Forest
             string[] locationData = File.ReadAllLines(locationDataPath);
 
             // Creating location objects
-            string[] locationNames = Enum.GetNames(typeof(Location));
-            for (var line = 0; line < locationData.Length; line++)
+            string[] locationNames = Enum.GetNames(typeof(LocationID));
+            for (var line = 0; line < locationData.Length - 4; line++)
             {
                 var locationEntry = new LocationData();
 
-                if (locationData[0 + line] == )
+                string locationIDText = locationData[line];
+                LocationID location = Enum.Parse<LocationID>(locationIDText);
+
+                locationEntry.ID = location;
+                locationEntry.Name = locationData[line + 1];
+                locationEntry.Description = locationData[line + 2];
+
+                LocationsData.Add(location, locationEntry);
+
+                line += 3;
             }
 
             // Displaying title art
@@ -187,6 +226,9 @@ namespace Forest
             Console.WriteLine();
 
             // Display short instructions about how to play??
+
+            Console.ReadKey();
+            DisplayLocation();
 
             // Game loop
             while (!quitGame)

@@ -1,0 +1,45 @@
+Den
+Name: Bears Den
+Description: <Description text>
+Directions:
+    North: Forest
+    South: River
+    West: Forest2
+    East: Forest3
+
+
+Forest
+Name: Forest
+Description: <Description text>
+Directions:
+    South: Den
+
+Forest2
+Name: Forest2
+Description: <Description text>
+Directions:
+    East: Den
+
+Forest3
+Name: Forest3
+Description: <Description text>
+Directions:
+    West: Den
+
+River
+Name: River
+Description: <Description text>
+Directions:
+    North: Den
+
+Inventory
+Name: Inventory
+Description: <Description text>
+
+Nowhere
+Name: Nowhere
+Description: This object do not exist
+
+<ID text>
+Name: <Name text>
+Description: <Description text>
