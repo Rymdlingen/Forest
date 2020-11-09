@@ -1,0 +1,19 @@
+Den
+Name: Bears Den
+Description: <Description text>
+
+Forest
+Name: Forest
+Description: <Description text>
+
+Inventory
+Name: Inventory
+Description: <Description text>
+
+Nowhere
+Name: Nowhere
+Description: This object do not exist
+
+<ID text>
+Name: <Name text>
+Description: <Description text>

@@ -1,18 +1,43 @@
-Den
+ID: Den
 Name: Bears Den
-Description: <Description text>
+Description: This is where you start.
+Directions:
+    North: Forest
+    South: River
+    West: Forest2
+    East: Forest3
 
-Forest
+ID: Forest
 Name: Forest
-Description: <Description text>
+Description: This part of the forest(1) is to the north of the den.
+Directions:
+    South: Den
 
-Inventory
+ID: Forest2
+Name: Forest2
+Description: This part of the forest(2) is to the west of the den.
+Directions:
+    East: Den
+
+ID: Forest3
+Name: Forest3
+Description: This part of the forest(3) is to the east of the den.
+Directions:
+    West: Den
+
+ID: River
+Name: River
+Description: This river is to the south of the den.
+Directions:
+    North: Den
+
+ID: Inventory
 Name: Inventory
-Description: <Description text>
+Description: This is the things you have picked up.
 
-Nowhere
+ID: Nowhere
 Name: Nowhere
-Description: This object do not exist
+Description: This item do not exist.
 
 <ID text>
 Name: <Name text>

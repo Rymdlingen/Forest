@@ -6,28 +6,32 @@ using System.Collections.Generic;
 
 namespace Forest
 {
-    enum LocationID
+    enum LocationId
     {
         Nowhere,
         Inventory,
         Den,
-        Forest
+        Forest,
+        Forest2,
+        Forest3,
+        River,
+        Placeholder
     }
 
     enum Direction
     {
         North,
         South,
-        Weast,
+        West,
         East
     }
 
     class LocationData
     {
-        public LocationID ID;
+        public LocationId Id;
         public string Name;
         public string Description;
-        public Dictionary<Direction, LocationID> Directions;
+        public Dictionary<Direction, LocationId> Directions;
     }
 
     class Program
@@ -37,10 +41,10 @@ namespace Forest
         const int PrintPauseMilliseconds = 150;
 
         // Data dictionaries
-        static Dictionary<LocationID, LocationData> LocationsData = new Dictionary<LocationID, LocationData>();
+        static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
 
         // Current state
-        static LocationID CurrentLocationID = LocationID.Den;
+        static LocationId CurrentLocationId = LocationId.Den;
 
 
         static bool quitGame = false;
@@ -108,40 +112,40 @@ namespace Forest
 
                 case "take":
                 case "pick":
-                    //TODO
+                    // TODO
                     break;
                 case "give":
-                    //TODO
+                    // TODO
                     break;
                 case "drop":
-                    //TODO
+                    // TODO
                     break;
                 case "combine":
-                    //TODO
+                    // TODO
                     break;
                 case "inventory":
                 case "i":
                     // TODO show list if whats in the inventory
                     break;
                 case "talk":
-                    //TODO
+                    // TODO
                     break;
                 case "look":
-                    //TODO
+                    // TODO
                     break;
                 case "shift":
-                    //TODO need to figure out what command I want to use for this
+                    // TODO need to figure out what command I want to use for this
                     break;
                 case "sleep":
-                    //TODO
+                    // TODO
                     break;
                 case "read":
-                    //TODO
+                    // TODO
                     break;
 
                 // TODO interacting verbs, probably need more of them
                 case "eat":
-                    //TODO
+                    // TODO
                     break;
 
 
@@ -156,10 +160,10 @@ namespace Forest
                     }
                     break;
                 case "save":
-                    //TODO
+                    // TODO
                     break;
                 case "load":
-                    //TODO
+                    // TODO
                     break;
 
                 default:
@@ -174,8 +178,21 @@ namespace Forest
             Console.Clear();
 
             // Display current location description.
-            LocationData currentLocationData = LocationsData[CurrentLocationID];
+            LocationData currentLocationData = LocationsData[CurrentLocationId];
             Print(currentLocationData.Description);
+
+            // Array with strings of directions
+            string[] allDirections = Enum.GetNames(typeof(Direction));
+
+            // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions
+            for (int direction = 0; direction < allDirections.Length; direction++)
+            {
+                Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
+                if (currentLocationData.Directions.ContainsKey(currentDirection))
+                {
+                    Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
+                }
+            }
         }
 
         static void Main(string[] args)
@@ -183,37 +200,95 @@ namespace Forest
             // Initialization
 
             // Reading title art information
-            string titleArtPath = "ForestTitleArt.txt";
-            string[] title = File.ReadAllLines(titleArtPath);
+            string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
 
             // Reading all the text for the games story
-            string storyPath = "ForestGameStory.txt";
-            string[] gameStory = File.ReadAllLines(storyPath);
+            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
 
             // Reading location data
-            string locationDataPath = "ForestLocations.txt";
-            string[] locationData = File.ReadAllLines(locationDataPath);
+            string[] locationData = File.ReadAllLines("ForestLocations.txt");
 
             // Creating location objects
-            string[] locationNames = Enum.GetNames(typeof(LocationID));
-            for (var line = 0; line < locationData.Length - 4; line++)
+            string[] locationNames = Enum.GetNames(typeof(LocationId));
+
+            bool newEntry = true;
+            var locationEntry = new LocationData();
+            LocationId locationEntryId = LocationId.Placeholder;
+            for (int line = 0; line < locationData.Length; line++)
+            {
+                if (newEntry)
+                {
+                    locationEntry = new LocationData();
+                    locationEntry.Directions = new Dictionary<Direction, LocationId>();
+                    locationEntryId = LocationId.Placeholder;
+                    newEntry = false;
+                }
+
+                Match match = Regex.Match(locationData[line], "^([A-Z].*): ?(.*)");
+
+                string property = match.Groups[1].Value;
+                string value = match.Groups[2]?.Value;
+
+                switch (property)
+                {
+                    case "ID":
+                        locationEntryId = Enum.Parse<LocationId>(value);
+                        locationEntry.Id = locationEntryId;
+                        break;
+
+                    case "Name":
+                        locationEntry.Name = value;
+                        break;
+
+                    case "Description":
+                        locationEntry.Description = value;
+                        break;
+
+                    case "Directions":
+                        do
+                        {
+                            Match directionAndDestination = Regex.Match(locationData[line + 1], @"[ \t]*([A-Z]\w*): (\w*)");
+
+                            if (directionAndDestination.Value == "")
+                            {
+                                break;
+                            }
+
+                            Direction direction = Enum.Parse<Direction>(directionAndDestination.Groups[1].Value);
+                            LocationId destination = Enum.Parse<LocationId>(directionAndDestination.Groups[2].Value);
+
+                            locationEntry.Directions[direction] = destination;
+
+                            line++;
+
+                        } while (line + 1 < locationData.Length);
+
+                        break;
+                    case "":
+                        LocationsData.Add(locationEntryId, locationEntry);
+                        newEntry = true;
+                        break;
+                }
+            }
+
+            /*for (var line = 0; line < locationData.Length - 4; line++)
             {
                 var locationEntry = new LocationData();
 
                 string locationIDText = locationData[line];
-                LocationID location = Enum.Parse<LocationID>(locationIDText);
+                LocationId location = Enum.Parse<LocationId>(locationIDText);
 
-                locationEntry.ID = location;
+                locationEntry.Id = location;
                 locationEntry.Name = locationData[line + 1];
                 locationEntry.Description = locationData[line + 2];
 
                 LocationsData.Add(location, locationEntry);
 
                 line += 3;
-            }
+            }*/
 
             // Displaying title art
-            foreach (string line in title)
+            foreach (string line in titleAsciiArt)
             {
                 Console.WriteLine(line);
             }
