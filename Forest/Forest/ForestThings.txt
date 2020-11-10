@@ -1,0 +1,39 @@
+ID: Moss
+Name: Moss
+Description: Found in forest, needed for making den cosy.
+
+ID: Grass
+Name: Grass
+Description: Found in glade, needed for making den cosy.
+
+ID: Leaves
+Name: Leaves
+Description: Found in leafy forest, needed for making den cosy.
+
+ID: Berries
+Name: Berries
+Description: Found in forest, needed for eating.
+
+ID: Beehive
+Name: Beehive
+Description: Found in forest, needed for trying to eat and getting stung by bee.
+
+ID: Fish
+Name: Fish
+Description: Found in river, needed for eating.
+
+ID: Necklace
+Name: Necklace
+Description: Found at one of the locations before passing the cliffs, needed to learn to shift shape and being able to pass the cliffs.
+
+ID: Owl
+Name: Owl
+Description: Owl NPC
+
+ID: Frog
+Name: Frog
+Description: Frog NPC
+
+ID: <ID text>
+Name: <Name text>
+Description: <Description text>

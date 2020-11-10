@@ -18,6 +18,19 @@ namespace Forest
         Placeholder
     }
 
+    enum ThingId
+    {
+        Moss,
+        Grass,
+        Leaves,
+        Berries,
+        Beehive,
+        Fish,
+        Necklace,
+        Owl,
+        Frog
+    }
+
     enum Direction
     {
         North,
@@ -29,6 +42,21 @@ namespace Forest
     class LocationData
     {
         public LocationId Id;
+        public string Name;
+        public string Description;
+        public Dictionary<Direction, LocationId> Directions;
+    }
+
+    class ThingData
+    {
+        public ThingId Id;
+        public string Name;
+        public string Description;
+    }
+
+    class ParsedData
+    {
+        public string Id;
         public string Name;
         public string Description;
         public Dictionary<Direction, LocationId> Directions;
@@ -237,6 +265,14 @@ namespace Forest
 
             // Creating location objects
             string[] locationNames = Enum.GetNames(typeof(LocationId));
+
+            // Reading thing data
+            string[] thingData = File.ReadAllLines("ForestThings.txt");
+
+            // Creating location objects
+            string[] thingNames = Enum.GetNames(typeof(ThingId));
+
+
 
             bool newEntry = true;
             var locationEntry = new LocationData();
