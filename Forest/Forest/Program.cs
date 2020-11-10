@@ -93,23 +93,25 @@ namespace Forest
             // Call the right handler for the given verb.
             switch (verb)
             {
+                // Directions.
                 case "north":
                 case "n":
-                    // TODO
+                    HandleMovement(Direction.North);
                     break;
                 case "south":
                 case "s":
-                    // TODO
+                    HandleMovement(Direction.South);
                     break;
                 case "west":
                 case "w":
-                    // TODO
+                    HandleMovement(Direction.West);
                     break;
                 case "east":
                 case "e":
-                    // TODO
+                    HandleMovement(Direction.East);
                     break;
 
+                // Verbs.
                 case "take":
                 case "pick":
                     // TODO
@@ -123,18 +125,11 @@ namespace Forest
                 case "combine":
                     // TODO
                     break;
-                case "inventory":
-                case "i":
-                    // TODO show list if whats in the inventory
-                    break;
                 case "talk":
                     // TODO
                     break;
                 case "look":
                     // TODO
-                    break;
-                case "shift":
-                    // TODO need to figure out what command I want to use for this
                     break;
                 case "sleep":
                     // TODO
@@ -142,13 +137,23 @@ namespace Forest
                 case "read":
                     // TODO
                     break;
-
                 // TODO interacting verbs, probably need more of them
                 case "eat":
                     // TODO
                     break;
 
+                // Inventory.
+                case "inventory":
+                case "i":
+                    // TODO show list if whats in the inventory
+                    break;
 
+                // Shapeshifting.
+                case "shift":
+                    // TODO need to figure out what command I want to use for this
+                    break;
+
+                // Quit.
                 case "quit":
                 case "q":
                 case "end":
@@ -159,6 +164,8 @@ namespace Forest
                         quitGame = true;
                     }
                     break;
+
+                // Save and load.
                 case "save":
                     // TODO
                     break;
@@ -166,6 +173,7 @@ namespace Forest
                     // TODO
                     break;
 
+                // Unvalid verb.
                 default:
                     // TODO
                     Reply("I don't understand");
@@ -192,6 +200,25 @@ namespace Forest
                 {
                     Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
                 }
+            }
+        }
+
+        static void HandleMovement(Direction direction)
+        {
+            LocationData currentLocation = LocationsData[CurrentLocationId];
+
+            // Checking if the direction is availible for the current location.
+            if (currentLocation.Directions.ContainsKey(direction))
+            {
+                // Changing the current location to the new location and displaying the new location information.
+                LocationId newLocation = currentLocation.Directions[direction];
+                CurrentLocationId = newLocation;
+                DisplayLocation();
+            }
+            else
+            {
+                // If the player tries to go in a direction with no location.
+                Reply("That direction is not possible.");
             }
         }
 
