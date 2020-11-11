@@ -52,6 +52,7 @@ namespace Forest
         public ThingId Id;
         public string Name;
         public string Description;
+        public LocationId StartingLocationId;
     }
 
     class ParsedData
@@ -60,6 +61,7 @@ namespace Forest
         public string Name;
         public string Description;
         public Dictionary<Direction, LocationId> Directions;
+        public string StartingLocationId;
     }
 
     class Program
@@ -68,12 +70,13 @@ namespace Forest
         const ConsoleColor PromptColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
 
-        // Data dictionaries
+        // Data dictionaries.
         static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
         static Dictionary<ThingId, ThingData> ThingsData = new Dictionary<ThingId, ThingData>();
 
-        // Current state
+        // Current state.
         static LocationId CurrentLocationId = LocationId.Den;
+        static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
 
 
         static bool quitGame = false;
@@ -319,6 +322,11 @@ namespace Forest
 
                         break;
 
+                    // This case is only used for things (not used for locations).
+                    case "Starting location":
+                        parsedDataEntry.StartingLocationId = value;
+                        break;
+
                     // When the line is empty, the parsed data is used to create a LocationData or ThingData object.
                     case "":
                         // Checking if the parsed data is a location.
@@ -326,12 +334,18 @@ namespace Forest
                         {
                             // Creating a new LocationData object from the parsed data.
                             var locationEntry = new LocationData();
+
+                            // Moving data from parsedDataEntry to locationEntry.
                             LocationId locationId = Enum.Parse<LocationId>(parsedDataEntry.Id);
                             locationEntry.Id = locationId;
+
                             locationEntry.Name = parsedDataEntry.Name;
+
                             locationEntry.Description = parsedDataEntry.Description;
+
                             locationEntry.Directions = parsedDataEntry.Directions;
 
+                            // Adding the new object.
                             LocationsData.Add(locationId, locationEntry);
                         }
 
@@ -340,11 +354,19 @@ namespace Forest
                         {
                             // Creating a new ThingData object from the parsed data.
                             var thingEntry = new ThingData();
+
+                            // Moving data from parsedDataEntry to thingEntry.
                             ThingId thingId = Enum.Parse<ThingId>(parsedDataEntry.Id);
                             thingEntry.Id = thingId;
+
                             thingEntry.Name = parsedDataEntry.Name;
+
                             thingEntry.Description = parsedDataEntry.Description;
 
+                            LocationId thingStartingLocationId = Enum.Parse<LocationId>(parsedDataEntry.StartingLocationId);
+                            thingEntry.StartingLocationId = thingStartingLocationId;
+
+                            // Adding the new object.
                             ThingsData.Add(thingId, thingEntry);
                         }
 
@@ -352,6 +374,15 @@ namespace Forest
                         newParsedDataObject = true;
                         break;
                 }
+            }
+        }
+
+        static void InitializeThingsLocations()
+        {
+            // Store the starting location of each thing.
+            foreach (KeyValuePair<ThingId, ThingData> thingEntry in ThingsData)
+            {
+                ThingsCurrentLocations[thingEntry.Key] = thingEntry.Value.StartingLocationId;
             }
         }
 
@@ -374,6 +405,9 @@ namespace Forest
             // Parsing location and thing data.
             ParseData(locationData);
             ParseData(thingData);
+
+            // Store all things starting locations into the dictionary of things current locations.
+            InitializeThingsLocations();
 
             // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
 
