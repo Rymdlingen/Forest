@@ -39,6 +39,8 @@ ID: Nowhere
 Name: Nowhere
 Description: This item do not exist.
 
+Notes:
+
 ID: <ID text>
 Name: <Name text>
 Description: <Description text>

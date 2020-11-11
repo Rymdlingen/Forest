@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Forest
 {
@@ -14,8 +15,7 @@ namespace Forest
         Forest,
         Forest2,
         Forest3,
-        River,
-        Placeholder
+        River
     }
 
     enum ThingId
@@ -259,11 +259,9 @@ namespace Forest
             bool newParsedDataObject = true;
             var parsedDataEntry = new ParsedData();
 
-            // Arrays and strings used to decide if the ParsedData object is a location or thing.
+            // Arrays used to decide if the ParsedData object is a location or thing.
             string[] locationNames = Enum.GetNames(typeof(LocationId));
-            string allLocationNames = string.Join("", locationNames);
             string[] thingNames = Enum.GetNames(typeof(ThingId));
-            string allThingNames = string.Join("", thingNames);
 
             // Check every line of the file and store the information into the right place.
             for (int line = 0; line < fileData.Length; line++)
@@ -284,6 +282,10 @@ namespace Forest
                 // Checking the property to decide where to store the value.
                 switch (property)
                 {
+                    // TODO
+                    case "Notes":
+                        line = fileData.Length;
+                        break;
                     case "ID":
                         parsedDataEntry.Id = value;
                         break;
@@ -330,44 +332,35 @@ namespace Forest
                     // When the line is empty, the parsed data is used to create a LocationData or ThingData object.
                     case "":
                         // Checking if the parsed data is a location.
-                        if (allLocationNames.Contains(parsedDataEntry.Id))
+                        if (locationNames.Contains(parsedDataEntry.Id))
                         {
                             // Creating a new LocationData object from the parsed data.
-                            var locationEntry = new LocationData();
-
                             // Moving data from parsedDataEntry to locationEntry.
                             LocationId locationId = Enum.Parse<LocationId>(parsedDataEntry.Id);
-                            locationEntry.Id = locationId;
-
-                            locationEntry.Name = parsedDataEntry.Name;
-
-                            locationEntry.Description = parsedDataEntry.Description;
-
-                            locationEntry.Directions = parsedDataEntry.Directions;
-
-                            // Adding the new object.
-                            LocationsData.Add(locationId, locationEntry);
+                            var locationEntry = new LocationData
+                            {
+                                Id = locationId,
+                                Name = parsedDataEntry.Name,
+                                Description = parsedDataEntry.Description,
+                                Directions = parsedDataEntry.Directions
+                            };
+                            LocationsData[locationId] = locationEntry;
                         }
 
                         // Checking if the parsed data is a thing.
-                        if (allThingNames.Contains(parsedDataEntry.Id))
+                        if (thingNames.Contains(parsedDataEntry.Id))
                         {
                             // Creating a new ThingData object from the parsed data.
-                            var thingEntry = new ThingData();
-
-                            // Moving data from parsedDataEntry to thingEntry.
                             ThingId thingId = Enum.Parse<ThingId>(parsedDataEntry.Id);
-                            thingEntry.Id = thingId;
-
-                            thingEntry.Name = parsedDataEntry.Name;
-
-                            thingEntry.Description = parsedDataEntry.Description;
-
                             LocationId thingStartingLocationId = Enum.Parse<LocationId>(parsedDataEntry.StartingLocationId);
-                            thingEntry.StartingLocationId = thingStartingLocationId;
-
-                            // Adding the new object.
-                            ThingsData.Add(thingId, thingEntry);
+                            var thingEntry = new ThingData
+                            {
+                                Id = thingId,
+                                Name = parsedDataEntry.Name,
+                                Description = parsedDataEntry.Description,
+                                StartingLocationId = thingStartingLocationId
+                            };
+                            ThingsData[thingId] = thingEntry;
                         }
 
                         // Boolean used to start creating an new ParsedData object.

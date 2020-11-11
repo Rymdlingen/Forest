@@ -43,6 +43,7 @@ Name: Frog
 Description: Frog NPC
 Starting location: Nowhere
 
+Notes:
 ID: <ID text>
 Name: <Name text>
 Description: <Description text>
