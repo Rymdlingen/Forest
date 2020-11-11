@@ -70,6 +70,7 @@ namespace Forest
 
         // Data dictionaries
         static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
+        static Dictionary<ThingId, ThingData> ThingsData = new Dictionary<ThingId, ThingData>();
 
         // Current state
         static LocationId CurrentLocationId = LocationId.Den;
@@ -250,107 +251,133 @@ namespace Forest
             }
         }
 
-        static void Main(string[] args)
+        static void ParseData(string[] fileData)
         {
-            // Initialization
+            bool newParsedDataObject = true;
+            var parsedDataEntry = new ParsedData();
 
-            // Reading title art information
-            string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
-
-            // Reading all the text for the games story
-            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
-
-            // Reading location data
-            string[] locationData = File.ReadAllLines("ForestLocations.txt");
-
-            // Creating location objects
+            // Arrays and strings used to decide if the ParsedData object is a location or thing.
             string[] locationNames = Enum.GetNames(typeof(LocationId));
-
-            // Reading thing data
-            string[] thingData = File.ReadAllLines("ForestThings.txt");
-
-            // Creating location objects
+            string allLocationNames = string.Join("", locationNames);
             string[] thingNames = Enum.GetNames(typeof(ThingId));
+            string allThingNames = string.Join("", thingNames);
 
-
-
-            bool newEntry = true;
-            var locationEntry = new LocationData();
-            LocationId locationEntryId = LocationId.Placeholder;
-            for (int line = 0; line < locationData.Length; line++)
+            // Check every line of the file and store the information into the right place.
+            for (int line = 0; line < fileData.Length; line++)
             {
-                if (newEntry)
+                // Start of a new ParsedData object.
+                if (newParsedDataObject)
                 {
-                    locationEntry = new LocationData();
-                    locationEntry.Directions = new Dictionary<Direction, LocationId>();
-                    locationEntryId = LocationId.Placeholder;
-                    newEntry = false;
+                    parsedDataEntry = new ParsedData();
+                    parsedDataEntry.Directions = new Dictionary<Direction, LocationId>();
+                    newParsedDataObject = false;
                 }
 
-                Match match = Regex.Match(locationData[line], "^([A-Z].*): ?(.*)");
-
+                // Dividing the line into property and value.
+                Match match = Regex.Match(fileData[line], "^([A-Z].*): ?(.*)");
                 string property = match.Groups[1].Value;
                 string value = match.Groups[2]?.Value;
 
+                // Checking the property to decide where to store the value.
                 switch (property)
                 {
                     case "ID":
-                        locationEntryId = Enum.Parse<LocationId>(value);
-                        locationEntry.Id = locationEntryId;
+                        parsedDataEntry.Id = value;
                         break;
 
                     case "Name":
-                        locationEntry.Name = value;
+                        parsedDataEntry.Name = value;
                         break;
 
                     case "Description":
-                        locationEntry.Description = value;
+                        parsedDataEntry.Description = value;
                         break;
 
+                    // This case is only used for locations (not used for things).
                     case "Directions":
                         do
                         {
-                            Match directionAndDestination = Regex.Match(locationData[line + 1], @"[ \t]*([A-Z]\w*): (\w*)");
+                            // Pattern to se if the next line is a direction.
+                            string directionAndDestinationPattern = @"[ \t]*([A-Z]\w*): (\w*)";
+                            Match directionAndDestination = Regex.Match(fileData[line + 1], directionAndDestinationPattern);
 
-                            if (directionAndDestination.Value == "")
+                            // If the next line is not a direction, break out of this case.
+                            if (!Regex.IsMatch(fileData[line + 1], directionAndDestinationPattern))
                             {
                                 break;
                             }
 
+                            // Parsing the direction and destination and storing them in a dictionary.
                             Direction direction = Enum.Parse<Direction>(directionAndDestination.Groups[1].Value);
                             LocationId destination = Enum.Parse<LocationId>(directionAndDestination.Groups[2].Value);
+                            parsedDataEntry.Directions[direction] = destination;
 
-                            locationEntry.Directions[direction] = destination;
-
+                            // Increasing the line to see if the next line is also a direction.
                             line++;
 
-                        } while (line + 1 < locationData.Length);
+                        } while (line + 1 < fileData.Length);
 
                         break;
+
+                    // When the line is empty, the parsed data is used to create a LocationData or ThingData object.
                     case "":
-                        LocationsData.Add(locationEntryId, locationEntry);
-                        newEntry = true;
+                        // Checking if the parsed data is a location.
+                        if (allLocationNames.Contains(parsedDataEntry.Id))
+                        {
+                            // Creating a new LocationData object from the parsed data.
+                            var locationEntry = new LocationData();
+                            LocationId locationId = Enum.Parse<LocationId>(parsedDataEntry.Id);
+                            locationEntry.Id = locationId;
+                            locationEntry.Name = parsedDataEntry.Name;
+                            locationEntry.Description = parsedDataEntry.Description;
+                            locationEntry.Directions = parsedDataEntry.Directions;
+
+                            LocationsData.Add(locationId, locationEntry);
+                        }
+
+                        // Checking if the parsed data is a thing.
+                        if (allThingNames.Contains(parsedDataEntry.Id))
+                        {
+                            // Creating a new ThingData object from the parsed data.
+                            var thingEntry = new ThingData();
+                            ThingId thingId = Enum.Parse<ThingId>(parsedDataEntry.Id);
+                            thingEntry.Id = thingId;
+                            thingEntry.Name = parsedDataEntry.Name;
+                            thingEntry.Description = parsedDataEntry.Description;
+
+                            ThingsData.Add(thingId, thingEntry);
+                        }
+
+                        // Boolean used to start creating an new ParsedData object.
+                        newParsedDataObject = true;
                         break;
                 }
             }
+        }
 
-            /*for (var line = 0; line < locationData.Length - 4; line++)
-            {
-                var locationEntry = new LocationData();
+        static void Main(string[] args)
+        {
+            // Initialization.
 
-                string locationIDText = locationData[line];
-                LocationId location = Enum.Parse<LocationId>(locationIDText);
+            // Reading title art information.
+            string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
 
-                locationEntry.Id = location;
-                locationEntry.Name = locationData[line + 1];
-                locationEntry.Description = locationData[line + 2];
+            // Reading all the text for the games story.
+            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
 
-                LocationsData.Add(location, locationEntry);
+            // Reading location data.
+            string[] locationData = File.ReadAllLines("ForestLocations.txt");
 
-                line += 3;
-            }*/
+            // Reading thing data.
+            string[] thingData = File.ReadAllLines("ForestThings.txt");
 
-            // Displaying title art
+            // Parsing location and thing data.
+            ParseData(locationData);
+            ParseData(thingData);
+
+            // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
+
+            // Displaying title art.
             foreach (string line in titleAsciiArt)
             {
                 Console.WriteLine(line);
@@ -358,17 +385,17 @@ namespace Forest
             Console.ReadKey();
             Console.Clear();
 
-            // Displaying the introduction/first part of the games story
+            // Displaying the introduction/first part of the games story.
             Console.ForegroundColor = NarrativeColor;
             Print(gameStory[0]);
-            Console.WriteLine();
-
-            // Display short instructions about how to play??
-
             Console.ReadKey();
+
+            // TODO Display short instructions about how to play??
+
+            // Displaying the first location.
             DisplayLocation();
 
-            // Game loop
+            // Game loop.
             while (!quitGame)
             {
                 // Ask player what they want to do.
