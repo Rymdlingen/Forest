@@ -9,6 +9,7 @@
         <None Remove="ForestGameStory.txt" />
         <None Remove="ForestLocations.txt" />
         <None Remove="ForestThings.txt" />
+        <None Remove="ForestSaveFile.txt" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="ForestTitleArt.txt">
@@ -22,6 +23,9 @@
         </Content>
         <Content Include="ForestThings.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="ForestSaveFile.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 </Project>

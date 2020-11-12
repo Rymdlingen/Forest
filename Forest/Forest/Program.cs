@@ -200,9 +200,11 @@ namespace Forest
                 // Save and load.
                 case "save":
                     // TODO
+                    SaveCurrentGameState();
                     break;
                 case "load":
                     // TODO
+                    LoadSavedGameState();
                     break;
 
                 // Unvalid verb.
@@ -275,9 +277,9 @@ namespace Forest
                 }
 
                 // Dividing the line into property and value.
-                Match match = Regex.Match(fileData[line], "^([A-Z].*): ?(.*)");
+                Match match = Regex.Match(fileData[line], "^([A-Z].*): *(.*)");
                 string property = match.Groups[1].Value;
-                string value = match.Groups[2]?.Value;
+                string value = match.Groups[2].Value;
 
                 // Checking the property to decide where to store the value.
                 switch (property)
@@ -377,6 +379,33 @@ namespace Forest
             {
                 ThingsCurrentLocations[thingEntry.Key] = thingEntry.Value.StartingLocationId;
             }
+        }
+
+        static void SaveCurrentGameState()
+        {
+            Reply("What do you want to name your save file?");
+            string saveFileName = Console.ReadLine();
+
+            var save = File.OpenWrite("ForestSaveFile.txt");
+
+            var writer = new StreamWriter(save);
+
+            writer.WriteLine($"ID: {saveFileName}");
+
+            writer.Close();
+        }
+
+        static void LoadSavedGameState()
+        {
+            Reply("Which save file do you want to load?");
+
+            string[] load = File.ReadAllLines("ForestSaveFile.txt");
+
+            foreach (string line in load)
+            {
+                Print(line);
+            }
+
         }
 
         static void Main(string[] args)
