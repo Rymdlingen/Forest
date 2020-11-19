@@ -70,6 +70,8 @@ namespace Forest
         const ConsoleColor PromptColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
 
+        // static List<string> load;
+
         // Data dictionaries.
         static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
         static Dictionary<ThingId, ThingData> ThingsData = new Dictionary<ThingId, ThingData>();
@@ -200,11 +202,11 @@ namespace Forest
                 // Save and load.
                 case "save":
                     // TODO
-                    SaveCurrentGameState();
+                    // SaveCurrentGameState();
                     break;
                 case "load":
                     // TODO
-                    LoadSavedGameState();
+                    // LoadSavedGameState();
                     break;
 
                 // Unvalid verb.
@@ -233,6 +235,19 @@ namespace Forest
                 if (currentLocationData.Directions.ContainsKey(currentDirection))
                 {
                     Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
+                }
+            }
+
+            // Display things at the current location, if there is any.
+            IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
+
+            if (thingsAtCurrentLocation.Count() > 0)
+            {
+                Print("You see: ");
+
+                foreach (ThingId thingId in thingsAtCurrentLocation)
+                {
+                    Print($"{GetName(thingId)}.");
                 }
             }
         }
@@ -381,32 +396,73 @@ namespace Forest
             }
         }
 
-        static void SaveCurrentGameState()
+        static IEnumerable<ThingId> GetThingsAtLocation(LocationId locationId)
         {
-            Reply("What do you want to name your save file?");
-            string saveFileName = Console.ReadLine();
-
-            var save = File.OpenWrite("ForestSaveFile.txt");
-
-            var writer = new StreamWriter(save);
-
-            writer.WriteLine($"ID: {saveFileName}");
-
-            writer.Close();
+            // Returns all the ThingIds for things at the given location.
+            return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId] == locationId);
         }
 
-        static void LoadSavedGameState()
+        static string GetName(ThingId thingId)
         {
-            Reply("Which save file do you want to load?");
+            // Returns the name of a thing.
+            return ThingsData[thingId].Name;
+        }
 
-            string[] load = File.ReadAllLines("ForestSaveFile.txt");
+        /*static string[] ReadSaveFile()
+        {
+            var _stream = File.OpenRead("ForestSaveFile.txt");
+            var _reader = new StreamReader(_stream);
+
+            string[] saveFiles = _reader.ReadToEnd().Trim().Split('\n');
+
+            for (var _i = 0; _i < saveFiles.Length; ++_i)
+            {
+                var _score = saveFiles[_i].Split(';');
+
+                sv_scores.Add(new Score() { iv_points = Int32.Parse(_score[0]), iv_name = _score[1] });
+            }   
+
+            _reader.Close();
+
+            return load;
+
+        }*/
+
+        /*static void SaveCurrentGameState()
+        {
+            Print("What do you want to name your save file?");
+            string saveFileName = Console.ReadLine();
+
+            List<string[]> load = new List<string[]> { ReadSaveFile() };
+            var save = File.OpenWrite("ForestSaveFile.txt");
+
+            load.Add($"\nID: {saveFileName}");
+
+            for (int line = 0; line < load.Length; line++)
+            {
+                if (load[line] == "" && load[line - 1] == "")
+                {
+                    var writer = new StreamWriter(save);
+
+                    writer.WriteLine($"ID: {saveFileName}");
+
+                    writer.Close();
+                }
+            }
+        }*/
+
+        /*static void LoadSavedGameState()
+        {
+            Print("Which save file do you want to load?");
+
+            string[] load = ReadSaveFile();
 
             foreach (string line in load)
             {
                 Print(line);
             }
 
-        }
+        }*/
 
         static void Main(string[] args)
         {
