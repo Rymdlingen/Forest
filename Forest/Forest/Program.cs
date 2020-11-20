@@ -80,8 +80,17 @@ namespace Forest
         static LocationId CurrentLocationId = LocationId.Den;
         static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
 
-
+        // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
+
+        // Thing helpers.
+        static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
+                                                                                                { "leaves", ThingId.Leaves },
+                                                                                                { "leafs", ThingId.Leaves },
+                                                                                                { "leaf", ThingId.Leaves },
+                                                                                                { "grass", ThingId.Grass } };
+
+        static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
 
         static void Print(string text)
         {
@@ -124,6 +133,9 @@ namespace Forest
                 verb = words[0];
             }
 
+            // Getting names of things from the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
             // Call the right handler for the given verb.
             switch (verb)
             {
@@ -148,12 +160,20 @@ namespace Forest
                 // Verbs.
                 case "take":
                 case "pick":
+                case "get":
                     // TODO
+                    HandleGet(words, thingIdsFromCommand);
+
                     break;
-                case "give":
-                    // TODO
-                    break;
+
                 case "drop":
+                    // TODO
+                    HandleDrop(words, thingIdsFromCommand);
+
+                    break;
+
+
+                case "give":
                     // TODO
                     break;
                 case "combine":
@@ -269,6 +289,54 @@ namespace Forest
                 // If the player tries to go in a direction with no location.
                 Reply("That direction is not possible.");
             }
+        }
+
+        static void HandleGet(string[] words, List<ThingId> thingIds)
+        {
+            string noun = "";
+            foreach (string word in words)
+            {
+                if (ThingIdsByName.ContainsKey(word))
+                {
+                    noun = word;
+                }
+            }
+
+            ThingId thingId = ThingIdsByName[noun];
+
+            if (ThingsYouCanGet.Contains(thingId))
+            {
+                Reply($"You picked up {noun}.");
+                ThingsCurrentLocations[thingId] = LocationId.Inventory;
+            }
+            else if (!ThingsYouCanGet.Contains(thingId))
+            {
+                Reply($"You can't pick that up.");
+            }
+            else if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+            {
+                Reply($"You already have {noun} in your inventory.");
+            }
+        }
+
+        static void HandleDrop(string[] words, List<ThingId> thingIds)
+        {
+
+        }
+
+        static List<ThingId> GetThingIdsFromWords(string[] words)
+        {
+            var thingIds = new List<ThingId>();
+
+            foreach (string word in words)
+            {
+                if (ThingIdsByName.ContainsKey(word))
+                {
+                    thingIds.Add(ThingIdsByName[word]);
+                }
+            }
+
+            return thingIds;
         }
 
         static void ParseData(string[] fileData)
