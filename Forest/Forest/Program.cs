@@ -84,11 +84,19 @@ namespace Forest
         static bool quitGame = false;
 
         // Thing helpers.
+        // (Just a reminder of all the things) Moss, Grass, Leaves, Berries, Beehive, Fish, Necklace, Owl, Frog.
         static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
                                                                                                 { "leaves", ThingId.Leaves },
                                                                                                 { "leafs", ThingId.Leaves },
                                                                                                 { "leaf", ThingId.Leaves },
-                                                                                                { "grass", ThingId.Grass } };
+                                                                                                { "grass", ThingId.Grass },
+                                                                                                { "berries", ThingId.Berries },
+                                                                                                { "berry", ThingId.Berries },
+                                                                                                { "honey", ThingId.Beehive },
+                                                                                                { "fish", ThingId.Fish },
+                                                                                                { "necklace", ThingId.Necklace },
+                                                                                                { "owl", ThingId.Owl },
+                                                                                                { "frog", ThingId.Frog } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
 
@@ -133,9 +141,6 @@ namespace Forest
                 verb = words[0];
             }
 
-            // Getting names of things from the command.
-            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
-
             // Call the right handler for the given verb.
             switch (verb)
             {
@@ -162,13 +167,13 @@ namespace Forest
                 case "pick":
                 case "get":
                     // TODO
-                    HandleGet(words, thingIdsFromCommand);
+                    HandleGet(words);
 
                     break;
 
                 case "drop":
                     // TODO
-                    HandleDrop(words, thingIdsFromCommand);
+                    HandleDrop(words);
 
                     break;
 
@@ -291,35 +296,70 @@ namespace Forest
             }
         }
 
-        static void HandleGet(string[] words, List<ThingId> thingIds)
+        static void HandleGet(string[] words)
         {
-            string noun = "";
-            foreach (string word in words)
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            var thingsFromCommand = new List<string>();
+            // Searching for as many words as we found keys for Thing IDs.
+            foreach (ThingId thingId in thingIdsFromCommand)
             {
-                if (ThingIdsByName.ContainsKey(word))
+                // Checking which word in the command that matches the Thing ID.
+                foreach (string word in words)
                 {
-                    noun = word;
+                    // A collection of all the keys (different words) that I decided matches the Thing IDs.
+                    Dictionary<string, ThingId>.KeyCollection thingIdsByNameKeys = ThingIdsByName.Keys;
+                    // If the word matches a key, add it to the list.
+                    if (thingIdsByNameKeys.Contains(word) && thingId == ThingIdsByName[word])
+                    {
+                        thingsFromCommand.Add(word);
+                        break;
+                    }
                 }
             }
 
-            ThingId thingId = ThingIdsByName[noun];
+            // If there is any words that match any Thing IDs.
+            if (thingsFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the location of the thing matches the location of the player and if it is a pickable thing.
+                // Checkong every thing found in the command.
+                foreach (string thing in thingsFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
 
-            if (ThingsYouCanGet.Contains(thingId))
-            {
-                Reply($"You picked up {noun}.");
-                ThingsCurrentLocations[thingId] = LocationId.Inventory;
+                    // Thing is pickable and at players location.
+                    if (ThingsYouCanGet.Contains(thingId) && ThingsCurrentLocations[thingId] == CurrentLocationId)
+                    {
+                        Reply($"You picked up {thing}.");
+                        ThingsCurrentLocations[thingId] = LocationId.Inventory;
+                    }
+                    // Thing is already in players inventory and can't be picked up again.
+                    else if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    {
+                        Reply($"You already have {thing} in your inventory.");
+                    }
+                    // Thing is in this location but can't be picked up.
+                    else if (ThingsCurrentLocations[thingId] == CurrentLocationId && !ThingsYouCanGet.Contains(thingId))
+                    {
+                        Reply($"You can't pick {thing} up.");
+                    }
+                    // Thing is not in this location.
+                    else if (ThingsCurrentLocations[thingId] != CurrentLocationId)
+                    {
+                        Reply($"There is no {thing} here.");
+                    }
+                }
             }
-            else if (!ThingsYouCanGet.Contains(thingId))
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
             {
-                Reply($"You can't pick that up.");
-            }
-            else if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
-            {
-                Reply($"You already have {noun} in your inventory.");
+                Reply($"There is no such thing here.");
             }
         }
 
-        static void HandleDrop(string[] words, List<ThingId> thingIds)
+        static void HandleDrop(string[] words)
         {
 
         }
