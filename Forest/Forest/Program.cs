@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Forest
 {
+    #region Data types
     enum LocationId
     {
         Nowhere,
@@ -63,9 +64,11 @@ namespace Forest
         public Dictionary<Direction, LocationId> Directions;
         public string StartingLocationId;
     }
+    #endregion
 
     class Program
     {
+        #region Fields
         const ConsoleColor NarrativeColor = ConsoleColor.Gray;
         const ConsoleColor PromptColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
@@ -99,7 +102,9 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
+        #endregion
 
+        #region Output helpers
         static void Print(string text)
         {
             // Split text into lines that don't exceed the window width.
@@ -119,7 +124,64 @@ namespace Forest
             Print(text);
             Console.WriteLine();
         }
+        #endregion
 
+        #region Interaction helpers
+        static List<ThingId> GetThingIdsFromWords(string[] words)
+        {
+            var thingIds = new List<ThingId>();
+
+            // For every word in the entered command, check if the word is a thing.
+            foreach (string word in words)
+            {
+                if (ThingIdsByName.ContainsKey(word))
+                {
+                    // If a word is a thing add it to the list of thing IDs.
+                    thingIds.Add(ThingIdsByName[word]);
+                }
+            }
+
+            return thingIds;
+        }
+
+        static List<string> GetThingKeysFromWords(string[] words, List<ThingId> thingIdsFromCommand)
+        {
+            // Getting a list of things as they are written in the entered command.
+            var thingKeysFromCommand = new List<string>();
+            // Searching for as many words as we found keys for Thing IDs.
+            foreach (ThingId thingId in thingIdsFromCommand)
+            {
+                // Checking which word in the command that matches the Thing ID.
+                foreach (string word in words)
+                {
+                    // A collection of all the keys (different words) that I decided matches the Thing IDs.
+                    Dictionary<string, ThingId>.KeyCollection thingIdsByNameKeys = ThingIdsByName.Keys;
+                    // If the word matches a key, add it to the list.
+                    if (thingIdsByNameKeys.Contains(word) && thingId == ThingIdsByName[word])
+                    {
+                        thingKeysFromCommand.Add(word);
+                        break;
+                    }
+                }
+            }
+
+            return thingKeysFromCommand;
+        }
+
+        static IEnumerable<ThingId> GetThingsAtLocation(LocationId locationId)
+        {
+            // Returns all the ThingIds for things at the given location.
+            return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId] == locationId);
+        }
+
+        static string GetName(ThingId thingId)
+        {
+            // Returns the name of a thing.
+            return ThingsData[thingId].Name;
+        }
+        #endregion
+
+        #region Interaction
         static void HandlePlayerAction()
         {
             // Ask player what they want to do.
@@ -245,48 +307,6 @@ namespace Forest
             }
         }
 
-        // Used when looking at a location.
-        static void LookAtLocation()
-        {
-            // Display current location description.
-            LocationData currentLocationData = LocationsData[CurrentLocationId];
-            Print(currentLocationData.Description);
-
-            // Array with strings of directions
-            string[] allDirections = Enum.GetNames(typeof(Direction));
-
-            // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions
-            for (int direction = 0; direction < allDirections.Length; direction++)
-            {
-                Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
-                if (currentLocationData.Directions.ContainsKey(currentDirection))
-                {
-                    Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
-                }
-            }
-
-            // Display things at the current location, if there is any.
-            IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
-
-            if (thingsAtCurrentLocation.Count() > 0)
-            {
-                Print("You see: ");
-
-                foreach (ThingId thingId in thingsAtCurrentLocation)
-                {
-                    Print($"{GetName(thingId)}.");
-                }
-            }
-        }
-
-        // Used when moving to a new location.
-        static void DisplayNewLocation()
-        {
-            // Clears the console before displaying all the information about the location.
-            Console.Clear();
-            LookAtLocation();
-        }
-
         static void HandleMovement(Direction direction)
         {
             LocationData currentLocation = LocationsData[CurrentLocationId];
@@ -392,7 +412,6 @@ namespace Forest
 
         static void HandleInventory()
         {
-
             string[] thingIds = Enum.GetNames(typeof(ThingId));
             var thingsInInventory = new List<string>();
 
@@ -479,48 +498,53 @@ namespace Forest
                 Reply($"There is no such thing to look at.");
             }
         }
+        #endregion
 
-        static List<ThingId> GetThingIdsFromWords(string[] words)
+        #region Display helpers
+        // Used when looking at a location.
+        static void LookAtLocation()
         {
-            var thingIds = new List<ThingId>();
+            // Display current location description.
+            LocationData currentLocationData = LocationsData[CurrentLocationId];
+            Print(currentLocationData.Description);
 
-            // For every word in the entered command, check if the word is a thing.
-            foreach (string word in words)
+            // Array with strings of directions
+            string[] allDirections = Enum.GetNames(typeof(Direction));
+
+            // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions
+            for (int direction = 0; direction < allDirections.Length; direction++)
             {
-                if (ThingIdsByName.ContainsKey(word))
+                Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
+                if (currentLocationData.Directions.ContainsKey(currentDirection))
                 {
-                    // If a word is a thing add it to the list of thing IDs.
-                    thingIds.Add(ThingIdsByName[word]);
+                    Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
                 }
             }
 
-            return thingIds;
-        }
+            // Display things at the current location, if there is any.
+            IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
 
-        static List<string> GetThingKeysFromWords(string[] words, List<ThingId> thingIdsFromCommand)
-        {
-            // Getting a list of things as they are written in the entered command.
-            var thingKeysFromCommand = new List<string>();
-            // Searching for as many words as we found keys for Thing IDs.
-            foreach (ThingId thingId in thingIdsFromCommand)
+            if (thingsAtCurrentLocation.Count() > 0)
             {
-                // Checking which word in the command that matches the Thing ID.
-                foreach (string word in words)
+                Print("You see: ");
+
+                foreach (ThingId thingId in thingsAtCurrentLocation)
                 {
-                    // A collection of all the keys (different words) that I decided matches the Thing IDs.
-                    Dictionary<string, ThingId>.KeyCollection thingIdsByNameKeys = ThingIdsByName.Keys;
-                    // If the word matches a key, add it to the list.
-                    if (thingIdsByNameKeys.Contains(word) && thingId == ThingIdsByName[word])
-                    {
-                        thingKeysFromCommand.Add(word);
-                        break;
-                    }
+                    Print($"{GetName(thingId)}.");
                 }
             }
-
-            return thingKeysFromCommand;
         }
 
+        // Used when moving to a new location.
+        static void DisplayNewLocation()
+        {
+            // Clears the console before displaying all the information about the location.
+            Console.Clear();
+            LookAtLocation();
+        }
+        #endregion
+
+        #region Program start
         static void ParseData(string[] fileData)
         {
             bool newParsedDataObject = true;
@@ -646,18 +670,59 @@ namespace Forest
             }
         }
 
-        static IEnumerable<ThingId> GetThingsAtLocation(LocationId locationId)
+        static void Main(string[] args)
         {
-            // Returns all the ThingIds for things at the given location.
-            return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId] == locationId);
-        }
+            // Initialization.
 
-        static string GetName(ThingId thingId)
-        {
-            // Returns the name of a thing.
-            return ThingsData[thingId].Name;
-        }
+            // Reading title art information.
+            string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
 
+            // Reading all the text for the games story.
+            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
+
+            // Reading location data.
+            string[] locationData = File.ReadAllLines("ForestLocations.txt");
+
+            // Reading thing data.
+            string[] thingData = File.ReadAllLines("ForestThings.txt");
+
+            // Parsing location and thing data.
+            ParseData(locationData);
+            ParseData(thingData);
+
+            // Store all things starting locations into the dictionary of things current locations.
+            InitializeThingsLocations();
+
+            // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
+
+            // Displaying title art.
+            foreach (string line in titleAsciiArt)
+            {
+                Console.WriteLine(line);
+            }
+            Console.ReadKey();
+            Console.Clear();
+
+            // Displaying the introduction/first part of the games story.
+            Console.ForegroundColor = NarrativeColor;
+            Print(gameStory[0]);
+            Console.ReadKey();
+
+            // TODO Display short instructions about how to play??
+
+            // Displaying the first location.
+            DisplayNewLocation();
+
+            // Game loop.
+            while (!quitGame)
+            {
+                // Ask player what they want to do.
+                HandlePlayerAction();
+            }
+        }
+        #endregion
+
+        #region Start and save, WIP
         /*static string[] ReadSaveFile()
         {
             var _stream = File.OpenRead("ForestSaveFile.txt");
@@ -713,56 +778,6 @@ namespace Forest
             }
 
         }*/
-
-        static void Main(string[] args)
-        {
-            // Initialization.
-
-            // Reading title art information.
-            string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
-
-            // Reading all the text for the games story.
-            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
-
-            // Reading location data.
-            string[] locationData = File.ReadAllLines("ForestLocations.txt");
-
-            // Reading thing data.
-            string[] thingData = File.ReadAllLines("ForestThings.txt");
-
-            // Parsing location and thing data.
-            ParseData(locationData);
-            ParseData(thingData);
-
-            // Store all things starting locations into the dictionary of things current locations.
-            InitializeThingsLocations();
-
-            // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
-
-            // Displaying title art.
-            foreach (string line in titleAsciiArt)
-            {
-                Console.WriteLine(line);
-            }
-            Console.ReadKey();
-            Console.Clear();
-
-            // Displaying the introduction/first part of the games story.
-            Console.ForegroundColor = NarrativeColor;
-            Print(gameStory[0]);
-            Console.ReadKey();
-
-            // TODO Display short instructions about how to play??
-
-            // Displaying the first location.
-            DisplayNewLocation();
-
-            // Game loop.
-            while (!quitGame)
-            {
-                // Ask player what they want to do.
-                HandlePlayerAction();
-            }
-        }
+        #endregion
     }
 }
