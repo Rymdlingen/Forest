@@ -180,6 +180,7 @@ namespace Forest
 
                 case "look":
                     // TODO
+                    HandleLook(words);
                     break;
 
                 case "give":
@@ -244,10 +245,9 @@ namespace Forest
             }
         }
 
-        static void DisplayLocation()
+        // Used when looking at a location.
+        static void LookAtLocation()
         {
-            Console.Clear();
-
             // Display current location description.
             LocationData currentLocationData = LocationsData[CurrentLocationId];
             Print(currentLocationData.Description);
@@ -279,6 +279,14 @@ namespace Forest
             }
         }
 
+        // Used when moving to a new location.
+        static void DisplayNewLocation()
+        {
+            // Clears the console before displaying all the information about the location.
+            Console.Clear();
+            LookAtLocation();
+        }
+
         static void HandleMovement(Direction direction)
         {
             LocationData currentLocation = LocationsData[CurrentLocationId];
@@ -289,7 +297,7 @@ namespace Forest
                 // Changing the current location to the new location and displaying the new location information.
                 LocationId newLocation = currentLocation.Directions[direction];
                 CurrentLocationId = newLocation;
-                DisplayLocation();
+                DisplayNewLocation();
             }
             else
             {
@@ -431,9 +439,45 @@ namespace Forest
             }
         }
 
-        static void HandleLook()
+        static void HandleLook(string[] words)
         {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the location of the thing matches the location of the player or has inventory as location.
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    // Thing is at players location or in inventory.
+                    if (ThingsCurrentLocations[thingId] == CurrentLocationId || ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    {
+                        Reply(ThingsData[thingId].Description);
+                    }
+                    // Thing is not in this location and not in inventory.
+                    else
+                    {
+                        Reply($"You do not see {thing} here.");
+                    }
+                }
+            }
+            // If the player only writes look, display information about the location.
+            else if (words.Count() == 1)
+            {
+                LookAtLocation();
+            }
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
+            {
+                Reply($"There is no such thing to look at.");
+            }
         }
 
         static List<ThingId> GetThingIdsFromWords(string[] words)
@@ -711,7 +755,7 @@ namespace Forest
             // TODO Display short instructions about how to play??
 
             // Displaying the first location.
-            DisplayLocation();
+            DisplayNewLocation();
 
             // Game loop.
             while (!quitGame)
