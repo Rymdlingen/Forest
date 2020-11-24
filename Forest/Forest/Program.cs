@@ -302,30 +302,14 @@ namespace Forest
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
             // Getting a list of things as they are written in the entered command.
-            var thingsFromCommand = new List<string>();
-            // Searching for as many words as we found keys for Thing IDs.
-            foreach (ThingId thingId in thingIdsFromCommand)
-            {
-                // Checking which word in the command that matches the Thing ID.
-                foreach (string word in words)
-                {
-                    // A collection of all the keys (different words) that I decided matches the Thing IDs.
-                    Dictionary<string, ThingId>.KeyCollection thingIdsByNameKeys = ThingIdsByName.Keys;
-                    // If the word matches a key, add it to the list.
-                    if (thingIdsByNameKeys.Contains(word) && thingId == ThingIdsByName[word])
-                    {
-                        thingsFromCommand.Add(word);
-                        break;
-                    }
-                }
-            }
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
 
             // If there is any words that match any Thing IDs.
-            if (thingsFromCommand.Count > 0)
+            if (thingKeysFromCommand.Count > 0)
             {
                 // Output the correct response depending on if the location of the thing matches the location of the player and if it is a pickable thing.
-                // Checkong every thing found in the command.
-                foreach (string thing in thingsFromCommand)
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
                 {
                     ThingId thingId = ThingIdsByName[thing];
 
@@ -361,22 +345,80 @@ namespace Forest
 
         static void HandleDrop(string[] words)
         {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the location of the thing is the inventory.
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    // Thing is in players inventory and is dropped.
+                    if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    {
+                        Reply($"You dropped {thing}.");
+                        ThingsCurrentLocations[thingId] = CurrentLocationId;
+                    }
+                    // Thing is not in players inventory and can't be dropped.
+                    else if (ThingsCurrentLocations[thingId] != LocationId.Inventory)
+                    {
+                        Reply($"You don't have {thing} in your inventory.");
+                    }
+                }
+            }
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
+            {
+                Reply($"There is no such thing in your inventory.");
+            }
         }
 
         static List<ThingId> GetThingIdsFromWords(string[] words)
         {
             var thingIds = new List<ThingId>();
 
+            // For every word in the entered command, check if the word is a thing.
             foreach (string word in words)
             {
                 if (ThingIdsByName.ContainsKey(word))
                 {
+                    // If a word is a thing add it to the list of thing IDs.
                     thingIds.Add(ThingIdsByName[word]);
                 }
             }
 
             return thingIds;
+        }
+
+        static List<string> GetThingKeysFromWords(string[] words, List<ThingId> thingIdsFromCommand)
+        {
+            // Getting a list of things as they are written in the entered command.
+            var thingKeysFromCommand = new List<string>();
+            // Searching for as many words as we found keys for Thing IDs.
+            foreach (ThingId thingId in thingIdsFromCommand)
+            {
+                // Checking which word in the command that matches the Thing ID.
+                foreach (string word in words)
+                {
+                    // A collection of all the keys (different words) that I decided matches the Thing IDs.
+                    Dictionary<string, ThingId>.KeyCollection thingIdsByNameKeys = ThingIdsByName.Keys;
+                    // If the word matches a key, add it to the list.
+                    if (thingIdsByNameKeys.Contains(word) && thingId == ThingIdsByName[word])
+                    {
+                        thingKeysFromCommand.Add(word);
+                        break;
+                    }
+                }
+            }
+
+            return thingKeysFromCommand;
         }
 
         static void ParseData(string[] fileData)
