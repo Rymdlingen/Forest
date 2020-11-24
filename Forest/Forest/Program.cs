@@ -132,7 +132,8 @@ namespace Forest
             string command = Console.ReadLine().ToLowerInvariant();
 
             // Split the command into words.
-            string[] words = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            char[] splitChars = { ' ', ',', '.' };
+            string[] words = command.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
 
             // Assuming the first word in the command is a verb. If there is no entered words the verb string stays empty.
             string verb = "";
@@ -177,6 +178,9 @@ namespace Forest
 
                     break;
 
+                case "look":
+                    // TODO
+                    break;
 
                 case "give":
                     // TODO
@@ -185,9 +189,6 @@ namespace Forest
                     // TODO
                     break;
                 case "talk":
-                    // TODO
-                    break;
-                case "look":
                     // TODO
                     break;
                 case "sleep":
@@ -205,6 +206,7 @@ namespace Forest
                 case "inventory":
                 case "i":
                     // TODO show list if whats in the inventory
+                    HandleInventory();
                     break;
 
                 // Shapeshifting.
@@ -378,6 +380,60 @@ namespace Forest
             {
                 Reply($"There is no such thing in your inventory.");
             }
+        }
+
+        static void HandleInventory()
+        {
+
+            string[] thingIds = Enum.GetNames(typeof(ThingId));
+            var thingsInInventory = new List<string>();
+
+            // Go through all the things and find the ones that have inventory as location.
+            foreach (string thing in thingIds)
+            {
+                ThingId thingId = Enum.Parse<ThingId>(thing);
+                if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                {
+                    // Add all things that has inventory as location to a list.
+                    thingsInInventory.Add(thing.ToString().ToLower());
+                }
+            }
+
+            // If there is more then one thing in the players inventory, format all the things into one string.
+            if (thingsInInventory.Count > 1)
+            {
+                // Add a new string that combines the last two things and adds "and" inbetween them.
+                thingsInInventory.Add($"{thingsInInventory[thingsInInventory.Count - 2]} and {thingsInInventory[thingsInInventory.Count - 1]}");
+                // Remove the two seperated words.
+                thingsInInventory.RemoveRange(thingsInInventory.Count - 3, 2);
+
+                // If there is more things then 2, add "," between all of them but the last two.
+                if (thingsInInventory.Count > 1)
+                {
+                    // Join all words together in a string.
+                    string joinList = String.Join(", ", thingsInInventory);
+                    // Remove all things in the list.
+                    thingsInInventory.Clear();
+                    // Add the formatted string with all the things to the list.
+                    thingsInInventory.Add(joinList);
+                }
+            }
+
+            // If there is things in the inventory, display the list of things.
+            if (thingsInInventory.Count > 0)
+            {
+                Reply($"You have these things in your inventory: {thingsInInventory[0]}.");
+            }
+            // If there is no things in the inventory, tell the player that.
+            else
+            {
+                Reply("You have nothing in your inventory.");
+            }
+        }
+
+        static void HandleLook()
+        {
+
         }
 
         static List<ThingId> GetThingIdsFromWords(string[] words)
