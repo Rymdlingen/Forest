@@ -374,23 +374,23 @@ namespace Forest
                     ThingId thingId = ThingIdsByName[thing];
 
                     // Thing is pickable and at players location.
-                    if (ThingsYouCanGet.Contains(thingId) && ThingsCurrentLocations[thingId] == CurrentLocationId)
+                    if (CanGetThing(thingId) && ThingIsHere(thingId))
                     {
                         Reply($"You picked up {thing}.");
-                        ThingsCurrentLocations[thingId] = LocationId.Inventory;
+                        GetThing(thingId);
                     }
                     // Thing is already in players inventory and can't be picked up again.
-                    else if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    else if (HaveThing(thingId))
                     {
                         Reply($"You already have {thing} in your inventory.");
                     }
                     // Thing is in this location but can't be picked up.
-                    else if (ThingsCurrentLocations[thingId] == CurrentLocationId && !ThingsYouCanGet.Contains(thingId))
+                    else if (ThingIsHere(thingId) && !CanGetThing(thingId))
                     {
                         Reply($"You can't pick {thing} up.");
                     }
                     // Thing is not in this location.
-                    else if (ThingsCurrentLocations[thingId] != CurrentLocationId)
+                    else if (!ThingIsHere(thingId))
                     {
                         Reply($"There is no {thing} here.");
                     }
@@ -421,13 +421,13 @@ namespace Forest
                     ThingId thingId = ThingIdsByName[thing];
 
                     // Thing is in players inventory and is dropped.
-                    if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    if (HaveThing(thingId))
                     {
                         Reply($"You dropped {thing}.");
-                        ThingsCurrentLocations[thingId] = CurrentLocationId;
+                        DropThing(thingId);
                     }
                     // Thing is not in players inventory and can't be dropped.
-                    else if (ThingsCurrentLocations[thingId] != LocationId.Inventory)
+                    else if (!HaveThing(thingId))
                     {
                         Reply($"You don't have {thing} in your inventory.");
                     }
@@ -449,7 +449,7 @@ namespace Forest
             foreach (string thing in thingIds)
             {
                 ThingId thingId = Enum.Parse<ThingId>(thing);
-                if (ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                if (HaveThing(thingId))
                 {
                     // Add all things that has inventory as location to a list.
                     thingsInInventory.Add(thing.ToString().ToLower());
@@ -506,7 +506,7 @@ namespace Forest
                     ThingId thingId = ThingIdsByName[thing];
 
                     // Thing is at players location or in inventory.
-                    if (ThingsCurrentLocations[thingId] == CurrentLocationId || ThingsCurrentLocations[thingId] == LocationId.Inventory)
+                    if (ThingIsAvailable(thingId))
                     {
                         Reply(ThingsData[thingId].Description);
                     }
@@ -598,17 +598,17 @@ namespace Forest
         /// <returns>True or false.</returns>
         static bool ThingIsHere(ThingId thingId)
         {
-            return ThingsCurrentLocations[thingId] == CurrentLocationId;
+            return ThingAt(thingId, CurrentLocationId);
         }
 
         /// <summary>
-        /// Checks if a certain thing is pickable or not.
+        /// Checks if a certain thing is either at the players current location or in the inventory.
         /// </summary>
         /// <param name="thingId"></param>
         /// <returns>True or false.</returns>
         static bool ThingIsAvailable(ThingId thingId)
         {
-            return ThingsYouCanGet.Contains(thingId);
+            return ThingIsHere(thingId) || HaveThing(thingId);
         }
 
         /// <summary>
@@ -618,29 +618,58 @@ namespace Forest
         /// <returns>True or false.</returns>
         static bool HaveThing(ThingId thingId)
         {
-            return ThingsCurrentLocations[thingId] == LocationId.Inventory;
+            return ThingAt(thingId, LocationId.Inventory);
         }
 
-        static void MoveThing()
+        /// <summary>
+        /// Checks if a certain thing is possible to pick up.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>True or false.</returns>
+        static bool CanGetThing(ThingId thingId)
         {
-
+            return ThingsYouCanGet.Contains(thingId);
         }
 
-        static void SwapThings()
+        /// <summary>
+        /// Changes a certain things location to a certain location.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <param name="locationId"></param>
+        static void MoveThing(ThingId thingId, LocationId locationId)
         {
-
+            ThingsCurrentLocations[thingId] = locationId;
         }
 
-        static void GetThing()
+        /// <summary>
+        /// Swaps two things locations.
+        /// </summary>
+        /// <param name="thing1Id"></param>
+        /// <param name="thing2Id"></param>
+        static void SwapThings(ThingId thing1Id, ThingId thing2Id)
         {
-
+            LocationId locationOfThing1 = ThingsCurrentLocations[thing1Id];
+            MoveThing(thing1Id, ThingsCurrentLocations[thing2Id]);
+            MoveThing(thing2Id, locationOfThing1);
         }
 
-        static void DropThing()
+        /// <summary>
+        /// Changes a certain things location to inventory.
+        /// </summary>
+        /// <param name="thingId"></param>
+        static void GetThing(ThingId thingId)
         {
-
+            MoveThing(thingId, LocationId.Inventory);
         }
 
+        /// <summary>
+        /// Changes a certain things location to the players current location.
+        /// </summary>
+        /// <param name="thingId"></param>
+        static void DropThing(ThingId thingId)
+        {
+            MoveThing(thingId, CurrentLocationId);
+        }
         #endregion
 
         #region Program start
