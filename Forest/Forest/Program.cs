@@ -591,19 +591,34 @@ namespace Forest
             return ThingsCurrentLocations[thingId] == locationId;
         }
 
+        /// <summary>
+        /// Checks if a certain thing is at the same location as the player.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>True or false.</returns>
         static bool ThingIsHere(ThingId thingId)
         {
             return ThingsCurrentLocations[thingId] == CurrentLocationId;
         }
 
-        static void ThingIsAvailable()
+        /// <summary>
+        /// Checks if a certain thing is pickable or not.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>True or false.</returns>
+        static bool ThingIsAvailable(ThingId thingId)
         {
-
+            return ThingsYouCanGet.Contains(thingId);
         }
 
-        static void HaveThing()
+        /// <summary>
+        /// Checks if a certain thing has inventory as current location.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>True or false.</returns>
+        static bool HaveThing(ThingId thingId)
         {
-
+            return ThingsCurrentLocations[thingId] == LocationId.Inventory;
         }
 
         static void MoveThing()
