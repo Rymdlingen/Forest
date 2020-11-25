@@ -102,6 +102,7 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
+        static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         #endregion
 
         #region Output helpers
@@ -132,6 +133,18 @@ namespace Forest
         {
             Print(text);
             Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Capitalizes the first letter in a string.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>String with the first letter capitalized.</returns>
+        static string Capitalize(string text)
+        {
+            string capitalizeFirstLetter = text[0].ToString().ToUpper();
+            text = text.Remove(0, 1);
+            return capitalizeFirstLetter + text;
         }
         #endregion
 
@@ -261,13 +274,11 @@ namespace Forest
                 case "get":
                     // TODO
                     HandleGet(words);
-
                     break;
 
                 case "drop":
                     // TODO
                     HandleDrop(words);
-
                     break;
 
                 case "look":
@@ -275,13 +286,15 @@ namespace Forest
                     HandleLook(words);
                     break;
 
+                case "talk":
+                    // TODO
+                    HandleTalk(words);
+                    break;
+
                 case "give":
                     // TODO
                     break;
                 case "combine":
-                    // TODO
-                    break;
-                case "talk":
                     // TODO
                     break;
                 case "sleep":
@@ -452,7 +465,7 @@ namespace Forest
                 if (HaveThing(thingId))
                 {
                     // Add all things that has inventory as location to a list.
-                    thingsInInventory.Add(thing.ToString().ToLower());
+                    thingsInInventory.Add(ThingsData[thingId].Name.ToLower());
                 }
             }
 
@@ -528,6 +541,68 @@ namespace Forest
                 Reply($"There is no such thing to look at.");
             }
         }
+
+        static void HandleTalk(string[] words)
+        {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the location of the thing matches the location of the player and the thing is a NPC.
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    // Thing is at players location and is a NPC.
+                    if (ThingIsHere(thingId) && ThingIsNpc(thingId))
+                    {
+                        switch (thingId)
+                        {
+                            case ThingId.Owl:
+                                // TODO
+                                break;
+
+                            case ThingId.Frog:
+                                // TODO
+                                break;
+                        }
+                    }
+                    else if (!ThingIsHere(thingId) && ThingIsNpc(thingId))
+                    {
+                        Reply($"{Capitalize(thing)} is not here.");
+                    }
+                    // Thing is not something you can talk to.
+                    else
+                    {
+                        Reply($"You can't talk to {thing}.");
+                    }
+                }
+            }
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
+            {
+                Reply($"You can't talk to that.");
+            }
+
+        }
+
+        static void TalkToOwl()
+        {
+            // TODO
+        }
+
+        static void TalkToFrog()
+        {
+            // TODO
+        }
+
+        // TODO add more game events
         #endregion
 
         #region Display helpers
@@ -629,6 +704,16 @@ namespace Forest
         static bool CanGetThing(ThingId thingId)
         {
             return ThingsYouCanGet.Contains(thingId);
+        }
+
+        /// <summary>
+        /// Checks if a thing is an NPC.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>True or false.</returns>
+        static bool ThingIsNpc(ThingId thingId)
+        {
+            return ThingsThatAreNpcs.Contains(thingId);
         }
 
         /// <summary>
