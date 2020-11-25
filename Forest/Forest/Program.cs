@@ -105,6 +105,10 @@ namespace Forest
         #endregion
 
         #region Output helpers
+        /// <summary>
+        /// Checks how wide the console is and writes text one line at a time making sure no words are cut off.
+        /// </summary>
+        /// <param name="text"></param>
         static void Print(string text)
         {
             // Split text into lines that don't exceed the window width.
@@ -119,6 +123,11 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Checks how wide the console is and writes text one line at a time making sure no words are cut off.
+        /// Adds an empty line after the text.
+        /// </summary>
+        /// <param name="text"></param>
         static void Reply(string text)
         {
             Print(text);
@@ -127,6 +136,11 @@ namespace Forest
         #endregion
 
         #region Interaction helpers
+        /// <summary>
+        /// Checks every word to see if they match any of the keywords in the dictinarys containing all Thing Ids.
+        /// </summary>
+        /// <param name="words"></param>
+        /// <returns>A list of thing ids that matched the words.</returns>
         static List<ThingId> GetThingIdsFromWords(string[] words)
         {
             var thingIds = new List<ThingId>();
@@ -144,6 +158,12 @@ namespace Forest
             return thingIds;
         }
 
+        /// <summary>
+        /// Finds the words from an entered command that matches thing ids.
+        /// </summary>
+        /// <param name="words"></param>
+        /// <param name="thingIdsFromCommand"></param>
+        /// <returns>A list of words that the player used in the command that matches thing ids.</returns>
         static List<string> GetThingKeysFromWords(string[] words, List<ThingId> thingIdsFromCommand)
         {
             // Getting a list of things as they are written in the entered command.
@@ -168,12 +188,22 @@ namespace Forest
             return thingKeysFromCommand;
         }
 
+        /// <summary>
+        /// Checks what things have the players current location as their current location.
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <returns>A list of location id enumerables for all things at the players currentlocation.</returns>
         static IEnumerable<ThingId> GetThingsAtLocation(LocationId locationId)
         {
             // Returns all the ThingIds for things at the given location.
             return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId] == locationId);
         }
 
+        /// <summary>
+        /// Accesses the things data and returns the things name.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <returns>The things name.</returns>
         static string GetName(ThingId thingId)
         {
             // Returns the name of a thing.
@@ -501,7 +531,9 @@ namespace Forest
         #endregion
 
         #region Display helpers
-        // Used when looking at a location.
+        /// <summary>
+        /// Displays all information about a location, description, directions and things.
+        /// </summary>
         static void LookAtLocation()
         {
             // Display current location description.
@@ -535,6 +567,9 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Displays all information about a location, description, directions and things. And adds an empty line after the text.
+        /// </summary>
         // Used when moving to a new location.
         static void DisplayNewLocation()
         {
@@ -542,6 +577,55 @@ namespace Forest
             Console.Clear();
             LookAtLocation();
         }
+        #endregion
+
+        #region Event helpers
+        /// <summary>
+        /// Checks if a certain thing is in a certain location.
+        /// </summary>
+        /// <param name="thingId"></param>
+        /// <param name="locationId"></param>
+        /// <returns>True or false.</returns>
+        static bool ThingAt(ThingId thingId, LocationId locationId)
+        {
+            return ThingsCurrentLocations[thingId] == locationId;
+        }
+
+        static bool ThingIsHere(ThingId thingId)
+        {
+            return ThingsCurrentLocations[thingId] == CurrentLocationId;
+        }
+
+        static void ThingIsAvailable()
+        {
+
+        }
+
+        static void HaveThing()
+        {
+
+        }
+
+        static void MoveThing()
+        {
+
+        }
+
+        static void SwapThings()
+        {
+
+        }
+
+        static void GetThing()
+        {
+
+        }
+
+        static void DropThing()
+        {
+
+        }
+
         #endregion
 
         #region Program start
