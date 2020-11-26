@@ -40,6 +40,16 @@ namespace Forest
         East
     }
 
+    enum Goal
+    {
+        DenMadeCozy,
+        FishEaten,
+        StungByBee,
+        NecklaceWorn,
+        DreamtAboutShiftingShape,
+        GoOnAdventure
+    }
+
     class LocationData
     {
         public LocationId Id;
@@ -82,6 +92,12 @@ namespace Forest
         // Current state.
         static LocationId CurrentLocationId = LocationId.Den;
         static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
+        static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenMadeCozy, false },
+                                                                                     { Goal.DreamtAboutShiftingShape, false },
+                                                                                     { Goal.FishEaten, false },
+                                                                                     { Goal.GoOnAdventure, false },
+                                                                                     { Goal.NecklaceWorn, false },
+                                                                                     { Goal.StungByBee, false } };
 
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
@@ -605,6 +621,59 @@ namespace Forest
         // TODO add more game events
         #endregion
 
+        #region Game Rules
+        static void ApplyGameRules()
+        {
+            if (!GoalCompleted[Goal.DenMadeCozy])
+            {
+                if (ThingAt(ThingId.Grass, LocationId.Den) && ThingAt(ThingId.Leaves, LocationId.Den) && ThingAt(ThingId.Moss, LocationId.Den))
+                {
+                    GoalCompleted[Goal.DenMadeCozy] = true;
+                    Print($"Now your den is ready for next winter sleep.");
+                }
+            }
+
+            if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
+            {
+                // TODO
+            }
+
+            if (!GoalCompleted[Goal.FishEaten])
+            {
+                // TODO
+            }
+
+            if (!GoalCompleted[Goal.GoOnAdventure])
+            {
+                // TODO
+            }
+
+            if (!GoalCompleted[Goal.NecklaceWorn])
+            {
+                // TODO
+            }
+
+            if (!GoalCompleted[Goal.StungByBee])
+            {
+                // TODO
+            }
+
+            if (AllGoalsCompleted())
+            {
+                EndGame();
+            }
+        }
+        #endregion
+
+        #region Events
+        static void EndGame()
+        {
+            Print("End of chapter 1");
+            quitGame = true;
+            // TODO
+        }
+        #endregion
+
         #region Display helpers
         /// <summary>
         /// Displays all information about a location, description, directions and things.
@@ -754,6 +823,15 @@ namespace Forest
         static void DropThing(ThingId thingId)
         {
             MoveThing(thingId, CurrentLocationId);
+        }
+
+        /// <summary>
+        /// Checks if all goals are completed.
+        /// </summary>
+        /// <returns>True or false.</returns>
+        static bool AllGoalsCompleted()
+        {
+            return GoalCompleted.All(goal => goal.Value);
         }
         #endregion
 
@@ -931,6 +1009,7 @@ namespace Forest
             {
                 // Ask player what they want to do.
                 HandlePlayerAction();
+                ApplyGameRules();
             }
         }
         #endregion
