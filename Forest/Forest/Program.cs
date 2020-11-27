@@ -12,13 +12,16 @@ namespace Forest
     {
         Nowhere,
         Inventory,
-        Den,
+        DirtyDen,
+        CleanDen,
+        CozyDen,
         Forest,
         Forest2,
         Forest3,
         River
     }
 
+    // If adding here, also add in ThingIdsByName dictionary.
     enum ThingId
     {
         Moss,
@@ -29,7 +32,8 @@ namespace Forest
         Fish,
         Necklace,
         Owl,
-        Frog
+        Frog,
+        Dirt
     }
 
     enum Direction
@@ -40,8 +44,10 @@ namespace Forest
         East
     }
 
+    // If adding here, also add in GoalCompleted dictionary.
     enum Goal
     {
+        DenCleaned,
         DenMadeCozy,
         FishEaten,
         StungByBee,
@@ -90,14 +96,15 @@ namespace Forest
         static Dictionary<ThingId, ThingData> ThingsData = new Dictionary<ThingId, ThingData>();
 
         // Current state.
-        static LocationId CurrentLocationId = LocationId.Den;
+        static LocationId CurrentLocationId = LocationId.DirtyDen;
         static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
-        static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenMadeCozy, false },
-                                                                                     { Goal.DreamtAboutShiftingShape, false },
-                                                                                     { Goal.FishEaten, false },
-                                                                                     { Goal.GoOnAdventure, false },
-                                                                                     { Goal.NecklaceWorn, false },
-                                                                                     { Goal.StungByBee, false } };
+        static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
+                                                                                   { Goal.DenMadeCozy, false },
+                                                                                   { Goal.DreamtAboutShiftingShape, false },
+                                                                                   { Goal.FishEaten, false },
+                                                                                   { Goal.GoOnAdventure, false },
+                                                                                   { Goal.NecklaceWorn, false },
+                                                                                   { Goal.StungByBee, false } };
 
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
@@ -115,7 +122,8 @@ namespace Forest
                                                                                                 { "fish", ThingId.Fish },
                                                                                                 { "necklace", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
-                                                                                                { "frog", ThingId.Frog } };
+                                                                                                { "frog", ThingId.Frog },
+                                                                                                { "den", ThingId.Dirt } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
@@ -233,10 +241,20 @@ namespace Forest
         /// </summary>
         /// <param name="thingId"></param>
         /// <returns>The things name.</returns>
-        static string GetName(ThingId thingId)
+        static string GetThingName(ThingId thingId)
         {
             // Returns the name of a thing.
             return ThingsData[thingId].Name;
+        }
+
+        /// <summary>
+        /// Accesses the locations data and returns the locations name.
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <returns>The locations name.</returns>
+        static string GetLocationName(LocationId locationId)
+        {
+            return LocationsData[locationId].Name;
         }
         #endregion
 
@@ -288,23 +306,23 @@ namespace Forest
                 case "take":
                 case "pick":
                 case "get":
-                    // TODO
                     HandleGet(words);
                     break;
 
                 case "drop":
-                    // TODO
                     HandleDrop(words);
                     break;
 
                 case "look":
-                    // TODO
                     HandleLook(words);
                     break;
 
                 case "talk":
-                    // TODO
                     HandleTalk(words);
+                    break;
+
+                case "clean":
+                    HandleClean(words);
                     break;
 
                 case "give":
@@ -608,6 +626,51 @@ namespace Forest
 
         }
 
+        static void HandleClean(string[] words)
+        {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the player tries to clean the den or not.
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    // The entered thing matches the dirty den.
+                    if (thingId == ThingId.Dirt)
+                    {
+                        LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CleanDen].Description;
+                        GoalCompleted[Goal.DenCleaned] = true;
+                        Reply("You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter.");
+                    }
+                    // Thing is not dirty den.
+                    else
+                    {
+                        Reply($"{Capitalize(thing)} doesn't need cleaning.");
+                    }
+                }
+            }
+            // If the player only writes clean, ask what to clean.
+            else if (words.Count() == 1)
+            {
+                Reply("What needs cleaning?");
+                // TODO add asking for input.
+            }
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
+            {
+                Reply($"That doesn't need cleaning.");
+            }
+
+        }
+
         static void TalkToOwl()
         {
             // TODO
@@ -624,12 +687,21 @@ namespace Forest
         #region Game Rules
         static void ApplyGameRules()
         {
+            if (!GoalCompleted[Goal.DenCleaned])
+            {
+                // Change the players location to CleanDen so I can check the current location to see if this is done?
+                // Right now I will just change it to true in the handler. Maybe thats good enough?
+            }
+
             if (!GoalCompleted[Goal.DenMadeCozy])
             {
-                if (ThingAt(ThingId.Grass, LocationId.Den) && ThingAt(ThingId.Leaves, LocationId.Den) && ThingAt(ThingId.Moss, LocationId.Den))
+                if (ThingAt(ThingId.Grass, LocationId.DirtyDen) && ThingAt(ThingId.Leaves, LocationId.DirtyDen) && ThingAt(ThingId.Moss, LocationId.DirtyDen))
                 {
                     GoalCompleted[Goal.DenMadeCozy] = true;
+                    LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CozyDen].Description;
                     Print($"Now your den is ready for next winter sleep.");
+
+                    // TODO delete things from pickable things. Make ThingsYouCanGet into an dictionary with bools?
                 }
             }
 
@@ -658,7 +730,7 @@ namespace Forest
                 // TODO
             }
 
-            if (AllGoalsCompleted())
+            if (AllGoalsCompleted() || GoalCompleted[Goal.DenMadeCozy])
             {
                 EndGame();
             }
@@ -668,7 +740,7 @@ namespace Forest
         #region Events
         static void EndGame()
         {
-            Print("End of chapter 1");
+            Print("THE END! (Clearing this puzzle ends the game for now, since it's the only puzzle I have started working on)");
             quitGame = true;
             // TODO
         }
@@ -683,6 +755,7 @@ namespace Forest
             // Display current location description.
             LocationData currentLocationData = LocationsData[CurrentLocationId];
             Print(currentLocationData.Description);
+            Console.WriteLine();
 
             // Array with strings of directions
             string[] allDirections = Enum.GetNames(typeof(Direction));
@@ -693,9 +766,10 @@ namespace Forest
                 Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
                 if (currentLocationData.Directions.ContainsKey(currentDirection))
                 {
-                    Print($"{allDirections[direction]}: {currentLocationData.Directions[currentDirection].ToString()}");
+                    Print($"{allDirections[direction]}: {GetLocationName(currentLocationData.Directions[currentDirection])}");
                 }
             }
+            Console.WriteLine();
 
             // Display things at the current location, if there is any.
             IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
@@ -706,8 +780,9 @@ namespace Forest
 
                 foreach (ThingId thingId in thingsAtCurrentLocation)
                 {
-                    Print($"{GetName(thingId)}.");
+                    Print($"{GetThingName(thingId)}.");
                 }
+                Console.WriteLine();
             }
         }
 

@@ -1,35 +1,43 @@
-ID: Den
+ID: DirtyDen
 Name: Bears Den
-Description: This is where you start.
+Description: This is your den. It needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
 Directions:
     North: Forest
     South: River
     West: Forest2
     East: Forest3
 
+ID: CleanDen
+Name: Bears Den
+Description: This is your den. It needs to be prepared for next winter sleep. You should make it cozy with soft green materials found in the forest.
+
+ID: CozyDen
+Name: Bears Den
+Description: This is your den, it's made cozy with soft moss, grass and leaves.
+
 ID: Forest
 Name: Forest
 Description: This part of the forest(1) is to the north of the den.
 Directions:
-    South: Den
+    South: DirtyDen
 
 ID: Forest2
 Name: Forest2
 Description: This part of the forest(2) is to the west of the den.
 Directions:
-    East: Den
+    East: DirtyDen
 
 ID: Forest3
 Name: Forest3
 Description: This part of the forest(3) is to the east of the den.
 Directions:
-    West: Den
+    West: DirtyDen
 
 ID: River
 Name: River
 Description: This river is to the south of the den.
 Directions:
-    North: Den
+    North: DirtyDen
 
 ID: Inventory
 Name: Inventory

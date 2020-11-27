@@ -1,3 +1,8 @@
+ID: Dirt
+Name: Dirty den
+Description: Dirty.
+Starting location: Nowhere
+
 ID: Moss
 Name: Moss
 Description: Found in forest, needed for making den cosy.
