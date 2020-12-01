@@ -6,32 +6,32 @@ Starting location: Nowhere
 ID: Moss
 Name: Moss
 Description: Found in forest, needed for making den cosy.
-Starting location: Forest3
+Starting location: 4MossyForestNorth
 
 ID: Grass
 Name: Grass
 Description: Found in glade, needed for making den cosy.
-Starting location: Forest
+Starting location: 8Glade
 
 ID: Leaves
 Name: Leaves
 Description: Found in leafy forest, needed for making den cosy.
-Starting location: Forest2
+Starting location: 11LeafyForestNorth
 
 ID: Berries
 Name: Berries
 Description: Found in forest, needed for eating.
-Starting location: Forest3
+Starting location: 15SouthEastForest
 
 ID: Beehive
 Name: Beehive
 Description: Found in forest, needed for trying to eat and getting stung by bee.
-Starting location: Forest2
+Starting location: 9Forest
 
 ID: Fish
 Name: Fish
 Description: Found in river, needed for eating.
-Starting location: River
+Starting location: 17EastRiver
 
 ID: Necklace
 Name: Necklace

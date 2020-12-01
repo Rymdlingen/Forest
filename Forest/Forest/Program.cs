@@ -15,10 +15,25 @@ namespace Forest
         DirtyDen,
         CleanDen,
         CozyDen,
+        NorthForest,
+        MossyForestEntrance,
+        MossyForestNorth,
+        MossyForestSouth,
+        BearsToilet,
+        SparseForest,
+        Glade,
         Forest,
-        Forest2,
-        Forest3,
-        River
+        LeafyForestEntrance,
+        LeafyForestNorth,
+        LeafyForestMiddle,
+        LeafyForestSouth,
+        SouthForest,
+        SouthEastForest,
+        WestRiver,
+        EastRiver,
+        Waterfall,
+        ViewPoint,
+        Cliffs
     }
 
     // If adding here, also add in ThingIdsByName dictionary.
@@ -39,9 +54,14 @@ namespace Forest
     enum Direction
     {
         North,
-        South,
+        Northwest,
         West,
-        East
+        Southwest,
+        South,
+        Southeast,
+        East,
+        Northeast,
+        NoDirection
     }
 
     // If adding here, also add in GoalCompleted dictionary.
@@ -126,6 +146,7 @@ namespace Forest
                                                                                                 { "den", ThingId.Dirt } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
+        static List<ThingId> ThingsYouCanDrop;
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         #endregion
 
@@ -140,11 +161,24 @@ namespace Forest
             int maximumLineLength = Console.WindowWidth - 1;
             MatchCollection lineMatches = Regex.Matches(text, @"(.{1," + maximumLineLength + @"})(?:\s|$)");
 
-            // Output each line with a small delay.
+            //Output each line with a small delay.
             foreach (Match line in lineMatches)
             {
-                Console.WriteLine(line.Groups[0].Value);
-                Thread.Sleep(PrintPauseMilliseconds);
+                // If there is \n in the line, add an empty line at that place.
+                if (line.Groups[0].Value.Contains(@"\n"))
+                {
+                    Console.WriteLine(line.Groups[0].Value.Split(@"\n")[0]);
+                    Thread.Sleep(PrintPauseMilliseconds);
+                    Console.WriteLine();
+                    Thread.Sleep(PrintPauseMilliseconds);
+                    Console.WriteLine(line.Groups[0].Value.Split(@"\n")[1]);
+                    Thread.Sleep(PrintPauseMilliseconds);
+                }
+                else
+                {
+                    Console.WriteLine(line.Groups[0].Value);
+                    Thread.Sleep(PrintPauseMilliseconds);
+                }
             }
         }
 
@@ -173,6 +207,29 @@ namespace Forest
         #endregion
 
         #region Interaction helpers
+        /// <summary>
+        /// Checks every word to see if they match any Direction enum.
+        /// </summary>
+        /// <param name="words"></param>
+        /// <returns>A list of thing ids that matched the words.</returns>
+        static Direction GetDirectionFromWords(string[] words)
+        {
+            string[] directions = Enum.GetNames(typeof(Direction));
+            Direction direction = Direction.NoDirection;
+
+            // For every word in the entered command, check if the word is a thing.
+            foreach (string word in words)
+            {
+                if (directions.Contains(Capitalize(word)))
+                {
+                    // If a word is a thing add it to the list of thing IDs.
+                    direction = Enum.Parse<Direction>(Capitalize(word));
+                }
+            }
+
+            return direction;
+        }
+
         /// <summary>
         /// Checks every word to see if they match any of the keywords in the dictinarys containing all Thing Ids.
         /// </summary>
@@ -289,17 +346,33 @@ namespace Forest
                 case "n":
                     HandleMovement(Direction.North);
                     break;
-                case "south":
-                case "s":
-                    HandleMovement(Direction.South);
+                case "northwest":
+                case "nw":
+                    HandleMovement(Direction.Northwest);
                     break;
                 case "west":
                 case "w":
                     HandleMovement(Direction.West);
                     break;
+                case "southwest":
+                case "sw":
+                    HandleMovement(Direction.Southwest);
+                    break;
+                case "south":
+                case "s":
+                    HandleMovement(Direction.South);
+                    break;
+                case "southeast":
+                case "se":
+                    HandleMovement(Direction.Southeast);
+                    break;
                 case "east":
                 case "e":
                     HandleMovement(Direction.East);
+                    break;
+                case "northeast":
+                case "ne":
+                    HandleMovement(Direction.Northeast);
                     break;
 
                 // Verbs.
@@ -325,21 +398,26 @@ namespace Forest
                     HandleClean(words);
                     break;
 
+                case "go":
+                    // TODO go to "name of location" (or direction)
+                    HandleGo(words);
+                    break;
                 case "give":
-                    // TODO
+                    // TODO needed later for giving things to NPCs
                     break;
                 case "combine":
-                    // TODO
+                    // TODO do I need this? probably yes, for making a fishing rod
                     break;
                 case "sleep":
-                    // TODO
+                    // TODO needed for the end of chapter 1 and the for the rest of the game
                     break;
                 case "read":
-                    // TODO
+                    // TODO not needed yet
                     break;
+
                 // TODO interacting verbs, probably need more of them
                 case "eat":
-                    // TODO
+                    // TODO for eating fish
                     break;
 
                 // Inventory.
@@ -378,7 +456,7 @@ namespace Forest
 
                 // Unvalid verb.
                 default:
-                    // TODO
+                    // TODO change text?
                     Reply("I don't understand");
                     break;
             }
@@ -452,6 +530,8 @@ namespace Forest
 
         static void HandleDrop(string[] words)
         {
+            // TODO fix droping things for making den cozy? Should I instead USE things to make den cozy? Should I give more information after a thing is droped? Specific for every thing?
+
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
@@ -467,22 +547,29 @@ namespace Forest
                 {
                     ThingId thingId = ThingIdsByName[thing];
 
+                    // Thing is not in players inventory and can't be dropped.
+                    if (!HaveThing(thingId))
+                    {
+                        Reply($"You don't have {thing} in your inventory.");
+                    }
+                    // Trying to drop things in den before den is cleaned.
+                    else if (CurrentLocationId == LocationId.DirtyDen && GoalCompleted[Goal.DenCleaned] == false && (thingId == ThingId.Grass || thingId == ThingId.Leaves || thingId == ThingId.Moss))
+                    {
+                        // TODO fix text.
+                        Reply("You should clean your den before making it cozy.");
+                    }
                     // Thing is in players inventory and is dropped.
-                    if (HaveThing(thingId))
+                    else if (HaveThing(thingId))
                     {
                         Reply($"You dropped {thing}.");
                         DropThing(thingId);
-                    }
-                    // Thing is not in players inventory and can't be dropped.
-                    else if (!HaveThing(thingId))
-                    {
-                        Reply($"You don't have {thing} in your inventory.");
                     }
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
+                // TODO text
                 Reply($"There is no such thing in your inventory.");
             }
         }
@@ -526,11 +613,13 @@ namespace Forest
             // If there is things in the inventory, display the list of things.
             if (thingsInInventory.Count > 0)
             {
+                // TODO text
                 Reply($"You have these things in your inventory: {thingsInInventory[0]}.");
             }
             // If there is no things in the inventory, tell the player that.
             else
             {
+                // TODO text
                 Reply("You have nothing in your inventory.");
             }
         }
@@ -560,6 +649,7 @@ namespace Forest
                     // Thing is not in this location and not in inventory.
                     else
                     {
+                        // TODO text
                         Reply($"You do not see {thing} here.");
                     }
                 }
@@ -572,6 +662,7 @@ namespace Forest
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
+                // TODO text
                 Reply($"There is no such thing to look at.");
             }
         }
@@ -609,11 +700,13 @@ namespace Forest
                     }
                     else if (!ThingIsHere(thingId) && ThingIsNpc(thingId))
                     {
+                        // TODO text
                         Reply($"{Capitalize(thing)} is not here.");
                     }
                     // Thing is not something you can talk to.
                     else
                     {
+                        // TODO text
                         Reply($"You can't talk to {thing}.");
                     }
                 }
@@ -621,6 +714,7 @@ namespace Forest
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
+                // TODO text
                 Reply($"You can't talk to that.");
             }
 
@@ -646,6 +740,7 @@ namespace Forest
                     // The entered thing matches the dirty den.
                     if (thingId == ThingId.Dirt)
                     {
+                        // TODO text
                         LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CleanDen].Description;
                         GoalCompleted[Goal.DenCleaned] = true;
                         Reply("You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter.");
@@ -653,6 +748,7 @@ namespace Forest
                     // Thing is not dirty den.
                     else
                     {
+                        // TODO text
                         Reply($"{Capitalize(thing)} doesn't need cleaning.");
                     }
                 }
@@ -660,15 +756,35 @@ namespace Forest
             // If the player only writes clean, ask what to clean.
             else if (words.Count() == 1)
             {
+                // TODO text
                 Reply("What needs cleaning?");
                 // TODO add asking for input.
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
+                // TODO text
                 Reply($"That doesn't need cleaning.");
             }
 
+        }
+
+        static void HandleGo(string[] words)
+        {
+            // Getting a directiond from words found in the command.
+            Direction directionFromCommand = GetDirectionFromWords(words);
+
+            // If there is a direction.
+            if (directionFromCommand != Direction.NoDirection)
+            {
+                HandleMovement(directionFromCommand);
+            }
+            // If there was no direction.
+            else
+            {
+                // TODO text
+                Reply($"I don't understand.");
+            }
         }
 
         static void TalkToOwl()
@@ -691,12 +807,15 @@ namespace Forest
             {
                 // Change the players location to CleanDen so I can check the current location to see if this is done?
                 // Right now I will just change it to true in the handler. Maybe thats good enough?
+
+                // TODO Change ID to the new denID aswell as the description, but keep the directions and name, also change all places that use the ID
             }
 
             if (!GoalCompleted[Goal.DenMadeCozy])
             {
                 if (ThingAt(ThingId.Grass, LocationId.DirtyDen) && ThingAt(ThingId.Leaves, LocationId.DirtyDen) && ThingAt(ThingId.Moss, LocationId.DirtyDen))
                 {
+                    // TODO text
                     GoalCompleted[Goal.DenMadeCozy] = true;
                     LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CozyDen].Description;
                     Print($"Now your den is ready for next winter sleep.");
@@ -742,7 +861,7 @@ namespace Forest
         {
             Print("THE END! (Clearing this puzzle ends the game for now, since it's the only puzzle I have started working on)");
             quitGame = true;
-            // TODO
+            // TODO change text, and probably other things as well
         }
         #endregion
 
@@ -917,7 +1036,7 @@ namespace Forest
             var parsedDataEntry = new ParsedData();
 
             // Arrays used to decide if the ParsedData object is a location or thing.
-            string[] locationNames = Enum.GetNames(typeof(LocationId));
+            string[] locationIdsAsStrings = Enum.GetNames(typeof(LocationId));
             string[] thingNames = Enum.GetNames(typeof(ThingId));
 
             // Check every line of the file and store the information into the right place.
@@ -932,7 +1051,7 @@ namespace Forest
                 }
 
                 // Dividing the line into property and value.
-                Match match = Regex.Match(fileData[line], "^([A-Z].*): *(.*)");
+                Match match = Regex.Match(fileData[line], "^[0-9]*([A-Z].*): *[0-9]*(.*)");
                 string property = match.Groups[1].Value;
                 string value = match.Groups[2].Value;
 
@@ -943,6 +1062,7 @@ namespace Forest
                     case "Notes":
                         line = fileData.Length;
                         break;
+
                     case "ID":
                         parsedDataEntry.Id = value;
                         break;
@@ -960,7 +1080,7 @@ namespace Forest
                         do
                         {
                             // Pattern to se if the next line is a direction.
-                            string directionAndDestinationPattern = @"[ \t]*([A-Z]\w*): (\w*)";
+                            string directionAndDestinationPattern = @"[ \t]*([A-Z]\w*): [0-9]+(\w*)";
                             Match directionAndDestination = Regex.Match(fileData[line + 1], directionAndDestinationPattern);
 
                             // If the next line is not a direction, break out of this case.
@@ -989,7 +1109,7 @@ namespace Forest
                     // When the line is empty, the parsed data is used to create a LocationData or ThingData object.
                     case "":
                         // Checking if the parsed data is a location.
-                        if (locationNames.Contains(parsedDataEntry.Id))
+                        if (locationIdsAsStrings.Contains(parsedDataEntry.Id))
                         {
                             // Creating a new LocationData object from the parsed data.
                             // Moving data from parsedDataEntry to locationEntry.
@@ -1071,7 +1191,7 @@ namespace Forest
 
             // Displaying the introduction/first part of the games story.
             Console.ForegroundColor = NarrativeColor;
-            Print(gameStory[0]);
+            Print($"{gameStory[0]}");
             Console.ReadKey();
 
             // TODO Display short instructions about how to play??
@@ -1146,5 +1266,11 @@ namespace Forest
 
         }*/
         #endregion
+
+        // TODO remove toilet after visiting once and change current location to 3.
+        // TODO puzzle about fishing
+        // TODO finding necklace
+        // TODO text about trying necklace and dream
+        // TODO end of part 1
     }
 }

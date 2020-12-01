@@ -1,43 +1,151 @@
-ID: DirtyDen
+ID: 1DirtyDen
 Name: Bears Den
-Description: This is your den. It needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
+Description: TODO This is your den. It needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
 Directions:
-    North: Forest
-    South: River
-    West: Forest2
-    East: Forest3
+    North: 2NorthForest
+    Northwest: 7SparseForest
+    West: 10LeafyForestEntrance
+    South: 14SouthForest
+    Southeast: 15SouthEastForest
 
-ID: CleanDen
+ID: 1CleanDen
 Name: Bears Den
-Description: This is your den. It needs to be prepared for next winter sleep. You should make it cozy with soft green materials found in the forest.
+Description: TODO This is your den. It needs to be prepared for next winter sleep. You should make it cozy with soft green materials found in the forest.
 
-ID: CozyDen
+ID: 1CozyDen
 Name: Bears Den
-Description: This is your den, it's made cozy with soft moss, grass and leaves.
+Description: TODO This is your den, it's made cozy with soft moss, grass and leaves.
 
-ID: Forest
+ID: 2NorthForest
 Name: Forest
-Description: This part of the forest(1) is to the north of the den.
+Description: TODO
 Directions:
-    South: DirtyDen
+    South: 1DirtyDen
+    East: 3MossyForestEntrance
 
-ID: Forest2
-Name: Forest2
-Description: This part of the forest(2) is to the west of the den.
+ID: 3MossyForestEntrance
+Name: Forest
+Description: TODO The forest is getting denser, darker and there is some moss on the ground.
 Directions:
-    East: DirtyDen
+    West: 2NorthForest
+    Southwest: 6BearsToilet
+    Southeast: 5MossyForestSouth
+    East: 4MossyForestNorth
 
-ID: Forest3
-Name: Forest3
-Description: This part of the forest(3) is to the east of the den.
+ID: 4MossyForestNorth
+Name: Forest
+Description: TODO The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
 Directions:
-    West: DirtyDen
+    West: 3MossyForestEntrance
+    South: 5MossyForestSouth
 
-ID: River
+ID: 5MossyForestSouth
+Name: Forest
+Description: TODO The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
+Directions:
+    North: 4MossyForestNorth
+    Northwest: 3MossyForestEntrance
+
+ID: 6BearsToilet
+Name: Toilet
+Description: TODO It smells weird here, this is Bears toilet. Better not go here again.
+
+ID: 7SparseForest
+Name: Sparse forest
+Description: <Description text>
+Directions:
+    North: 8Glade
+    Southeast: 1DirtyDen
+
+ID: 8Glade
+Name: Glade
+Description: <Description text>
+Directions:
+    South:7SparseForest
+    East: 9Forest
+
+ID: 9Forest
+Name: Forest
+Description: <Description text>
+Directions:
+    West: 8Glade
+
+ID: 10LeafyForestEntrance
+Name: Forest
+Description: <Description text>
+Directions:
+    West: 12LeafyForestMiddle
+
+ID: 11LeafyForestNorth
+Name: Leafy forest
+Description: <Description text>
+Directions:
+    South: 12LeafyForestMiddle
+
+ID: 12LeafyForestMiddle
+Name: Leafy forest
+Description: <Description text>
+Directions:
+    North: 11LeafyForestNorth
+    South: 13LeafyForestSouth
+    East: 10LeafyForestEntrance
+
+ID: 13LeafyForestSouth
+Name: <Name text>
+Description: <Description text>
+Directions:
+    North: 12LeafyForestMiddle
+    South: 16WestRiver
+
+ID: 14SouthForest
+Name: Forest
+Description: <Description text>
+Directions:
+    North: 1DirtyDen
+    South: 17EastRiver
+
+ID: 15SouthEastForest
+Name: Forest
+Description: <Description text>
+Directions:
+    Northwest: 1DirtyDen
+    South: 18Waterfall
+
+ID: 16WestRiver
 Name: River
-Description: This river is to the south of the den.
+Description: <Description text>
 Directions:
-    North: DirtyDen
+    North: 13LeafyForestSouth
+    East: 17EastRiver
+
+ID: 17EastRiver
+Name: River
+Description: <Description text>
+Directions:
+    North: 14SouthForest
+    West: 16WestRiver
+    South: 20Cliffs
+    East: 18Waterfall
+
+ID: 18Waterfall
+Name: Waterfall
+Description: <Description text>
+Directions:
+    North: 15SouthEastForest
+    West: 17EastRiver
+    Northeast: 19ViewPoint
+
+ID: 19ViewPoint
+Name: View point
+Description: <Description text>
+Directions:
+    Southwest: 18Waterfall
+
+ID: 20Cliffs
+Name: Cliffs
+Description: <Description text>
+Directions:
+    North: 17EastRiver
 
 ID: Inventory
 Name: Inventory
@@ -52,3 +160,12 @@ Notes:
 ID: <ID text>
 Name: <Name text>
 Description: <Description text>
+Directions:
+    North: 
+    Northwest: 
+    West: 
+    Southwest: 
+    South: 
+    Southeast: 
+    East: 
+    Northeast: 
