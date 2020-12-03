@@ -61,10 +61,10 @@ ID: 8Glade
 Name: Glade
 Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere.
 Directions:
-    South:7SparseForest
-    East: 9Forest
+    South: 7SparseForest
+    East: 9BeeForest
 
-ID: 9Forest
+ID: 9BeeForest
 Name: You see a lot of bees flying this way
 Description: This is were all the bees live, they fly back and forth from the glade and their beehives.
 Directions:

@@ -22,7 +22,7 @@ namespace Forest
         BearsToilet,
         SparseForest,
         Glade,
-        Forest,
+        BeeForest,
         LeafyForestEntrance,
         LeafyForestNorth,
         LeafyForestMiddle,
@@ -105,9 +105,11 @@ namespace Forest
     class Program
     {
         #region Fields
-        const ConsoleColor NarrativeColor = ConsoleColor.Gray;
-        const ConsoleColor PromptColor = ConsoleColor.White;
+        const ConsoleColor NarrativeColor = ConsoleColor.DarkGreen;
+        const ConsoleColor PromptColor = ConsoleColor.DarkGray;
         const int PrintPauseMilliseconds = 150;
+
+        static bool beenHereBefore = false;
 
         // static List<string> load;
 
@@ -467,7 +469,27 @@ namespace Forest
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
             // Checking if the direction is availible for the current location.
-            if (currentLocation.Directions.ContainsKey(direction))
+            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Directions[direction] == LocationId.BearsToilet)
+            {
+                if (!beenHereBefore)
+                {
+                    LocationId oldLocation = CurrentLocationId;
+                    // Changing the current location to the new location and displaying the new location information.
+                    LocationId newLocation = currentLocation.Directions[direction];
+                    CurrentLocationId = newLocation;
+                    DisplayNewLocation();
+                    Console.ReadKey();
+                    CurrentLocationId = oldLocation;
+                    DisplayNewLocation();
+                    beenHereBefore = true;
+                }
+                else
+                {
+                    Reply("You don't want to go there again!");
+                }
+
+            }
+            else if (currentLocation.Directions.ContainsKey(direction))
             {
                 // Changing the current location to the new location and displaying the new location information.
                 LocationId newLocation = currentLocation.Directions[direction];
