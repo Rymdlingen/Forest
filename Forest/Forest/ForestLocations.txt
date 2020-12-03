@@ -1,6 +1,6 @@
 ID: 1DirtyDen
 Name: Bears Den
-Description: TODO This is your den. It needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
+Description: You are in the small clearing in the forest where your den is. \nYour den needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
 Directions:
     North: 2NorthForest
     Northwest: 7SparseForest
@@ -10,22 +10,22 @@ Directions:
 
 ID: 1CleanDen
 Name: Bears Den
-Description: TODO This is your den. It needs to be prepared for next winter sleep. You should make it cozy with soft green materials found in the forest.
+Description: You are in the small clearing in the forest where your den is. \nYour den needs to be prepared for next winter sleep. It is cleaned out but you should also make it cozy with soft green materials found in the forest.
 
 ID: 1CozyDen
 Name: Bears Den
-Description: TODO This is your den, it's made cozy with soft moss, grass and leaves.
+Description: You are in the small clearing in the forest where your den is. It is made cozy with soft moss, grass and leaves.
 
 ID: 2NorthForest
 Name: Forest
-Description: TODO
+Description: You are in the northern part of the forest.
 Directions:
     South: 1DirtyDen
     East: 3MossyForestEntrance
 
 ID: 3MossyForestEntrance
 Name: Forest
-Description: TODO The forest is getting denser, darker and there is some moss on the ground.
+Description: The forest is getting denser, darker and there is some moss on the ground.
 Directions:
     West: 2NorthForest
     Southwest: 6BearsToilet
@@ -34,14 +34,14 @@ Directions:
 
 ID: 4MossyForestNorth
 Name: Forest
-Description: TODO The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
+Description: The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
 Directions:
     West: 3MossyForestEntrance
     South: 5MossyForestSouth
 
 ID: 5MossyForestSouth
 Name: Forest
-Description: TODO The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
+Description: The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
 Directions:
     North: 4MossyForestNorth
     Northwest: 3MossyForestEntrance
