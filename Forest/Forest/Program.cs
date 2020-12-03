@@ -12,7 +12,7 @@ namespace Forest
     {
         Nowhere,
         Inventory,
-        DirtyDen,
+        Den,
         CleanDen,
         CozyDen,
         NorthForest,
@@ -116,7 +116,7 @@ namespace Forest
         static Dictionary<ThingId, ThingData> ThingsData = new Dictionary<ThingId, ThingData>();
 
         // Current state.
-        static LocationId CurrentLocationId = LocationId.DirtyDen;
+        static LocationId CurrentLocationId = LocationId.Den;
         static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
@@ -553,7 +553,7 @@ namespace Forest
                         Reply($"You don't have {thing} in your inventory.");
                     }
                     // Trying to drop things in den before den is cleaned.
-                    else if (CurrentLocationId == LocationId.DirtyDen && GoalCompleted[Goal.DenCleaned] == false && (thingId == ThingId.Grass || thingId == ThingId.Leaves || thingId == ThingId.Moss))
+                    else if (CurrentLocationId == LocationId.Den && GoalCompleted[Goal.DenCleaned] == false && (thingId == ThingId.Grass || thingId == ThingId.Leaves || thingId == ThingId.Moss))
                     {
                         // TODO fix text.
                         Reply("You should clean your den before making it cozy.");
@@ -741,7 +741,7 @@ namespace Forest
                     if (thingId == ThingId.Dirt)
                     {
                         // TODO text
-                        LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CleanDen].Description;
+                        LocationsData[LocationId.Den].Description = LocationsData[LocationId.CleanDen].Description;
                         GoalCompleted[Goal.DenCleaned] = true;
                         Reply("You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter.");
                     }
@@ -813,11 +813,11 @@ namespace Forest
 
             if (!GoalCompleted[Goal.DenMadeCozy])
             {
-                if (ThingAt(ThingId.Grass, LocationId.DirtyDen) && ThingAt(ThingId.Leaves, LocationId.DirtyDen) && ThingAt(ThingId.Moss, LocationId.DirtyDen))
+                if (ThingAt(ThingId.Grass, LocationId.Den) && ThingAt(ThingId.Leaves, LocationId.Den) && ThingAt(ThingId.Moss, LocationId.Den))
                 {
                     // TODO text
                     GoalCompleted[Goal.DenMadeCozy] = true;
-                    LocationsData[LocationId.DirtyDen].Description = LocationsData[LocationId.CozyDen].Description;
+                    LocationsData[LocationId.Den].Description = LocationsData[LocationId.CozyDen].Description;
                     Print($"Now your den is ready for next winter sleep.");
 
                     // TODO delete things from pickable things. Make ThingsYouCanGet into an dictionary with bools?

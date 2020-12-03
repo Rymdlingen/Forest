@@ -1,6 +1,6 @@
-ID: 1DirtyDen
+ID: 1Den
 Name: Bears Den
-Description: You are in the small clearing in the forest where your den is. \nYour den needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
+Description: You are in the small opening in the forest where your den is. \nYour den needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.
 Directions:
     North: 2NorthForest
     Northwest: 7SparseForest
@@ -10,22 +10,22 @@ Directions:
 
 ID: 1CleanDen
 Name: Bears Den
-Description: You are in the small clearing in the forest where your den is. \nYour den needs to be prepared for next winter sleep. It is cleaned out but you should also make it cozy with soft green materials found in the forest.
+Description: You are in the small opening in the forest where your den is. \nYour den needs to be prepared for next winter sleep. It is cleaned out but you should also make it cozy with soft green materials found in the forest.
 
 ID: 1CozyDen
 Name: Bears Den
-Description: You are in the small clearing in the forest where your den is. It is made cozy with soft moss, grass and leaves.
+Description: You are in the small opening in the forest where your den is. It is made cozy with soft moss, grass and leaves.
 
 ID: 2NorthForest
 Name: Forest
 Description: You are in the northern part of the forest.
 Directions:
-    South: 1DirtyDen
+    South: 1Den
     East: 3MossyForestEntrance
 
 ID: 3MossyForestEntrance
 Name: Forest
-Description: The forest is getting denser, darker and there is some moss on the ground.
+Description: The forest is getting denser, darker and there is some small patches of moss on the ground.
 Directions:
     West: 2NorthForest
     Southwest: 6BearsToilet
@@ -34,93 +34,95 @@ Directions:
 
 ID: 4MossyForestNorth
 Name: Forest
-Description: The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
+Description: This part of the forest is dense, dark and mostly consists of old spruce trees. On the ground there is a lot of soft dark green moss and old sticks.
 Directions:
     West: 3MossyForestEntrance
     South: 5MossyForestSouth
 
 ID: 5MossyForestSouth
 Name: Forest
-Description: The forest here is dense, dark and there is a lot of soft dark green moss on the ground.
+Description: This part of the forest is dense, dark and mostly consists of old spruce trees. On the ground there is a lot of soft dark green moss and old sticks.
 Directions:
     North: 4MossyForestNorth
     Northwest: 3MossyForestEntrance
 
 ID: 6BearsToilet
-Name: Toilet
-Description: TODO It smells weird here, this is Bears toilet. Better not go here again.
+Name: Small path to hidden part of the forest.
+Description: Oh.. this seems to be Bears toilet.. it smells awful here, better leave quickly!
 
 ID: 7SparseForest
 Name: Sparse forest
-Description: <Description text>
+Description: The trees here are sparser, in the north they seem to open up around a meadow. 
 Directions:
     North: 8Glade
-    Southeast: 1DirtyDen
+    Southeast: 1Den
 
 ID: 8Glade
 Name: Glade
-Description: <Description text>
+Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere.
 Directions:
     South:7SparseForest
     East: 9Forest
 
 ID: 9Forest
-Name: Forest
-Description: <Description text>
+Name: You see a lot of bees flying this way
+Description: This is were all the bees live, they fly back and forth from the glade and their beehives.
 Directions:
     West: 8Glade
 
 ID: 10LeafyForestEntrance
 Name: Forest
-Description: <Description text>
+Description: There is mostly big, old trees here. But to the west you see some trees that are looking younger and newer, those trees are smaller and have small, light green leaves.
 Directions:
     West: 12LeafyForestMiddle
+    East: 1Den
 
 ID: 11LeafyForestNorth
 Name: Leafy forest
-Description: <Description text>
+Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small. In this part of the leafy forest there is a lot of sticks on the ground.
 Directions:
     South: 12LeafyForestMiddle
 
 ID: 12LeafyForestMiddle
 Name: Leafy forest
-Description: <Description text>
+Description: In this part of the forest there is a lot of young and small birch trees. Their leaves are light green and small, they look soft and pretty cozy.
 Directions:
     North: 11LeafyForestNorth
     South: 13LeafyForestSouth
     East: 10LeafyForestEntrance
 
 ID: 13LeafyForestSouth
-Name: <Name text>
-Description: <Description text>
+Name: Leafy forest
+Description: This part of the leafy forest is really close to the river, it seems like that makes the small leaves of the young birches super soft and very cozy.
 Directions:
     North: 12LeafyForestMiddle
     South: 16WestRiver
 
 ID: 14SouthForest
 Name: Forest
-Description: <Description text>
+Description: You are at the edge of the forest, in the middle between the den and the river.
 Directions:
-    North: 1DirtyDen
+    North: 1Den
     South: 17EastRiver
 
 ID: 15SouthEastForest
 Name: Forest
-Description: <Description text>
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This place makes you feel relaxed.
 Directions:
-    Northwest: 1DirtyDen
+    Northwest: 1Den
     South: 18Waterfall
 
 ID: 16WestRiver
 Name: River
-Description: <Description text>
+Description: The river is rocky and pretty calm, this is a good place to catch fish or go for a swim.
 Directions:
     North: 13LeafyForestSouth
+    South: 20Cliffs
     East: 17EastRiver
 
 ID: 17EastRiver
 Name: River
-Description: <Description text>
+Description: The river is flowing fast since there is no rocks and the water goes down the high cliffs just west of here, because of that this is not a good place to swim.
 Directions:
     North: 14SouthForest
     West: 16WestRiver
@@ -129,7 +131,7 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: <Description text>
+Description: The water forcefully flows down the cliffs, it's beautiful and dangerous. 
 Directions:
     North: 15SouthEastForest
     West: 17EastRiver
@@ -137,15 +139,16 @@ Directions:
 
 ID: 19ViewPoint
 Name: View point
-Description: <Description text>
+Description: This is a popular viewpoint where humans like to have picnics and watch the magnificent view over the big forest in the north and the mountains in the east. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take look at the view and search around the picnic tables to see if there is something left behind.
 Directions:
     Southwest: 18Waterfall
 
 ID: 20Cliffs
 Name: Cliffs
-Description: <Description text>
+Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch for as long you can see both west and east. At the foot of the cliffs the forest continues, in the southwest you can see snow and in the southeast there is big mountains. The only way down you can see is a narrow path, but since you are a bear you are too big for that path.
 Directions:
     North: 17EastRiver
+    Northwest: 16WestRiver
 
 ID: Inventory
 Name: Inventory
