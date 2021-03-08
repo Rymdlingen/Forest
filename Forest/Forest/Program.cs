@@ -161,7 +161,8 @@ namespace Forest
         {
             // Split text into lines that don't exceed the window width.
             int maximumLineLength = Console.WindowWidth - 1;
-            MatchCollection lineMatches = Regex.Matches(text, @"(.{1," + maximumLineLength + @"})(?:\s|$)");
+            // If there is \n written in the text, that line is ended even if it's shorter then the maximum line length.
+            MatchCollection lineMatches = Regex.Matches(text, @"([^\\]{1," + maximumLineLength + @"})(?:$|\s|\\n)");
 
             //Output each line with a small delay.
             foreach (Match line in lineMatches)
@@ -172,9 +173,9 @@ namespace Forest
                     Console.WriteLine(line.Groups[0].Value.Split(@"\n")[0]);
                     Thread.Sleep(PrintPauseMilliseconds);
                     Console.WriteLine();
-                    Thread.Sleep(PrintPauseMilliseconds);
-                    Console.WriteLine(line.Groups[0].Value.Split(@"\n")[1]);
-                    Thread.Sleep(PrintPauseMilliseconds);
+                    //Thread.Sleep(PrintPauseMilliseconds);
+                    //Console.WriteLine(line.Groups[0].Value.Split(@"\n")[1]);
+                    //Thread.Sleep(PrintPauseMilliseconds);
                 }
                 else
                 {
