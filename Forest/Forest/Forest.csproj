@@ -10,6 +10,7 @@
         <None Remove="ForestLocations.txt" />
         <None Remove="ForestThings.txt" />
         <None Remove="ForestSaveFile.txt" />
+        <None Remove="ForestEventAndGoalText.txt" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="ForestTitleArt.txt">
@@ -25,6 +26,9 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="ForestSaveFile.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="ForestEventAndGoalText.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

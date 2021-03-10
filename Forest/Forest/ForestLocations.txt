@@ -1,6 +1,6 @@
 ID: 1Den
 Name: Bears Den
-Description: You are in the small opening in the forest where your den is. \nIt is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree. \n1Your den needs to be prepared for next winter sleep. You should clean it out and make it cozy with soft green materials found in the forest.1 \n2Your den needs to be prepared for next winter sleep. It is cleaned out but you should also make it cozy with soft green materials found in the forest.2 \n3Your den is very cozy with soft moss, grass and leaves.3
+Description: You are in the small opening in the forest where your den is. \nIt is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree.
 Directions:
     North: 2NorthForest
     Northwest: 7SparseForest

@@ -13,8 +13,6 @@ namespace Forest
         Nowhere,
         Inventory,
         Den,
-        CleanDen,
-        CozyDen,
         NorthForest,
         MossyForestEntrance,
         MossyForestNorth,
@@ -737,7 +735,6 @@ namespace Forest
                 // TODO text
                 Reply($"You can't talk to that.");
             }
-
         }
 
         static void HandleClean(string[] words)
@@ -761,7 +758,6 @@ namespace Forest
                     if (thingId == ThingId.Dirt)
                     {
                         // TODO text
-                        LocationsData[LocationId.Den].Description = LocationsData[LocationId.CleanDen].Description;
                         GoalCompleted[Goal.DenCleaned] = true;
                         Reply("You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter.");
                     }
@@ -837,7 +833,7 @@ namespace Forest
                 {
                     // TODO text
                     GoalCompleted[Goal.DenMadeCozy] = true;
-                    LocationsData[LocationId.Den].Description = LocationsData[LocationId.CozyDen].Description;
+                    //LocationsData[LocationId.Den].Description = LocationsData[LocationId.CozyDen].Description;
                     Print($"Now your den is ready for next winter sleep.");
 
                     // TODO delete things from pickable things. Make ThingsYouCanGet into an dictionary with bools?
@@ -893,9 +889,14 @@ namespace Forest
         {
             // Display current location description.
             LocationData currentLocationData = LocationsData[CurrentLocationId];
+            // Check for special text (digits)
+            // Check if the corresponding bool tells the text should be shown
+            // MAke a new string with all the text that should be shown
+            // Print that string instead of the whole description
             Print(currentLocationData.Description);
             Console.WriteLine();
 
+            /*vThis is now already written in the descriptions
             // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
 
@@ -907,7 +908,7 @@ namespace Forest
                 {
                     Print($"{allDirections[direction]}: {GetLocationName(currentLocationData.Directions[currentDirection])}");
                 }
-            }
+            }*/
             Console.WriteLine();
         }
 
@@ -1154,6 +1155,82 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Removes empty lines from an array.
+        /// </summary>
+        /// <param name="arrayWithText"></param>
+        /// <returns>Array with no empty entries.</returns>
+        static string[] RemoveEmptyLines(string[] arrayWithText)
+        {
+            // MAke the array into a list.
+            var listOfText = new List<string>(arrayWithText.ToList<string>());
+
+            // Check each line in the list to see if they are empty.
+            for (int line = 0; line < listOfText.Count; line++)
+            {
+                // If the line is empty remove it.
+                if (listOfText[line] == "")
+                {
+                    listOfText.RemoveAt(line);
+                    // Since a line was removed, all upcomming lines got a lower number, adjust the line index accordingly.
+                    line--;
+                }
+            }
+
+            // Make the list into an array and return it.
+            string[] noEmptyLines = listOfText.ToArray<string>();
+            return noEmptyLines;
+        }
+
+        /// <summary>
+        /// Removes all digits in the start of a string. (Make sure the first char is actually a digit before calling)
+        /// </summary>
+        /// <param name="textWithDigits"></param>
+        /// <returns>A string without digits.</returns>
+        static string RemoveDigits(string textWithDigits)
+        {
+            // Remove the first char
+            string text = textWithDigits.Remove(0, 1);
+
+            // Check if next char is a digit.
+            if (Regex.IsMatch(text[0].ToString(), @"\d"))
+            {
+                // If it is call this method again.
+                RemoveDigits(text);
+            }
+
+            // Return a new string.
+            string noDigits = text;
+            return noDigits;
+        }
+
+        /// <summary>
+        /// Calls both the remove empty lines and the remove digits method.
+        /// </summary>
+        /// <param name="arrayWithText"></param>
+        /// <returns>An array of string that are not empty and do not start with digits.</returns>
+        static string[] RemoveEmptyLinesAndDigits(string[] arrayWithText)
+        {
+            // Call the remove empty lines method.
+            string[] processedText = RemoveEmptyLines(arrayWithText);
+
+            // Go through all the lines to see if they start with a digit.
+            int lineIndex = 0;
+            foreach (string line in processedText)
+            {
+                if (Regex.IsMatch(line[0].ToString(), @"\d"))
+                {
+                    // If they do call the remove digit method.
+                    processedText[lineIndex] = RemoveDigits(line);
+                }
+                // Used for overwriting the correct line in the array.
+                lineIndex++;
+            }
+
+            // Return an array with no empty lines and no digits in the start of lines.
+            return processedText;
+        }
+
         static void InitializeThingsLocations()
         {
             // Store the starting location of each thing.
@@ -1172,6 +1249,9 @@ namespace Forest
 
             // Reading all the text for the games story.
             string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
+
+            // Reading all extra event and gaol text.
+            string[] eventAndGoalExtraText = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestEventAndGoalText.txt"));
 
             // Reading location data.
             string[] locationData = File.ReadAllLines("ForestLocations.txt");
