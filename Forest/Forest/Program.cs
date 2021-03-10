@@ -107,9 +107,13 @@ namespace Forest
         const ConsoleColor PromptColor = ConsoleColor.DarkGray;
         const int PrintPauseMilliseconds = 150;
 
-        static bool beenHereBefore = false;
+        static bool beenTBearToiletBefore = false;
 
         // static List<string> load;
+
+        // Text documents (that are not parsed and stored somewhere else).
+        static string[] gameStory;
+        static string[] eventAndGoalExtraText;
 
         // Data dictionaries.
         static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
@@ -311,6 +315,19 @@ namespace Forest
         {
             return LocationsData[locationId].Name;
         }
+
+        /// <summary>
+        /// Clears the consol, displayes indicator for not accepting commands, needs a keypress and then disapers.
+        /// </summary>
+        static void PressAnyKeyToContinue()
+        {
+            // TODO not sure about color
+            Console.ForegroundColor = PromptColor;
+            Console.Write("...");
+            Console.ReadKey();
+            Console.Clear();
+
+        }
         #endregion
 
         #region Interaction
@@ -335,6 +352,8 @@ namespace Forest
             {
                 verb = words[0].Trim();
             }
+
+            // TODO add something for if the player writes "go", "walk" or something like that, change the verb to the second word? witch should be a direction?
 
             // Call the right handler for the given verb.
             switch (verb)
@@ -467,23 +486,36 @@ namespace Forest
             // Checking if the direction is availible for the current location.
             if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Directions[direction] == LocationId.BearsToilet)
             {
-                if (!beenHereBefore)
+                if (!beenTBearToiletBefore)
                 {
                     LocationId oldLocation = CurrentLocationId;
                     // Changing the current location to the new location and displaying the new location information.
                     LocationId newLocation = currentLocation.Directions[direction];
                     CurrentLocationId = newLocation;
                     DisplayNewLocation();
-                    Console.ReadKey();
+                    PressAnyKeyToContinue();
                     CurrentLocationId = oldLocation;
                     DisplayNewLocation();
-                    beenHereBefore = true;
+                    beenTBearToiletBefore = true;
                 }
                 else
                 {
                     Reply("You don't want to go there again!");
                 }
 
+            }
+            // If the player is trying to go from the south leafy forest to the west river, they go on the waterslide and a special text is displayed as they are taken to the east part of the river because of currents in the west river.
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestSouth && currentLocation.Directions[direction] == LocationId.WestRiver)
+            {
+                Console.Clear();
+                Print(eventAndGoalExtraText[0]);
+                PressAnyKeyToContinue();
+                CurrentLocationId = LocationId.EastRiver;
+                DisplayNewLocation();
+            }
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.WestRiver && currentLocation.Directions[direction] == LocationId.LeafyForestSouth)
+            {
+                Print(eventAndGoalExtraText[1]);
             }
             else if (currentLocation.Directions.ContainsKey(direction))
             {
@@ -894,9 +926,10 @@ namespace Forest
             // MAke a new string with all the text that should be shown
             // Print that string instead of the whole description
             Print(currentLocationData.Description);
+            AddExtraDescription();
             Console.WriteLine();
 
-            /*vThis is now already written in the descriptions
+            /*vThis is now already written in the descriptions, but I will keep the code in case I change my mind.
             // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
 
@@ -921,6 +954,34 @@ namespace Forest
             // Clears the console before displaying all the information about the location.
             Console.Clear();
             LookAtLocation();
+        }
+
+        static void AddExtraDescription()
+        {
+            // Check for extra text for Den.
+            if (CurrentLocationId == LocationId.Den)
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // If den is cleaned and ready to be made cozy.
+                if (GoalCompleted[Goal.DenCleaned] && !GoalCompleted[Goal.DenMadeCozy])
+                {
+                    Print(eventAndGoalExtraText[3]);
+                }
+                // If den is clean and cozy (puzzle completed).
+                else if (GoalCompleted[Goal.DenMadeCozy])
+                {
+                    Print(eventAndGoalExtraText[4]);
+                }
+                // Default text, puzzle description/start.
+                else
+                {
+                    Print(eventAndGoalExtraText[2]);
+                }
+
+                return;
+            }
         }
         #endregion
 
@@ -1248,10 +1309,10 @@ namespace Forest
             string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
 
             // Reading all the text for the games story.
-            string[] gameStory = File.ReadAllLines("ForestGameStory.txt");
+            gameStory = File.ReadAllLines("ForestGameStory.txt");
 
             // Reading all extra event and gaol text.
-            string[] eventAndGoalExtraText = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestEventAndGoalText.txt"));
+            eventAndGoalExtraText = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestEventAndGoalText.txt"));
 
             // Reading location data.
             string[] locationData = File.ReadAllLines("ForestLocations.txt");

@@ -106,7 +106,7 @@ Directions:
 
 ID: 16WestRiver
 Name: River
-Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it calms down in a natural dam before continuing down the cliffs. To the south on the other side of the river is a passage through the cliffs.
+Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it calms down in a natural dam before continuing down the cliffs. To the south, on the other side of the river, is a passage through the rocky edge of the river.
 Directions:
     North: 13LeafyForestSouth
     South: 20Cliffs
