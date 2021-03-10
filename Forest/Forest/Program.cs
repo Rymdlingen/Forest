@@ -173,9 +173,6 @@ namespace Forest
                     Console.WriteLine(line.Groups[0].Value.Split(@"\n")[0]);
                     Thread.Sleep(PrintPauseMilliseconds);
                     Console.WriteLine();
-                    //Thread.Sleep(PrintPauseMilliseconds);
-                    //Console.WriteLine(line.Groups[0].Value.Split(@"\n")[1]);
-                    //Thread.Sleep(PrintPauseMilliseconds);
                 }
                 else
                 {
@@ -220,12 +217,12 @@ namespace Forest
             string[] directions = Enum.GetNames(typeof(Direction));
             Direction direction = Direction.NoDirection;
 
-            // For every word in the entered command, check if the word is a thing.
+            // For every word in the entered command, check if the word is a direction.
             foreach (string word in words)
             {
                 if (directions.Contains(Capitalize(word)))
                 {
-                    // If a word is a thing add it to the list of thing IDs.
+                    // If a word is a direction add it to the list of directions.
                     direction = Enum.Parse<Direction>(Capitalize(word));
                 }
             }
@@ -338,7 +335,7 @@ namespace Forest
             string verb = "";
             if (command != "")
             {
-                verb = words[0];
+                verb = words[0].Trim();
             }
 
             // Call the right handler for the given verb.
@@ -440,7 +437,7 @@ namespace Forest
                 case "q":
                 case "end":
                 case "exit":
-                    // TODO ask if the player really wants to quit and if they want to save
+                    // TODO ask if the player really wants to quit and if they want to save "do you really want to quit all your progress will be lost" 
                     {
                         Reply("Thanks for playing!");
                         quitGame = true;
@@ -621,7 +618,7 @@ namespace Forest
                 // Remove the two seperated words.
                 thingsInInventory.RemoveRange(thingsInInventory.Count - 3, 2);
 
-                // If there is more things then 2, add "," between all of them but the last two.
+                // If there is more things then 2, add "," between all of them but the last two which are already combined with "and".
                 if (thingsInInventory.Count > 1)
                 {
                     // Join all words together in a string.
@@ -899,10 +896,10 @@ namespace Forest
             Print(currentLocationData.Description);
             Console.WriteLine();
 
-            // Array with strings of directions
+            // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
 
-            // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions
+            // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions.
             for (int direction = 0; direction < allDirections.Length; direction++)
             {
                 Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
@@ -912,20 +909,6 @@ namespace Forest
                 }
             }
             Console.WriteLine();
-
-            // Display things at the current location, if there is any.
-            IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
-
-            if (thingsAtCurrentLocation.Count() > 0)
-            {
-                Print("You see: ");
-
-                foreach (ThingId thingId in thingsAtCurrentLocation)
-                {
-                    Print($"{GetThingName(thingId)}.");
-                }
-                Console.WriteLine();
-            }
         }
 
         /// <summary>
@@ -969,6 +952,7 @@ namespace Forest
         /// <returns>True or false.</returns>
         static bool ThingIsAvailable(ThingId thingId)
         {
+            // TODO do this really work? Will it return true if any of them are true?
             return ThingIsHere(thingId) || HaveThing(thingId);
         }
 
