@@ -317,7 +317,7 @@ namespace Forest
         }
 
         /// <summary>
-        /// Clears the consol, displayes indicator for not accepting commands, needs a keypress and then disapers.
+        /// Clears the consol, displayes indicator for not accepting commands(... instead of >), needs a keypress and then disapers.
         /// </summary>
         static void PressAnyKeyToContinue()
         {
@@ -551,13 +551,13 @@ namespace Forest
                     // Thing is pickable and at players location.
                     if (CanGetThing(thingId) && ThingIsHere(thingId))
                     {
-                        Reply($"You picked up {thing}.");
+                        Reply($"You picked up {thing}." + ThingsData[thingId].Description);
                         GetThing(thingId);
                     }
                     // Thing is already in players inventory and can't be picked up again.
                     else if (HaveThing(thingId))
                     {
-                        Reply($"You already have {thing} in your inventory.");
+                        Reply($"You already have {thing}.");
                     }
                     // Thing is in this location but can't be picked up.
                     else if (ThingIsHere(thingId) && !CanGetThing(thingId))

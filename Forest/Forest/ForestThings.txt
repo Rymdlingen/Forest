@@ -1,51 +1,61 @@
 ID: Dirt
 Name: Dirty den
-Description: Dirty.
+Description: (NOT DONE) Dirty.
 Starting location: Nowhere
 
 ID: Moss
 Name: Moss
-Description: Found in forest, needed for making den cosy.
+Description: (NOT DONE) Found in forest, needed for making den cosy.
 Starting location: 4MossyForestNorth
 
 ID: Grass
 Name: Grass
-Description: Found in glade, needed for making den cosy.
+Description: (NOT DONE) Found in glade, needed for making den cosy.
 Starting location: 8Glade
 
-ID: Leaves
+ID: OldLeaves
+Name: Old leaves
+Description: (NOT DONE) (change description to talk about last years leaves?) 
+Starting location: 11LeafyForestNorth
+
+ID: OKLeaves
 Name: Leaves
-Description: Found in leafy forest, needed for making den cosy.
+Description: (NOT DONE) Found in leafy forest, needed for making den cosy.
+Starting location: 11LeafyForestMiddle
+
+ID: SoftLeaves
+Name: Soft leaves
+Description: (NOT DONE) Found in leafy forest, needed for making den cosy.
 Starting location: 11LeafyForestSouth
 
 ID: Berries
 Name: Berries
-Description: Found in forest, needed for eating.
+Description: (NOT DONE) Found in forest, needed for eating.
 Starting location: 15SouthEastForest
 
 ID: Beehive
 Name: Beehive
-Description: Found in forest, needed for trying to eat and getting stung by bee.
+Description: (NOT DONE) Found in forest, needed for trying to eat and getting stung by bee.
 Starting location: 9BeeForest
 
 ID: Fish
 Name: Fish
-Description: You see a fish in the river.
+Description: (NOT DONE) You see a fish in the river.
 Starting location: 16WestRiver
 
 ID: Necklace
 Name: Necklace
-Description: Found at one of the locations before passing the cliffs, needed to learn to shift shape and being able to pass the cliffs.
+Description: (NOT DONE) Found at one of the locations before passing the cliffs, needed to learn to shift shape and being able to pass the cliffs.
 Starting location: Nowhere
 
 ID: Owl
 Name: Owl
-Description: Owl NPC
+Description: (NOT DONE) Owl NPC
 Starting location: Nowhere
 
 ID: Frog
 Name: Frog
-Description: Frog NPC
+Description: (NOT DONE) Frog NPC
 Starting location: Nowhere
 
 Notes:
