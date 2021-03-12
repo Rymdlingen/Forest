@@ -64,7 +64,7 @@ Directions:
 
 ID: 10LeafyForestEntrance
 Name: Forest
-Description: You are in the west part of the old forest that is your home, to the west is a younger part of the forest, the trees there are smaller and have small, light green leaves. To the east is your den.
+Description: You are on the long path between the old forest that is your home in the east and the younger forest where the trees are smaller and have small, light green leaves in the west. You walk and walk, eventually you will get there!
 Directions:
     West: 12LeafyForestMiddle
     East: 1Den
@@ -106,7 +106,7 @@ Directions:
 
 ID: 16WestRiver
 Name: River
-Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it calms down in a natural dam before continuing down the cliffs. To the south, on the other side of the river, is a passage through the rocky edge of the river.
+Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it eventually calms down in a natural dam before continuing down the cliffs. To the south, on the other side of the river, is a passage through the rocky edge of the river.
 Directions:
     North: 13LeafyForestSouth
     South: 20Cliffs
@@ -114,7 +114,7 @@ Directions:
 
 ID: 17EastRiver
 Name: River
-Description: The river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way through and around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
+Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way through and around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
 Directions:
     North: 14SouthForest
     West: 16WestRiver

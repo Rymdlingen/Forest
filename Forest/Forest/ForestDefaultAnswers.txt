@@ -1,0 +1,35 @@
+Pick up: You picked @ up.
+
+Thing can not be picked up: You see @ but you can't pick it up.
+
+Thing is not here: There is no @ that you can pick up here.
+
+Already in inventory: You already have @, you don't need more.
+
+Drop possible: You placed @ on the ground. It is no longer in you possession.
+
+Drop not possible: You can't place @ down here.
+
+Can drop but lose thing: You placed @ down, but now you won't be able to find it again, it's lost.
+
+You do not have that: You don't have @, so you can't drop it!
+
+Get this and lose another thing: You swap out @ for thing, you don't need both. (TODO Needs special message from events?)
+
+Notes:
+Template
+
+where there is an @ symbol, the string will be split and the name of the thing has to be put in through the code.
+
+If I add a type of answer, don't forget to change the number of answers in the parse method. Also only add answers to the bottom, otherwise it need to be changed with number in the array other answers are at.
+
+0 Pick up: <Message about picking thing up>
+1 Thing can not be picked up: <Not possible to pick up, message about why>
+2 Thing is not here: <You can't see such a thing>
+3 Already in inventory: <You can't have the same thing twice>
+4 Drop possible: <Message about the drop, what happen because of it?>
+5 Drop not possible: <Thing can't be dropped here>
+6 Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+7 You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+8 Get this and lose another thing: <You pick this up, but you swap out another thing in your 
+	inventory>

@@ -6,6 +6,16 @@ Starting location: Nowhere
 ID: Moss
 Name: Moss
 Description: (NOT DONE) Found in forest, needed for making den cosy.
+Answers:
+	Pick up: You picked up some soft, dark green moss.
+	Drop possible:
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	Already in inventory: <You can't have the same thing twice>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: 4MossyForestNorth
 
 ID: Grass
@@ -59,7 +69,19 @@ Description: (NOT DONE) Frog NPC
 Starting location: Nowhere
 
 Notes:
+Template
+
 ID: <ID text>
 Name: <Name text>
 Description: <Description text>
+Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+	Pick up: <Message about picking this up>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	Already in inventory: <You can't have the same thing twice>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: <LocationID>

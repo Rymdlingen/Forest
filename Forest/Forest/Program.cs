@@ -87,6 +87,7 @@ namespace Forest
         public ThingId Id;
         public string Name;
         public string Description;
+        public string[] Answers;
         public LocationId StartingLocationId;
     }
 
@@ -95,6 +96,7 @@ namespace Forest
         public string Id;
         public string Name;
         public string Description;
+        public string[] Answers;
         public Dictionary<Direction, LocationId> Directions;
         public string StartingLocationId;
     }
@@ -111,9 +113,10 @@ namespace Forest
 
         // static List<string> load;
 
-        // Text documents (that are not parsed and stored somewhere else).
+        // Text documents (that have data that is not parsed and stored somewhere else, or that needs to be accessed from a method without sending it as a parameter to that method).
         static string[] gameStory;
         static string[] eventAndGoalExtraText;
+        static string[] defaultAnswersToGetInteractions;
 
         // Data dictionaries.
         static Dictionary<LocationId, LocationData> LocationsData = new Dictionary<LocationId, LocationData>();
@@ -150,7 +153,10 @@ namespace Forest
                                                                                                 { "den", ThingId.Dirt } };
 
         static ThingId[] ThingsYouCanGet = { ThingId.Moss, ThingId.Leaves, ThingId.Grass };
-        static List<ThingId> ThingsYouCanDrop;
+        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() {
+            {ThingId.Moss, LocationId.Den },
+            {ThingId.Leaves, LocationId.Den },
+            {ThingId.Grass, LocationId.Den } };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         #endregion
 
@@ -551,30 +557,35 @@ namespace Forest
                     // Thing is pickable and at players location.
                     if (CanGetThing(thingId) && ThingIsHere(thingId))
                     {
-                        Reply($"You picked up {thing}." + ThingsData[thingId].Description);
+                        // Picked it up!
+                        Reply(ThingsData[thingId].Answers[0]);
                         GetThing(thingId);
                     }
                     // Thing is already in players inventory and can't be picked up again.
                     else if (HaveThing(thingId))
                     {
-                        Reply($"You already have {thing}.");
+                        // Already have.
+                        Reply(ThingsData[thingId].Answers[3]);
                     }
                     // Thing is in this location but can't be picked up.
                     else if (ThingIsHere(thingId) && !CanGetThing(thingId))
                     {
-                        Reply($"You can't pick {thing} up.");
+                        // Can't pick up.
+                        Reply(ThingsData[thingId].Answers[1]);
                     }
                     // Thing is not in this location.
                     else if (!ThingIsHere(thingId))
                     {
-                        Reply($"There is no {thing} here.");
+                        // Not here.
+                        Reply(ThingsData[thingId].Answers[2]);
                     }
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                Reply($"There is no such thing here.");
+                // Says "There is no such thing that you can pick up here." (if not changed).
+                Reply(eventAndGoalExtraText[5]);
             }
         }
 
@@ -600,27 +611,39 @@ namespace Forest
                     // Thing is not in players inventory and can't be dropped.
                     if (!HaveThing(thingId))
                     {
-                        Reply($"You don't have {thing} in your inventory.");
+                        // Youd don't have that in the inventory.
+                        Reply(ThingsData[thingId].Answers[7]);
                     }
                     // Trying to drop things in den before den is cleaned.
                     else if (CurrentLocationId == LocationId.Den && GoalCompleted[Goal.DenCleaned] == false && (thingId == ThingId.Grass || thingId == ThingId.Leaves || thingId == ThingId.Moss))
                     {
-                        // TODO fix text.
-                        Reply("You should clean your den before making it cozy.");
+                        // Says "You should clean the den before putting anything in there. A good spring cleaning always makes your home feel cozier!" (if not changed).
+                        Reply(eventAndGoalExtraText[6]);
                     }
                     // Thing is in players inventory and is dropped.
                     else if (HaveThing(thingId))
                     {
-                        Reply($"You dropped {thing}.");
-                        DropThing(thingId);
+                        // If you can drop this thing at this location.
+                        if (ThingsYouCanDropAtLocations.ContainsKey(thingId) && ThingsYouCanDropAtLocations[thingId] == CurrentLocationId)
+                        {
+                            // Can drop.
+                            Reply(ThingsData[thingId].Answers[4]);
+                            DropThing(thingId);
+                        }
+                        // You have the thing but cant drop it here.
+                        else
+                        {
+                            // No drop.
+                            Reply(ThingsData[thingId].Answers[5]);
+                        }
                     }
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // TODO text
-                Reply($"There is no such thing in your inventory.");
+                // Says "You don't have that, so you can't drop it!" (if not changed).
+                Reply(eventAndGoalExtraText[7]);
             }
         }
 
@@ -1171,6 +1194,52 @@ namespace Forest
                         break;
 
                     // This case is only used for things (not used for locations).
+                    case "Answers":
+                        // Create a list of all the answers (using a list so I can add one answer at the time)
+                        var listOfAnswers = new List<string>();
+
+                        // Counting the lines with answers, there is 9 lines with answers.
+                        int lines = 0;
+                        int numberOfAnswers = 9;
+
+                        // Pattern for finding just the text that is the answer.
+                        string answerPattern = @"[ \t]*.*: *(.*)";
+
+                        // Go through all the 8 answers to see if there is a custom one otherwise add the default answer.
+                        do
+                        {
+                            // Searching in the current line + the number of answer lines we are at + on because we started on the line that guides the code to start parsing.
+                            string answer = Regex.Match(fileData[line + lines + 1], answerPattern).Groups[1].Value;
+
+                            // If I forgot to delete the template text from the data, the answer should be the default one,
+                            if (answer.Contains('<') || answer.Contains('>'))
+                            {
+                                answer = "";
+                            }
+
+                            // Store the correct type of answer.
+                            if (answer == "")
+                            {
+                                // No custom answer, add the default answer to the list.
+                                listOfAnswers.Add(defaultAnswersToGetInteractions[lines].Split(':', '@')[1].TrimStart() + parsedDataEntry.Id.ToLower() + defaultAnswersToGetInteractions[lines].Split('@')[1]);
+                            }
+                            else
+                            {
+                                // There is a custom answer, add it to the list.
+                                listOfAnswers.Add(answer);
+                            }
+                            lines++;
+
+                        } while (lines < numberOfAnswers);
+
+                        line += numberOfAnswers;
+
+                        // Make the list into an array and add it to the data.
+                        parsedDataEntry.Answers = listOfAnswers.ToArray<string>();
+
+                        break;
+
+                    // This case is only used for things (not used for locations).
                     case "Starting location":
                         parsedDataEntry.StartingLocationId = value;
                         break;
@@ -1204,6 +1273,7 @@ namespace Forest
                                 Id = thingId,
                                 Name = parsedDataEntry.Name,
                                 Description = parsedDataEntry.Description,
+                                Answers = parsedDataEntry.Answers,
                                 StartingLocationId = thingStartingLocationId
                             };
                             ThingsData[thingId] = thingEntry;
@@ -1313,6 +1383,8 @@ namespace Forest
 
             // Reading all extra event and gaol text.
             eventAndGoalExtraText = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestEventAndGoalText.txt"));
+
+            defaultAnswersToGetInteractions = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestDefaultAnswers.txt"));
 
             // Reading location data.
             string[] locationData = File.ReadAllLines("ForestLocations.txt");
