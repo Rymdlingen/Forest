@@ -88,7 +88,7 @@ namespace Forest
         public string Name;
         public string Description;
         public string[] Answers;
-        public LocationId StartingLocationId;
+        public LocationId[] StartingLocationId;
     }
 
     class ParsedData
@@ -124,7 +124,7 @@ namespace Forest
 
         // Current state.
         static LocationId CurrentLocationId = LocationId.Den;
-        static Dictionary<ThingId, LocationId> ThingsCurrentLocations = new Dictionary<ThingId, LocationId>();
+        static Dictionary<ThingId, List<LocationId>> ThingsCurrentLocations = new Dictionary<ThingId, List<LocationId>>();
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
                                                                                    { Goal.DreamtAboutShiftingShape, false },
@@ -298,7 +298,7 @@ namespace Forest
         static IEnumerable<ThingId> GetThingsAtLocation(LocationId locationId)
         {
             // Returns all the ThingIds for things at the given location.
-            return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId] == locationId);
+            return ThingsCurrentLocations.Keys.Where(thingId => ThingsCurrentLocations[thingId].Contains(locationId));
         }
 
         /// <summary>
@@ -837,7 +837,6 @@ namespace Forest
                 // TODO text
                 Reply($"That doesn't need cleaning.");
             }
-
         }
 
         static void HandleGo(string[] words)
@@ -934,6 +933,14 @@ namespace Forest
             quitGame = true;
             // TODO change text, and probably other things as well
         }
+
+        // TODO add event about floting on the river
+        // TODO add event fro walking on the long path
+        // TODO add event for cozy den goal completed
+        // TODO add event for trying to cross the river and getting quest
+        // TODO add event about bees and flowers
+        // TODO add event for fishing
+        // TODO event for looking through binoculars (NO, wont have time)
         #endregion
 
         #region Display helpers
@@ -952,7 +959,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-            /*vThis is now already written in the descriptions, but I will keep the code in case I change my mind.
+            //This is now already written in the descriptions, but I will keep the code in case I change my mind.
             // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
 
@@ -964,8 +971,22 @@ namespace Forest
                 {
                     Print($"{allDirections[direction]}: {GetLocationName(currentLocationData.Directions[currentDirection])}");
                 }
-            }*/
+            }
             Console.WriteLine();
+
+            // Display things at the current location, if there is any.
+            IEnumerable<ThingId> thingsAtCurrentLocation = GetThingsAtLocation(CurrentLocationId);
+
+            if (thingsAtCurrentLocation.Count() > 0)
+            {
+                Print("You see: ");
+
+                foreach (ThingId thingId in thingsAtCurrentLocation)
+                {
+                    Print($"{GetThingName(thingId)}.");
+                }
+                Console.WriteLine();
+            }
         }
 
         /// <summary>
@@ -1017,7 +1038,7 @@ namespace Forest
         /// <returns>True or false.</returns>
         static bool ThingAt(ThingId thingId, LocationId locationId)
         {
-            return ThingsCurrentLocations[thingId] == locationId;
+            return ThingsCurrentLocations[thingId].Contains(locationId);
         }
 
         /// <summary>
@@ -1078,28 +1099,46 @@ namespace Forest
         /// <param name="locationId"></param>
         static void MoveThing(ThingId thingId, LocationId locationId)
         {
-            ThingsCurrentLocations[thingId] = locationId;
+            // TODO IS THIS WHAT I WANT???
+            // Removes the thing from the current location.
+            ThingsCurrentLocations[thingId].Remove(CurrentLocationId);
+            // Adds the thing to a new location.
+            ThingsCurrentLocations[thingId].Add(locationId);
         }
 
         /// <summary>
-        /// Swaps two things locations.
+        /// Swaps two things, the one that is in the inventory is droped at players location, the other one is placed in the inventory.
         /// </summary>
         /// <param name="thing1Id"></param>
         /// <param name="thing2Id"></param>
-        static void SwapThings(ThingId thing1Id, ThingId thing2Id)
+        static void GetOneAndDropOneThing(ThingId thing1Id, ThingId thing2Id)
         {
-            LocationId locationOfThing1 = ThingsCurrentLocations[thing1Id];
-            MoveThing(thing1Id, ThingsCurrentLocations[thing2Id]);
-            MoveThing(thing2Id, locationOfThing1);
+            ThingId thingInInventory = ThingsCurrentLocations[thing1Id].Contains(LocationId.Inventory) ? thing1Id : thing2Id;
+            ThingId thingNotInInventory = thingInInventory == thing1Id ? thing2Id : thing1Id;
+            DropThing(thingInInventory);
+            GetThing(thingNotInInventory);
         }
 
         /// <summary>
-        /// Changes a certain things location to inventory.
+        /// Swaps two things, the one that is in the inventory disapears, the other one is placed in the inventory.
+        /// </summary>
+        /// <param name="thing1Id"></param>
+        /// <param name="thing2Id"></param>
+        static void GetOneAndLoseOneThing(ThingId thing1Id, ThingId thing2Id)
+        {
+            ThingId thingInInventory = ThingsCurrentLocations[thing1Id].Contains(LocationId.Inventory) ? thing1Id : thing2Id;
+            ThingId thingNotInInventory = thingInInventory == thing1Id ? thing2Id : thing1Id;
+            LoseThing(thingInInventory);
+            GetThing(thingNotInInventory);
+        }
+
+        /// <summary>
+        /// Duplicates and adds a certain thing to the inventory.
         /// </summary>
         /// <param name="thingId"></param>
         static void GetThing(ThingId thingId)
         {
-            MoveThing(thingId, LocationId.Inventory);
+            ThingsCurrentLocations[thingId].Add(LocationId.Inventory);
         }
 
         /// <summary>
@@ -1108,7 +1147,17 @@ namespace Forest
         /// <param name="thingId"></param>
         static void DropThing(ThingId thingId)
         {
-            MoveThing(thingId, CurrentLocationId);
+            ThingsCurrentLocations[thingId].Remove(LocationId.Inventory);
+            ThingsCurrentLocations[thingId].Add(CurrentLocationId);
+        }
+
+        /// <summary>
+        /// Delete a certain thing from the inventory.
+        /// </summary>
+        /// <param name="thingId"></param>
+        static void LoseThing(ThingId thingId)
+        {
+            ThingsCurrentLocations[thingId].Remove(LocationId.Inventory);
         }
 
         /// <summary>
@@ -1267,7 +1316,20 @@ namespace Forest
                         {
                             // Creating a new ThingData object from the parsed data.
                             ThingId thingId = Enum.Parse<ThingId>(parsedDataEntry.Id);
-                            LocationId thingStartingLocationId = Enum.Parse<LocationId>(parsedDataEntry.StartingLocationId);
+                            var startingLocationsStrings = new List<string>(parsedDataEntry.StartingLocationId.Split(','));
+                            var startingLocationsIds = new List<LocationId>();
+                            for (int location = 0; location < startingLocationsStrings.Count; location++)
+                            {
+                                if (location == 0)
+                                {
+                                    startingLocationsIds.Add(Enum.Parse<LocationId>(startingLocationsStrings[location].Trim()));
+                                }
+                                else
+                                {
+                                    startingLocationsIds.Add(Enum.Parse<LocationId>(RemoveDigits(startingLocationsStrings[location].Trim())));
+                                }
+                            }
+                            LocationId[] thingStartingLocationId = startingLocationsIds.ToArray<LocationId>();
                             var thingEntry = new ThingData
                             {
                                 Id = thingId,
@@ -1293,7 +1355,7 @@ namespace Forest
         /// <returns>Array with no empty entries.</returns>
         static string[] RemoveEmptyLines(string[] arrayWithText)
         {
-            // MAke the array into a list.
+            // Make the array into a list.
             var listOfText = new List<string>(arrayWithText.ToList<string>());
 
             // Check each line in the list to see if they are empty.
@@ -1327,7 +1389,7 @@ namespace Forest
             if (Regex.IsMatch(text[0].ToString(), @"\d"))
             {
                 // If it is call this method again.
-                RemoveDigits(text);
+                text = RemoveDigits(text);
             }
 
             // Return a new string.
@@ -1364,10 +1426,13 @@ namespace Forest
 
         static void InitializeThingsLocations()
         {
-            // Store the starting location of each thing.
+            // Store the starting location(s) of each thing.
             foreach (KeyValuePair<ThingId, ThingData> thingEntry in ThingsData)
             {
-                ThingsCurrentLocations[thingEntry.Key] = thingEntry.Value.StartingLocationId;
+                foreach (LocationId location in thingEntry.Value.StartingLocationId)
+                {//could not find key Dirt CONTINUE HERE
+                    ThingsCurrentLocations[thingEntry.Key].Add(location);
+                }
             }
         }
 

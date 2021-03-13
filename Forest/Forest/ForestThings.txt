@@ -1,7 +1,17 @@
 ID: Dirt
 Name: Dirty den
-Description: (NOT DONE) Dirty.
-Starting location: Nowhere
+Description: It's dirty, you should clean it.
+Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+	Pick up: <Message about picking this up>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	Already in inventory: <You can't have the same thing twice>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+Starting location: 1Den
 
 ID: Moss
 Name: Moss
@@ -16,7 +26,7 @@ Answers:
 	Thing is not here:
 	You do not have that:
 	Get this and lose another thing:
-Starting location: 4MossyForestNorth
+Starting location: 4MossyForestNorth, 5MossyForestSouth, 1Den
 
 ID: Grass
 Name: Grass
@@ -31,7 +41,7 @@ Answers:
 	Thing is not here:
 	You do not have that:
 	Get this and lose another thing:
-Starting location: 8Glade
+Starting location: 8Glade, 7SparseForest, 1Den
 
 ID: OldLeaves
 Name: Old leaves
@@ -46,7 +56,7 @@ Answers:
 	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 11LeafyForestNorth
+Starting location: 11LeafyForestNorth, 1Den
 
 ID: OKLeaves
 Name: Leaves
@@ -61,7 +71,7 @@ Answers:
 	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 12LeafyForestMiddle
+Starting location: 12LeafyForestMiddle, 1Den
 
 ID: SoftLeaves
 Name: Soft leaves
@@ -76,7 +86,7 @@ Answers:
 	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 13LeafyForestSouth
+Starting location: 13LeafyForestSouth, 1Den
 
 ID: Berries
 Name: Berries
