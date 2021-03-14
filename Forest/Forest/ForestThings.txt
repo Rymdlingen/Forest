@@ -3,12 +3,12 @@ Name: Dirty den
 Description: It's dirty, you should clean it.
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: 1Den
@@ -18,12 +18,12 @@ Name: Moss
 Description: The dark green moss is soft, it's perfect for padding the hard dirt floor in the den.
 Answers:
 	Pick up: You picked up some soft, dark green moss.
+	Thing can not be picked up:
+	Thing is not here:
+	Already in inventory:
 	Drop possible:
 	Drop not possible: This place doesn't need your soft moss, keep it!
 	Can drop but lose thing:
-	Already in inventory:
-	Thing can not be picked up:
-	Thing is not here:
 	You do not have that:
 	Get this and lose another thing:
 Starting location: 4MossyForestNorth, 5MossyForestSouth, 1Den
@@ -33,12 +33,12 @@ Name: Grass
 Description: Long glades of grass softly swaying in the wind.
 Answers:
 	Pick up: You gathered an armful of long, soft grass from the meadow.
+	Thing can not be picked up:
+	Thing is not here:
+	Already in inventory:
 	Drop possible: 
 	Drop not possible: If you put it down here the grass will be caught in the wind, better hold on to it and find a better place to put it.
 	Can drop but lose thing:
-	Already in inventory:
-	Thing can not be picked up:
-	Thing is not here:
 	You do not have that:
 	Get this and lose another thing:
 Starting location: 8Glade, 7SparseForest, 1Den
@@ -48,27 +48,27 @@ Name: Old leaves
 Description: These leaves are old and brown, it's the leaves that fell from the trees last year.
 Answers:
 	Pick up: You grabbed a bunch of old leaves from the ground.
+	Thing can not be picked up: You don't need more old leaves.
+	Thing is not here:
+	Already in inventory: You already have some of these old leaves.
 	Drop possible:
 	Drop not possible:
 	Can drop but lose thing:
-	Already in inventory:
-	Thing can not be picked up:
-	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
 Starting location: 11LeafyForestNorth, 1Den
 
-ID: OKLeaves
-Name: Leaves
-Description: These leaves are green and soft.
+ID: OkLeaves
+Name: Big leaves
+Description: The trees are covered in big green leaves.
 Answers:
-	Pick up: You picked som leaves from some low hanging branches. It's not much, but it might be useful.
+	Pick up: You picked some leaves from low hanging branches. It's not much, but it might be useful.
+	Thing can not be picked up: You don't need more big leaves.
+	Thing is not here:
+	Already in inventory: You have enough of these big leaves.
 	Drop possible:
 	Drop not possible:
 	Can drop but lose thing:
-	Already in inventory:
-	Thing can not be picked up:
-	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
 Starting location: 12LeafyForestMiddle, 1Den
@@ -77,28 +77,43 @@ ID: SoftLeaves
 Name: Soft leaves
 Description: On the small, young trees you see a lot of small, light green leaves. They just leafed out and it seem like the spring sun is making them soft and warm.
 Answers:
-	Pick up: Since the trees are so small here you can reach and collect a lot of the leaves. You gather as much as you can possibly carry.
+	Pick up: Since the trees are so small here you can reach and collect a lot of the small leaves. You gather a whole much of them!
+	Thing can not be picked up: You don't need more soft leaves.
+	Thing is not here:
+	Already in inventory: You add a few more of the small leaves to the bunch you already have but they are so small it hardly makes a difference.
 	Drop possible:
 	Drop not possible:
 	Can drop but lose thing:
-	Already in inventory:
-	Thing can not be picked up:
-	Thing is not here:
 	You do not have that:
 	Get this and lose another thing: <todo>
 Starting location: 13LeafyForestSouth, 1Den
+
+ID: PileOfLeaves
+Name: A pile of leaves
+Description: 
+Answers:
+	Pick up: <Can't be picked up>
+	Thing can not be picked up: <Can't be picked up because it is not placed in the world>
+	Thing is not here:
+	Already in inventory: <Will never happen>
+	Drop possible: You drop of the leaves you have left on the floor of your den.
+	Drop not possible: There is no use leaving your leaves here, there is probably a better place for them.
+	Can drop but lose thing: All of your leaves flew away in the wind.
+	You do not have that:
+	Get this and lose another thing: <todo>
+Starting location: Nowhere
 
 ID: Berries
 Name: Berries
 Description: (NOT DONE) Found in forest, needed for eating.
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: 15SouthEastForest
@@ -108,14 +123,14 @@ Name: Beehive
 Description: (NOT DONE) Found in forest, needed for trying to eat and getting stung by bee.
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
-	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: 9BeeForest
 
 ID: Fish
@@ -123,14 +138,14 @@ Name: Fish
 Description: (NOT DONE) You see a fish in the river.
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
-	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: 16WestRiver
 
 ID: Necklace
@@ -138,14 +153,14 @@ Name: Necklace
 Description: (NOT DONE) Found at one of the locations before passing the cliffs, needed to learn to shift shape and being able to pass the cliffs.
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
-	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: Nowhere
 
 ID: Owl
@@ -166,12 +181,12 @@ Name: <Name text>
 Description: <Description text>
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
-	Already in inventory: <You can't have the same thing twice>
-	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: <LocationID>

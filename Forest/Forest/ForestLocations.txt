@@ -71,13 +71,13 @@ Directions:
 
 ID: 11LeafyForestNorth
 Name: Leafy forest
-Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small. Between the trees small streams of water is rippling down towards the river. For as long as you can see around you this kind of forest continues. "Probably nothing more to see" you think, the way back is to the south.
+Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small, the lowest branches are just out of your reach. Between the trees small streams of water is rippling down towards the river and most of the ground is covered in long sticks and the leaves that fell from the tress last year. For as long as you can see this kind of forest continues around you. "Probably nothing more to see" you think, the way back is to the south.
 Directions:
     South: 12LeafyForestMiddle
 
 ID: 12LeafyForestMiddle
 Name: Leafy forest
-Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are small and they look soft and pretty cozy. Between the tress water is rippling down from the forest in the north towards the river in the south. The path to the east leads back towards your den.
+Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are pretty big but they still look soft and pretty cozy. Between the tress water is rippling down from the forest in the north towards the river in the south. The path to the east leads back towards your den.
 Directions:
     North: 11LeafyForestNorth
     South: 13LeafyForestSouth
