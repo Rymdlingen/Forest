@@ -24,9 +24,9 @@
 
 12In your pile of leaves you have @ at the bottom, then @ and some @ on top. You can't possibly carry more leaves.
 
-13You don't see a pile of leaves here.
+13You don't have a pile of leaves to look at.
 
-14You make it back to the den with most of your pile of leaves still with you, the old leaves on the top flew away, most of the big leves were also caught by the wind but you are still carrying all of the soft, light green leaves!
+14You make it back to the den with most of your pile of leaves still with you, the old, heavier leaves on the top stayed on the pile for quite some time but eventually the flew away, most of the big leaves were also caught by the wind but you are still carrying all of the soft, light green leaves since they were at the bottom of the pile!
 
 15Your den is clean and you have added @ to start to make it cozy, I'm sure there is something else that could be added to make the den even cozier.
 
@@ -51,3 +51,23 @@
 25Your den is clean and the floor is covered in soft moss, grass and leaves, it's the coziest den you have ever made!
 
 26Can't do that.
+
+27uh oh.. sliding down the river and carrying leaves don't go well together, all your leaves flew away in the wind.
+
+28There is nothing of interest in that direction.
+
+29The soft leaves on the top of the pile flew away immediately, they are the most important for a cozy den. Better try again!
+
+30You make it back to the den with most of the leaves, only the big leaves on the top of the pile flew away in the wind. But this mix of old leaves and soft leaves is not perfect.. you can do better! You let the rest of the leaves fly away in the wind, let's try again!
+
+31You make it back to the den with only the old leaves left, that's not going to be good enough! You get rid of the old leaves.
+
+32As soon as the old leaves flew away so did the soft leaves, can't have a cozy den without soft leaves. You trow the big leaves in the wind and watch them fly away.
+
+33You lost a lot of leaves on the windy walk back to the den, now you don't have enough to make the den cozy. You could probably carry more from the start, don't give up!
+
+34The few leaves you had was blown away in the wind, luckily there is a lot more where that came from. Leaves are important for making the den cozy, let's try again!
+
+35You are carrying a pile of leaves on the windy path back to the den, the wind gets stronger and start blowing your leaves away.
+
+36You don't have that, so you can't drop it.

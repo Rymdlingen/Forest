@@ -64,7 +64,7 @@ Directions:
 
 ID: 10LeafyForestEntrance
 Name: Forest
-Description: You are on the long path between the old forest that is your home in the east and the younger forest where the trees are smaller and have small, light green leaves in the west. You walk and walk, eventually you will get there!
+Description: You are on the long path between the old forest that is your home in the east and the younger forest where the trees are smaller and have small, light green leaves in the west. You walk and walk along the windy path, eventually you will get there!
 Directions:
     West: 12LeafyForestMiddle
     East: 1Den

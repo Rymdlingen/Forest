@@ -506,6 +506,7 @@ namespace Forest
             // Checking if the direction is availible for the current location.
             if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Directions[direction] == LocationId.BearsToilet)
             {
+                // TODO make method or delete this.
                 if (!beenTBearToiletBefore)
                 {
                     LocationId oldLocation = CurrentLocationId;
@@ -524,30 +525,35 @@ namespace Forest
                 }
 
             }
+            // If the player is going from the leafy forest to the den and have the pile of leaves, start event about leaves blowing in the wind.
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
+            {
+                BringLeavesToDen();
+            }
             // If the player is trying to go from the south leafy forest to the west river, they go on the waterslide and a special text is displayed as they are taken to the east part of the river because of currents in the west river.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestSouth && currentLocation.Directions[direction] == LocationId.WestRiver)
             {
-                Console.Clear();
-                Print(eventAndGoalExtraText[0]);
-                PressAnyKeyToContinueAndClear();
-                CurrentLocationId = LocationId.EastRiver;
-                DisplayNewLocation();
+                // Event for going down waterslide.
+                GoDownWaterSlide();
             }
+            // Can't go up water stream.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.WestRiver && currentLocation.Directions[direction] == LocationId.LeafyForestSouth)
             {
+                // If the player tries to go from the river to the leafy forest (climbing up the waterstream).
                 Print(eventAndGoalExtraText[1]);
             }
+            // Normal move.
             else if (currentLocation.Directions.ContainsKey(direction))
             {
-                // Changing the current location to the new location and displaying the new location information.
                 LocationId newLocation = currentLocation.Directions[direction];
-                CurrentLocationId = newLocation;
-                DisplayNewLocation();
+                // Changing the current location to the new location and displaying the new location information.
+                MovePlayerToNewLocation(newLocation);
             }
+            // No location in that direction.
             else
             {
-                // If the player tries to go in a direction with no location.
-                Reply("That direction is not possible.");
+                // Says "There is nothing of interest in that direction." (if not changed)
+                Reply(eventAndGoalExtraText[28]);
             }
         }
 
@@ -610,8 +616,6 @@ namespace Forest
                             GetThing(thingId);
                             break;
                     }
-                    // TODO add clering the pile (on drop and if going down the slide and if having the leaves in the wrong order
-                    // in the pile when going back to the den (also add text for this))
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
@@ -638,6 +642,14 @@ namespace Forest
                 foreach (string thing in thingKeysFromCommand)
                 {
                     ThingId thingId = ThingIdsByName[thing];
+
+                    // Special case for dropping leaves in the leafy forest.
+                    if (thingId == ThingId.OldLeaves || thingId == ThingId.OkLeaves || thingId == ThingId.SoftLeaves)
+                    {
+                        DropPileOfLeavesOutsideOfDen();
+
+                        return;
+                    }
 
                     // Thing is not in players inventory and can't be dropped.
                     if (!HaveThing(thingId))
@@ -776,7 +788,7 @@ namespace Forest
                     // Pile of leaves is not in inventory.
                     else
                     {
-                        // Says "You don't see a pile of leaves here." (if not changed).
+                        // Says "You don't have a pile of leaves to look at." (if not changed).
                         Reply(eventAndGoalExtraText[13]);
                     }
                 }
@@ -1158,8 +1170,20 @@ namespace Forest
 
         static void DropPileOfLeavesOutsideOfDen()
         {
-            Reply(ThingsData[ThingId.PileOfLeaves].Answers[6]);
-            LoseThing(ThingId.PileOfLeaves);
+            if (CurrentLocationId == LocationId.LeafyForestNorth || CurrentLocationId == LocationId.LeafyForestMiddle || CurrentLocationId == LocationId.LeafyForestSouth)
+            {
+                if (HaveThing(ThingId.PileOfLeaves))
+                {
+                    Reply(ThingsData[ThingId.PileOfLeaves].Answers[6]);
+                    // Remove the leaf pile from inventory and clear the list of leaves in leaf pile.
+                    LoseLeafPile();
+                }
+                else
+                {
+                    // Don't have that so can't drop it.
+                    Reply(eventAndGoalExtraText[36]);
+                }
+            }
         }
 
         static void PickUpLeaves(ThingId thingId)
@@ -1202,6 +1226,108 @@ namespace Forest
                     Console.WriteLine();
                 }
             }
+        }
+
+        static void BringLeavesToDen()
+        {
+            Console.Clear();
+            Reply(eventAndGoalExtraText[35]);
+
+            PressAnyKeyToContinue();
+
+            if (ThingsInPileOfLeaves.Count() == 3)
+            {
+                // Right order of leaves in the pile.
+                if (ThingsInPileOfLeaves[0] == ThingId.SoftLeaves && ThingsInPileOfLeaves[1] == ThingId.OkLeaves && ThingsInPileOfLeaves[2] == ThingId.OldLeaves)
+                {
+                    // Text about the leaves the player successfully brought back.
+                    Reply(eventAndGoalExtraText[14]);
+                }
+                // Wrong order of leaves in the pile.
+                else
+                {
+                    // Soft leaves on top (two options, but the work with the same text).
+                    if (ThingsInPileOfLeaves[2] == ThingId.SoftLeaves)
+                    {
+                        // Text about the important soft leaves flew away.
+                        Reply(eventAndGoalExtraText[29]);
+                    }
+                    // There is only one wrong option when the soft leaves is in the bottom (the other option is the correct one).
+                    else if (ThingsInPileOfLeaves[0] == ThingId.SoftLeaves)
+                    {
+                        // Text about bad mix of leaves.
+                        Reply(eventAndGoalExtraText[30]);
+                    }
+                    else if (ThingsInPileOfLeaves[0] == ThingId.OldLeaves)
+                    {
+                        // Text about only having the old leaves left, bad.
+                        Reply(eventAndGoalExtraText[31]);
+                    }
+                    else if (ThingsInPileOfLeaves[0] == ThingId.OkLeaves)
+                    {
+                        // Text about losing all the important soft leaves.
+                        Reply(eventAndGoalExtraText[32]);
+                    }
+
+                    // Remove the leaf pile from inventory and clear the list of leaves in leaf pile.
+                    LoseLeafPile();
+                }
+            }
+            else if (ThingsInPileOfLeaves.Count() == 2)
+            {
+                // Not enough leaves in pile.
+                Reply(eventAndGoalExtraText[33]);
+                // Remove the leaf pile from inventory and clear the list of leaves in leaf pile.
+                LoseLeafPile();
+            }
+            else
+            {
+                // The few leaves in the pile blew away.
+                Reply(eventAndGoalExtraText[34]);
+                // Remove the leaf pile from inventory and clear the list of leaves in leaf pile.
+                LoseLeafPile();
+            }
+
+            PressAnyKeyToContinueAndClear();
+
+            MovePlayerToNewLocation(LocationId.Den);
+        }
+
+        static void MovePlayerToNewLocation(LocationId newLocationId)
+        {
+            // Changing the current location to the new location and displaying the new location information.
+            CurrentLocationId = newLocationId;
+            DisplayNewLocation();
+        }
+
+        static void LoseLeafPile()
+        {
+            LoseThing(ThingId.PileOfLeaves);
+            ThingsInPileOfLeaves.Clear();
+        }
+
+        static void LoseLeavesWhenGoingDownWaterSlide()
+        {
+            // Display an extra message if player was holding the pile of leaves when sliding down the river.
+            if (HaveThing(ThingId.PileOfLeaves))
+            {
+                PressAnyKeyToContinue();
+                // Text about losing the leaves.
+                Print(eventAndGoalExtraText[27]);
+                LoseLeafPile();
+            }
+        }
+
+        static void GoDownWaterSlide()
+        {
+            Console.Clear();
+            // Text about sliding down the river ending up in the dam.
+            Reply(eventAndGoalExtraText[0]);
+            // Display an extra message if player was holding the pile of leaves when sliding down the river.
+            LoseLeavesWhenGoingDownWaterSlide();
+            PressAnyKeyToContinueAndClear();
+            // Put the player at the dam.
+            MovePlayerToNewLocation(LocationId.EastRiver);
         }
 
         // TODO add event about floting on the river
