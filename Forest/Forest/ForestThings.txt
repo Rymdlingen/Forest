@@ -18,7 +18,7 @@ Name: Moss
 Description: The dark green moss is soft, it's perfect for padding the hard dirt floor in the den.
 Answers:
 	Pick up: You picked up some soft, dark green moss.
-	Thing can not be picked up:
+	Thing can not be picked up: Let's leave the rest of the moss here, you don't need more.
 	Thing is not here:
 	Already in inventory:
 	Drop possible:
@@ -33,7 +33,7 @@ Name: Grass
 Description: Long glades of grass softly swaying in the wind.
 Answers:
 	Pick up: You gathered an armful of long, soft grass from the meadow.
-	Thing can not be picked up:
+	Thing can not be picked up: You don't need that.
 	Thing is not here:
 	Already in inventory:
 	Drop possible: 
@@ -89,7 +89,7 @@ Answers:
 Starting location: 13LeafyForestSouth, 1Den
 
 ID: PileOfLeaves
-Name: A pile of leaves
+Name: Pile of leaves
 Description: 
 Answers:
 	Pick up: <Can't be picked up>

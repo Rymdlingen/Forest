@@ -158,14 +158,13 @@ namespace Forest
                                                                                                 { "pile", ThingId.PileOfLeaves} };
 
         static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass };
-        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() {
-            {ThingId.Moss, LocationId.Den },
-            {ThingId.PileOfLeaves, LocationId.Den },
-            {ThingId.Grass, LocationId.Den } };
+        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
+                                                                                                                     {ThingId.PileOfLeaves, LocationId.Den },
+                                                                                                                     {ThingId.Grass, LocationId.Den }};
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         static List<ThingId> ThingsInPileOfLeaves = new List<ThingId>();
         static List<ThingId> ThingsInDen = new List<ThingId>();
-        static List<ThingId> PreviousThingsInDen = ThingsInDen;
+        static List<ThingId> PreviousThingsInDen = new List<ThingId>();
         #endregion
 
         #region Output helpers
@@ -333,14 +332,21 @@ namespace Forest
         /// <summary>
         /// Clears the consol, displayes indicator for not accepting commands(... instead of >), needs a keypress and then disapers.
         /// </summary>
+        static void PressAnyKeyToContinueAndClear()
+        {
+            PressAnyKeyToContinue();
+            Console.Clear();
+        }
+
+        /// <summary>
+        /// Clears the consol, displayes indicator for not accepting commands(... instead of >), needs a keypress and then disapers.
+        /// </summary>
         static void PressAnyKeyToContinue()
         {
             // TODO not sure about color
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
             Console.ReadKey();
-            Console.Clear();
-
         }
         #endregion
 
@@ -507,7 +513,7 @@ namespace Forest
                     LocationId newLocation = currentLocation.Directions[direction];
                     CurrentLocationId = newLocation;
                     DisplayNewLocation();
-                    PressAnyKeyToContinue();
+                    PressAnyKeyToContinueAndClear();
                     CurrentLocationId = oldLocation;
                     DisplayNewLocation();
                     beenTBearToiletBefore = true;
@@ -523,7 +529,7 @@ namespace Forest
             {
                 Console.Clear();
                 Print(eventAndGoalExtraText[0]);
-                PressAnyKeyToContinue();
+                PressAnyKeyToContinueAndClear();
                 CurrentLocationId = LocationId.EastRiver;
                 DisplayNewLocation();
             }
@@ -562,79 +568,50 @@ namespace Forest
                 {
                     ThingId thingId = ThingIdsByName[thing];
 
+                    // Thing is not in this location.
+                    if (!ThingIsHere(thingId))
+                    {
+                        // Not here.
+                        Reply(ThingsData[thingId].Answers[2]);
+
+                        return;
+                    }
 
                     // Thing is already in players inventory and can't be picked up again.
                     if (HaveThing(thingId))
                     {
                         // Already have.
                         Reply(ThingsData[thingId].Answers[3]);
+
+                        return;
                     }
-                    // Thing is pickable and at players location.
-                    else if (CanGetThing(thingId) && ThingIsHere(thingId))
-                    {
-                        // Special case for picking up leaves.
-                        if (thingId == ThingId.OkLeaves || thingId == ThingId.OldLeaves || thingId == ThingId.SoftLeaves)
-                        {
-                            if (ThingsInPileOfLeaves.Contains(thingId))
-                            {
-                                // Already have.
-                                string[] keyWords = new string[] { GetThingName(thingId).ToLower() };
-                                InsertKeyWordAndDisplay(eventAndGoalExtraText[7], keyWords);
-                            }
-                            else
-                            {
-                                // Get pile of leaves if player don't already have it.
-                                if (!ThingsCurrentLocations[ThingId.PileOfLeaves].Contains(LocationId.Inventory))
-                                {
-                                    GetThing(ThingId.PileOfLeaves);
-                                }
 
-                                // Get leaves.
-                                ThingsInPileOfLeaves.Add(thingId);
-                                // Display pick up line.
-                                Print(ThingsData[thingId].Answers[0]);
-
-                                // Display the correct information about the pick up when the pile is growing.
-                                if (ThingsInPileOfLeaves.Count == 2)
-                                {
-                                    // Two types of leaf in the pile.
-                                    string[] keyWords = new string[] { GetThingName(ThingsInPileOfLeaves[1]).ToLower(), GetThingName(ThingsInPileOfLeaves[0]).ToLower() };
-                                    InsertKeyWordAndDisplay(eventAndGoalExtraText[8], keyWords);
-                                }
-                                else if (ThingsInPileOfLeaves.Count == 3)
-                                {
-                                    // Three types of leaf in the pile.
-                                    string[] keyWords = new string[] { GetThingName(ThingsInPileOfLeaves[0]).ToLower(), GetThingName(ThingsInPileOfLeaves[1]).ToLower(), GetThingName(ThingsInPileOfLeaves[2]).ToLower() };
-                                    InsertKeyWordAndDisplay(eventAndGoalExtraText[9], keyWords);
-                                }
-                                else
-                                {
-                                    Console.WriteLine();
-                                }
-
-                                // TODO add clering the pile (on drop and if going down the slide and if having the leaves in the wrong order
-                                // in the pile when going back to the den (also add text for this))
-                            }
-                        }
-                        else
-                        {
-                            // Picked it up!
-                            Reply(ThingsData[thingId].Answers[0]);
-                            GetThing(thingId);
-                        }
-                    }
                     // Thing is in this location but can't be picked up.
                     else if (ThingIsHere(thingId) && !CanGetThing(thingId))
                     {
                         // Can't pick up.
                         Reply(ThingsData[thingId].Answers[1]);
+
+                        return;
                     }
-                    // Thing is not in this location.
-                    else if (!ThingIsHere(thingId))
+
+                    // Thing is pickable and at players location.
+                    switch (thingId)
                     {
-                        // Not here.
-                        Reply(ThingsData[thingId].Answers[2]);
+                        case ThingId.OkLeaves:
+                        case ThingId.OldLeaves:
+                        case ThingId.SoftLeaves:
+                            PickUpLeaves(thingId);
+                            break;
+
+                        default:
+                            // Picked it up!
+                            Reply(ThingsData[thingId].Answers[0]);
+                            GetThing(thingId);
+                            break;
                     }
+                    // TODO add clering the pile (on drop and if going down the slide and if having the leaves in the wrong order
+                    // in the pile when going back to the den (also add text for this))
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
@@ -647,8 +624,6 @@ namespace Forest
 
         static void HandleDrop(string[] words)
         {
-            // TODO fix droping things for making den cozy? Should I instead USE things to make den cozy? Should I give more information after a thing is droped? Specific for every thing?
-
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
@@ -667,60 +642,42 @@ namespace Forest
                     // Thing is not in players inventory and can't be dropped.
                     if (!HaveThing(thingId))
                     {
-                        // Youd don't have that in the inventory.
+                        // You don't have that in the inventory.
                         Reply(ThingsData[thingId].Answers[7]);
-                    }
-                    // Trying to drop things in den before den is cleaned.
-                    else if (CurrentLocationId == LocationId.Den && !GoalCompleted[Goal.DenCleaned] && (thingId == ThingId.Grass || thingId == ThingId.PileOfLeaves || thingId == ThingId.Moss))
-                    {
-                        // Says "You should clean the den before putting anything in there. A good spring cleaning always makes your home feel cozier!" (if not changed).
-                        Reply(eventAndGoalExtraText[6]);
-                    }
-                    // Thing is in players inventory and is dropped.
-                    else if (HaveThing(thingId))
-                    {
-                        // If you can drop this thing at this location.
-                        if (ThingsYouCanDropAtLocations.ContainsKey(thingId) && ThingsYouCanDropAtLocations[thingId] == CurrentLocationId)
-                        {
-                            // Can drop message.
-                            Reply(ThingsData[thingId].Answers[4]);
 
-                            // Special case for droping of things in den.
-                            if (thingId == ThingId.PileOfLeaves || thingId == ThingId.Moss || thingId == ThingId.Grass)
-                            {
-                                // Special special case for dropping of leaves.
-                                if (thingId == ThingId.PileOfLeaves)
-                                {
-                                    LoseThing(thingId);
-                                    ThingsInDen.Add(ThingId.SoftLeaves);
-                                }
-                                // For moss and grass.
-                                else
-                                {
-                                    LoseThing(thingId);
-                                    ThingsInDen.Add(thingId);
-                                }
-                            }
-                            // Normal drop of.
-                            else
-                            {
-                                DropThing(thingId);
-                            }
-                        }
-                        // You have the thing but cant drop it here.
-                        else
-                        {
-                            // No drop.
+                        return;
+                    }
+
+                    // Cases
+                    switch (thingId)
+                    {
+                        case ThingId.Moss:
+                        case ThingId.Grass:
+                        case ThingId.PileOfLeaves:
+                            // Checks if the current location is the den, handles the drop accordingly.
+                            DropThingInDen(thingId);
+                            break;
+
+                        // The only time leaf will refer to specific leaves are when in leafy forest, droping them makes player lose the whole pile.
+                        case ThingId.OldLeaves:
+                        case ThingId.OkLeaves:
+                        case ThingId.SoftLeaves:
+                            // Drops the whole pile of leaves.
+                            DropPileOfLeavesOutsideOfDen();
+                            break;
+
+                        // Player is trying to drop something that they can't drop here.
+                        default:
                             Reply(ThingsData[thingId].Answers[5]);
-                        }
+                            break;
                     }
                 }
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // Says "You don't have that, so you can't drop it!" (if not changed).
-                Reply(eventAndGoalExtraText[7]);
+                // Says "Can't do that" (if not changed).
+                Reply(eventAndGoalExtraText[26]);
             }
         }
 
@@ -822,6 +779,12 @@ namespace Forest
                         // Says "You don't see a pile of leaves here." (if not changed).
                         Reply(eventAndGoalExtraText[13]);
                     }
+                }
+                // Special case for looking at the den.
+                else if (thingIdsFromCommand.Contains(ThingId.Dirt))
+                {
+                    // Changes depending on the state of the den.
+                    LookAtDen();
                 }
                 else
                 {
@@ -930,15 +893,17 @@ namespace Forest
                     // The entered thing matches the dirty den.
                     if (thingId == ThingId.Dirt)
                     {
-                        // TODO text
                         GoalCompleted[Goal.DenCleaned] = true;
-                        Reply("You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter.");
+                        // Changes the dens description to match it beeing clean, says "Your den is clean but it needs something to make it cozy." (if not changed)
+                        ThingsData[ThingId.Dirt].Description = eventAndGoalExtraText[22];
+                        // Says "You clean out all the old foliage and your den is now looking pretty good, it's time to gather new material for making it cozy for next winter." (if not changed)
+                        Reply(eventAndGoalExtraText[23]);
                     }
                     // Thing is not dirty den.
                     else
                     {
-                        // TODO text
-                        Reply($"{Capitalize(thing)} doesn't need cleaning.");
+                        // Says "doesn't need cleaning."
+                        Reply(Capitalize(thing) + eventAndGoalExtraText[24]);
                     }
                 }
             }
@@ -1035,33 +1000,17 @@ namespace Forest
             if (!GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned])
             {
                 // First checks if there is any new things added to the den.
-                if (ThingsInDen != PreviousThingsInDen)
+                if (ThingsInDen.Count > PreviousThingsInDen.Count)
                 {
                     // First thing added.
-                    if (ThingsInDen.Count == 1)
+                    if (ThingsInDen.Count == 1 || ThingsInDen.Count == 2)
                     {
-                        string[] keyWords = new string[] { GetThingName(ThingsInDen[0]) };
-                        InsertKeyWordAndDisplay(eventAndGoalExtraText[15], keyWords);
-                    }
-                    // Second thing added.
-                    else if (ThingsInDen.Count == 2)
-                    {
-                        string[] keyWords = new string[] { GetThingName(ThingsInDen[0]), GetThingName(ThingsInDen[1]) };
-                        InsertKeyWordAndDisplay(eventAndGoalExtraText[16], keyWords);
+                        LookAtDen();
                     }
                     // All things added.
                     else if (ThingsInDen.Count == 3)
                     {
-                        GoalCompleted[Goal.DenMadeCozy] = true;
-
-                        // Print text tha tells the player the puzzle is done.
-                        Print(eventAndGoalExtraText[17]);
-                        PressAnyKeyToContinue();
-                        Print(eventAndGoalExtraText[18]);
-                        PressAnyKeyToContinue();
-                        Print(eventAndGoalExtraText[19]);
-                        PressAnyKeyToContinue();
-                        Reply(eventAndGoalExtraText[20]);
+                        DenGoalCompleted();
                     }
 
                     // Remove things already droped of from the list of things the player can pick up.
@@ -1083,7 +1032,8 @@ namespace Forest
                     }
 
                     // Set the previous den state to the current before next command.
-                    PreviousThingsInDen = ThingsInDen;
+                    PreviousThingsInDen.Clear();
+                    PreviousThingsInDen.AddRange(ThingsInDen);
                 }
             }
 
@@ -1125,6 +1075,133 @@ namespace Forest
             Print("THE END! (Clearing this puzzle ends the game for now, since it's the only puzzle I have started working on)");
             quitGame = true;
             // TODO change text, and probably other things as well
+        }
+
+        static void LookAtDen()
+        {
+            // One thing in den.
+            if (ThingsInDen.Count == 1)
+            {
+                string[] keyWords = new string[] { GetThingName(ThingsInDen[0]).ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[15], keyWords);
+            }
+            // Two things in den.
+            else if (ThingsInDen.Count == 2)
+            {
+                string[] keyWords = new string[] { GetThingName(ThingsInDen[0]).ToLower(), GetThingName(ThingsInDen[1]).ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[16], keyWords);
+            }
+            // All three things are in den.
+            else if (ThingsInDen.Count == 3)
+            {
+                // Says "Your den is clean and the floor is covered in soft moss, grass and leaves, it's the coziest den you have ever made!" (if not changed)
+                Reply(eventAndGoalExtraText[25]);
+            }
+            else
+            {
+                Reply(ThingsData[ThingId.Dirt].Description);
+            }
+        }
+
+        static void DenGoalCompleted()
+        {
+            GoalCompleted[Goal.DenMadeCozy] = true;
+
+            // Print text that tells the player the puzzle is done.
+            Console.Clear();
+            Reply(eventAndGoalExtraText[17]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[18]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[19]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[20]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[21]);
+            PressAnyKeyToContinueAndClear();
+        }
+
+        static void DropThingInDen(ThingId thingId)
+        {
+            // Can only happen if player is at den.
+            if (CurrentLocationId == LocationId.Den)
+            {
+                // Den is not clean.
+                if (!GoalCompleted[Goal.DenCleaned])
+                {
+                    // Says "You should clean the den before putting anything in there. A good spring cleaning always makes your home feel cozier!" (if not changed).
+                    Reply(eventAndGoalExtraText[6]);
+                }
+                // It's clean!
+                else
+                {
+                    // Special case for dropping of leaves.
+                    if (thingId == ThingId.PileOfLeaves)
+                    {
+                        LoseThing(thingId);
+                        ThingsInDen.Add(ThingId.SoftLeaves);
+                    }
+                    // For moss and grass.
+                    else
+                    {
+                        LoseThing(thingId);
+                        ThingsInDen.Add(thingId);
+                    }
+                }
+            }
+            else
+            {
+                // If the current location is not the den, these things cant be dropped cant be droped.
+                Reply(ThingsData[thingId].Answers[5]);
+            }
+        }
+
+        static void DropPileOfLeavesOutsideOfDen()
+        {
+            Reply(ThingsData[ThingId.PileOfLeaves].Answers[6]);
+            LoseThing(ThingId.PileOfLeaves);
+        }
+
+        static void PickUpLeaves(ThingId thingId)
+        {
+            if (ThingsInPileOfLeaves.Contains(thingId))
+            {
+                // Already have these leaves.
+                string[] keyWords = new string[] { GetThingName(thingId).ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[7], keyWords);
+            }
+            else
+            {
+                // Get pile of leaves if player don't already have it.
+                if (!ThingsCurrentLocations[ThingId.PileOfLeaves].Contains(LocationId.Inventory))
+                {
+                    GetThing(ThingId.PileOfLeaves);
+                }
+
+                // Put leaves in the pile.
+                ThingsInPileOfLeaves.Add(thingId);
+                // Display pick up line.
+                Print(ThingsData[thingId].Answers[0]);
+
+                // Display the correct information about the pick up when the pile is growing.
+                if (ThingsInPileOfLeaves.Count == 2)
+                {
+                    // Two types of leaf in the pile.
+                    string[] keyWords = new string[] { GetThingName(ThingsInPileOfLeaves[1]).ToLower(), GetThingName(ThingsInPileOfLeaves[0]).ToLower() };
+                    InsertKeyWordAndDisplay(eventAndGoalExtraText[8], keyWords);
+                }
+                else if (ThingsInPileOfLeaves.Count == 3)
+                {
+                    // Three types of leaf in the pile.
+                    string[] keyWords = new string[] { GetThingName(ThingsInPileOfLeaves[0]).ToLower(), GetThingName(ThingsInPileOfLeaves[1]).ToLower(), GetThingName(ThingsInPileOfLeaves[2]).ToLower() };
+                    InsertKeyWordAndDisplay(eventAndGoalExtraText[9], keyWords);
+                }
+                else
+                {
+                    // If there was no extra text added, just add an empty line for formatting.
+                    Console.WriteLine();
+                }
+            }
         }
 
         // TODO add event about floting on the river
@@ -1483,7 +1560,7 @@ namespace Forest
                             if (answer == "")
                             {
                                 // No custom answer, add the default answer to the list.
-                                listOfAnswers.Add(defaultAnswersToGetInteractions[lines].Split(':', '@')[1].TrimStart() + parsedDataEntry.Id.ToLower() + defaultAnswersToGetInteractions[lines].Split('@')[1]);
+                                listOfAnswers.Add(defaultAnswersToGetInteractions[lines].Split(':', '@')[1].TrimStart() + parsedDataEntry.Name.ToLower() + defaultAnswersToGetInteractions[lines].Split('@')[1]);
                             }
                             else
                             {
