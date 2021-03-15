@@ -135,7 +135,82 @@ Starting location: 9BeeForest
 
 ID: Fish
 Name: Fish
-Description: (NOT DONE) You see a fish in the river.
+Description: There is a lot of big fishes swimming in the dam, they thrive here in the calm water of the natural dam.
+Answers:
+	Pick up:
+	Thing can not be picked up: <special message about the puzzle>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: You set the fish free! Hope it finds its way back to the water.
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: 17EastRiver
+
+ID: OldStick
+Name: Old stick
+Description: A branch that fell from one of the spruces a long time ago.
+Answers:
+	Pick up: You picked up an old stick.
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: 4MossyForestNorth
+
+ID: LongStick
+Name: Long stick
+Description: There is a lot of long sticks lying on the ground.
+Answers:
+	Pick up: You grabbed the longest one you could find.
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: One is enough.
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: 11LeafyForestNorth
+
+ID: Rope
+Name: Rope
+Description: A chunky rope.
+Answers:
+	Pick up: You found a rope!
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: Nowhere
+
+ID: Trash
+Name: Trash
+Description: Some trash.
+Answers:
+	Pick up:
+	Thing can not be picked up:
+	Thing is not here:
+	Already in inventory:
+	Drop possible:
+	Drop not possible:
+	Can drop but lose thing:
+	You do not have that:
+	Get this and lose another thing:
+Starting location: Nowhere
+
+ID: Nail
+Name: Old rusty nail
+Description: It's an old rusty nail, how did it end up in the forest?
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
@@ -146,7 +221,22 @@ Answers: <Just guides the code to start making an array for the upcoming 8 lines
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
-Starting location: 16WestRiver
+Starting location: Nowhere
+
+ID: FishingRod
+Name: Fishing rod
+Description: You feel overwhelmingly proud when you look at the fishing rod you made yourself! It's made out of a stick, a rope and an old bent nail as the hook.
+Answers:
+	Pick up: <Won't happen>
+	Thing can not be picked up: <Won't happen>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <Won't happen>
+	Drop possible: <Won't happen, could be possible but would require extra message to be put at the location for telling the player it's there>
+	Drop not possible: You made it yourself, you don't want to lose it!
+	Can drop but lose thing: "There is good ways and bad ways for catching fish, this is a bad way!" you say as you throw the fishing rod in the dam, never to be seen again.
+	You do not have that: You can't do that, you threw the fishing rod in the dam.. remember?
+	Get this and lose another thing: <Won't happen>	
+Starting location: Nowhere
 
 ID: Necklace
 Name: Necklace

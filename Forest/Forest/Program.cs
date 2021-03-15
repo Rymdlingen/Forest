@@ -46,6 +46,12 @@ namespace Forest
         Berries,
         Beehive,
         Fish,
+        OldStick,
+        LongStick,
+        Rope,
+        Trash,
+        Nail,
+        FishingRod,
         Necklace,
         Owl,
         Frog,
@@ -141,7 +147,7 @@ namespace Forest
         static bool quitGame = false;
 
         // Thing helpers.
-        // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, Necklace, Owl, Frog.
+        // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, OldStick, LongStick, Rope, Nail, FishingRod, Necklace, Owl, Frog.    
         static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
                                                                                                 { "leaves", ThingId.OkLeaves },
                                                                                                 { "leafs", ThingId.OkLeaves },
@@ -151,20 +157,31 @@ namespace Forest
                                                                                                 { "berry", ThingId.Berries },
                                                                                                 { "honey", ThingId.Beehive },
                                                                                                 { "fish", ThingId.Fish },
+                                                                                                { "stick", ThingId.OldStick },
+                                                                                                { "rope", ThingId.Rope },
+                                                                                                { "trash", ThingId.Trash },
+                                                                                                { "garbage", ThingId.Trash },
+                                                                                                { "nail", ThingId.Nail },
+                                                                                                { "rod", ThingId.FishingRod },
                                                                                                 { "necklace", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt },
                                                                                                 { "pile", ThingId.PileOfLeaves} };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
                                                                                                                      {ThingId.PileOfLeaves, LocationId.Den },
                                                                                                                      {ThingId.Grass, LocationId.Den }};
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
+        // For puzzle: make den cozy.
         static List<ThingId> ThingsInPileOfLeaves = new List<ThingId>();
         static List<ThingId> ThingsInDen = new List<ThingId>();
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
+        // For puzzle: fishing.
+        static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
+
+
         #endregion
 
         #region Output helpers
@@ -454,7 +471,18 @@ namespace Forest
 
                 // TODO interacting verbs, probably need more of them
                 case "eat":
-                    // TODO for eating fish
+                    // TODO for eating fish and other things.
+                    break;
+
+                // For fishing puzzle.
+                case "bend":
+                    // TODO for bending nail.
+                    break;
+                case "search":
+                    // TODO for searching things at view point.
+                    break;
+                case "use":
+                    // TODO for using fishing rod.
                     break;
 
                 // Inventory.
@@ -593,7 +621,7 @@ namespace Forest
                     }
 
                     // Thing is in this location but can't be picked up.
-                    else if (ThingIsHere(thingId) && !CanGetThing(thingId))
+                    if (ThingIsHere(thingId) && !CanGetThing(thingId))
                     {
                         // Can't pick up.
                         Reply(ThingsData[thingId].Answers[1]);
@@ -608,13 +636,13 @@ namespace Forest
                         case ThingId.OldLeaves:
                         case ThingId.SoftLeaves:
                             PickUpLeaves(thingId);
-                            break;
+                            return;
 
                         default:
                             // Picked it up!
                             Reply(ThingsData[thingId].Answers[0]);
                             GetThing(thingId);
-                            break;
+                            return;
                     }
                 }
             }
@@ -949,6 +977,24 @@ namespace Forest
             {
                 // TODO text
                 Reply($"I don't understand.");
+            }
+        }
+
+        static void HandleSearch(string[] words)
+        {
+            // Searching through things at the view point.
+            if (CurrentLocationId == LocationId.ViewPoint)
+            {
+                foreach (string word in words)
+                {
+                    if (ThingsToSearch.Contains(word))
+                    {
+                        // Random if trash or rope
+                        // bool for if rope was collected
+                        // list of how much trash you have
+                        // messages
+                    }
+                }
             }
         }
 
