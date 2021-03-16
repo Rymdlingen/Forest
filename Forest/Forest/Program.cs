@@ -755,7 +755,7 @@ namespace Forest
             if (thingsInInventory.Count > 1)
             {
                 // Add a new string that combines the last two things and adds "and" inbetween them.
-                thingsInInventory.Add($"{thingsInInventory[thingsInInventory.Count - 2]} and {thingsInInventory[thingsInInventory.Count - 1]}");
+                thingsInInventory.Add(thingsInInventory[thingsInInventory.Count - 2] + eventAndGoalExtraText[50] + thingsInInventory[thingsInInventory.Count - 1]);
                 // Remove the two seperated words.
                 thingsInInventory.RemoveRange(thingsInInventory.Count - 3, 2);
 
@@ -774,14 +774,14 @@ namespace Forest
             // If there is things in the inventory, display the list of things.
             if (thingsInInventory.Count > 0)
             {
-                // TODO text
-                Reply($"You have these things in your inventory: {thingsInInventory[0]}.");
+                // Says "You are carrying these things:" (if not changed).
+                Reply(eventAndGoalExtraText[49] + thingsInInventory[0] + ".");
             }
             // If there is no things in the inventory, tell the player that.
             else
             {
-                // TODO text
-                Reply("You have nothing in your inventory.");
+                // Says "You are not carrying anything." (if not changed)
+                Reply(eventAndGoalExtraText[48]);
             }
         }
 
@@ -856,8 +856,9 @@ namespace Forest
                         // Thing is not in this location and not in inventory.
                         else
                         {
-                            // TODO text
-                            Reply($"You do not see {thing} here.");
+                            // Says "You do not see {thing} here." (id not changed)
+                            string[] thingArray = new string[] { thing };
+                            InsertKeyWordAndDisplay(eventAndGoalExtraText[47], thingArray);
                         }
                     }
                 }
@@ -870,8 +871,8 @@ namespace Forest
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // TODO text
-                Reply($"There is no such thing to look at.");
+                // Says "There is no such thing to look at." (if not changed).
+                Reply(eventAndGoalExtraText[46]);
             }
         }
 
@@ -964,15 +965,15 @@ namespace Forest
             // If the player only writes clean, ask what to clean.
             else if (words.Count() == 1)
             {
-                // TODO text
-                Reply("What needs cleaning?");
-                // TODO add asking for input.
+                // Asking "What needs cleaning?" and handles the command.
+                string[] newCommand = AskForInput(eventAndGoalExtraText[45]);
+                HandleClean(newCommand);
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // TODO text
-                Reply($"That doesn't need cleaning.");
+                // Says "That doesn't need cleaning." (if not changed)
+                Reply(eventAndGoalExtraText[44]);
             }
         }
 
@@ -1001,6 +1002,7 @@ namespace Forest
             {
                 SearchAtViewPoint(words);
             }
+            // If the player trys to search somewhere else.
             else
             {
                 Reply(eventAndGoalExtraText[43]);
@@ -1044,10 +1046,11 @@ namespace Forest
         /// <returns>An string array with all words that the pleyer entered.</returns>
         static string[] AskForInput(string narrative)
         {
+            // Display the narrative.
             Console.ForegroundColor = NarrativeColor;
             Print(narrative);
 
-            //
+            // Line where player writes.
             Console.ForegroundColor = PromptColor;
             Console.Write("> ");
 
@@ -2016,7 +2019,7 @@ namespace Forest
         static string[] RemoveEmptyLines(string[] arrayWithText)
         {
             // Make the array into a list.
-            var listOfText = new List<string>(arrayWithText.ToList<string>());
+            var listOfText = new List<string>(arrayWithText.ToList());
 
             // Check each line in the list to see if they are empty.
             for (int line = 0; line < listOfText.Count; line++)

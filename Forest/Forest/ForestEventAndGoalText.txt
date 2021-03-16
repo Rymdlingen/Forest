@@ -85,3 +85,17 @@
 42You have got rid of all the trash you had.
 
 43There is nothing you want to search through.
+
+44That doesn't need cleaning.
+
+45What needs cleaning?
+
+46There is no such thing to look at.
+
+47You do not see @ here.
+
+48You are not carrying anything.
+
+49You are carrying these things: 
+
+50 and 
