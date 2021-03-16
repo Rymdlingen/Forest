@@ -1030,7 +1030,8 @@ namespace Forest
                     // If the player have one pice of trash.
                     if (PileOfTrash.Count() == 1)
                     {
-                        Reply(ThingsData[ThingId.Trash].Answers[0]);
+                        // Says "You are carrying some trash." (if not changed).
+                        Reply(eventAndGoalExtraText[56]);
                     }
                     // If the player have more the 1 trash.
                     else
@@ -1117,6 +1118,12 @@ namespace Forest
 
                 // Text about how much trash the player have.
                 InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+            }
+
+            // If the player is picking up trash from any other location the view point, remove the trash from that location.
+            if (CurrentLocationId != LocationId.ViewPoint)
+            {
+                RemoveThingFromLocation(ThingId.Trash);
             }
         }
 
@@ -1843,7 +1850,7 @@ namespace Forest
         {
             // TODO IS THIS WHAT I WANT???
             // Removes the thing from the current location.
-            ThingsCurrentLocations[thingId].Remove(CurrentLocationId);
+            RemoveThingFromLocation(thingId);
             // Adds the thing to a new location.
             ThingsCurrentLocations[thingId].Add(locationId);
         }
@@ -1890,7 +1897,7 @@ namespace Forest
         static void DropThing(ThingId thingId)
         {
             ThingsCurrentLocations[thingId].Remove(LocationId.Inventory);
-            ThingsCurrentLocations[thingId].Add(CurrentLocationId);
+            AddThingToLocation(thingId);
         }
 
         /// <summary>
@@ -1909,6 +1916,15 @@ namespace Forest
         static void AddThingToLocation(ThingId thingId)
         {
             ThingsCurrentLocations[thingId].Add(CurrentLocationId);
+        }
+
+        /// <summary>
+        /// Removes a thing from the current location.
+        /// </summary>
+        /// <param name="thingId"></param>
+        static void RemoveThingFromLocation(ThingId thingId)
+        {
+            ThingsCurrentLocations[thingId].Remove(CurrentLocationId);
         }
 
         /// <summary>
