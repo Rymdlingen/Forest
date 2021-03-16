@@ -208,6 +208,21 @@ Answers:
 	Get this and lose another thing:
 Starting location: 19ViewPoint
 
+ID: Notes
+Name: Notes
+Description: There is notes scribbled in the bark of the trees all over this place, you read some of them. \n \n"I accidentally dropped my favorite rock from the cliff on the other side of the river. If you find it please give it to me! \n From Fox" \n \n"Left..right..left..left..down.. in the middle of the secret path is where I hid the sharp, not straight thing" \n \n"Hello! Looking for friends to play hide and seek with, find me if you want to play!"
+Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+Starting location: 14SouthForest
+
 ID: Binoculars
 Name: Binoculars
 Description: A set of binoculars used to take a good look at the view, but they can also be turned to look back into the forest.
@@ -221,7 +236,7 @@ Answers:
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
-Starting location: <LocationID>
+Starting location: 18Waterfall
 
 ID: Nail
 Name: Old rusty nail
