@@ -99,3 +99,15 @@
 49You are carrying these things: 
 
 50 and 
+
+51You are carrying a whole bunch of trash, @ pieces to be exact.
+
+52There is trash on the ground, who put that there?
+
+53There is also trash on the ground, who put that there?
+
+54There is trash both on the ground around the tables and picnic blankets and in the overflowing trash cans, the humans are always leaving such a mess behind.
+
+55There is also trash both on the ground around the tables and picnic blankets and in the overflowing trash cans, the humans are always leaving such a mess behind.
+
+56You are carrying some trash.

@@ -184,7 +184,7 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt } };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
                                                                                                                      {ThingId.PileOfLeaves, LocationId.Den },
                                                                                                                      {ThingId.Grass, LocationId.Den }};
@@ -621,8 +621,8 @@ namespace Forest
                         return;
                     }
 
-                    // Thing is already in players inventory and can't be picked up again.
-                    if (HaveThing(thingId))
+                    // Thing is already in players inventory and can't be picked up again (except for if the thing is trash).
+                    if (HaveThing(thingId) && thingId != ThingId.Trash)
                     {
                         // Already have.
                         Reply(ThingsData[thingId].Answers[3]);
@@ -646,13 +646,17 @@ namespace Forest
                         case ThingId.OldLeaves:
                         case ThingId.SoftLeaves:
                             PickUpLeaves(thingId);
-                            return;
+                            break;
+
+                        case ThingId.Trash:
+                            PickUpTrash();
+                            break;
 
                         default:
                             // Picked it up!
                             Reply(ThingsData[thingId].Answers[0]);
                             GetThing(thingId);
-                            return;
+                            break;
                     }
                 }
             }
@@ -684,6 +688,7 @@ namespace Forest
                     // Special case for dropping leaves in the leafy forest.
                     if (thingId == ThingId.OldLeaves || thingId == ThingId.OkLeaves || thingId == ThingId.SoftLeaves)
                     {
+                        // TODO Could make it so the correct type of lef sis dropped if specified, othervise the whole pile. Also need to know if player writes pile of leaf
                         DropPileOfLeavesOutsideOfDen();
 
                         return;
@@ -717,7 +722,7 @@ namespace Forest
                             break;
 
                         case ThingId.Trash:
-                            DropTrash(words);
+                            DropTrash();
                             break;
 
                         // Player is trying to drop something that they can't drop here.
@@ -796,57 +801,62 @@ namespace Forest
             // If there is any words that match any Thing IDs.
             if (thingKeysFromCommand.Count > 0)
             {
-                // Special case for pile of leaves.
-                if (thingIdsFromCommand.Contains(ThingId.PileOfLeaves))
+                foreach (string thing in thingKeysFromCommand)
                 {
-                    ThingId thingId = ThingId.PileOfLeaves;
+                    ThingId thingId = ThingIdsByName[thing];
 
-                    // Thing is at players location or in inventory.
-                    if (ThingIsAvailable(thingId))
+                    // Special case for pile of leaves.
+                    if (thingId == ThingId.PileOfLeaves)
                     {
-                        // Make an string array with wll the things in the pile.
-                        string[] leavesInPile = new string[ThingsInPileOfLeaves.Count];
-                        int count = 0;
-                        foreach (ThingId leaf in ThingsInPileOfLeaves)
+                        // Thing is at players location or in inventory.
+                        if (ThingIsAvailable(thingId))
                         {
-                            leavesInPile[count] = GetThingName(leaf).ToLower();
-                            count++;
-                        }
+                            // Make an string array with wll the things in the pile.
+                            string[] leavesInPile = new string[ThingsInPileOfLeaves.Count];
+                            int count = 0;
+                            foreach (ThingId leaf in ThingsInPileOfLeaves)
+                            {
+                                leavesInPile[count] = GetThingName(leaf).ToLower();
+                                count++;
+                            }
 
-                        // Display the correct description based on what is in the pile.
-                        if (ThingsInPileOfLeaves.Count == 1)
-                        {
-                            InsertKeyWordAndDisplay(eventAndGoalExtraText[10], leavesInPile);
+                            // Display the correct description based on what is in the pile.
+                            if (ThingsInPileOfLeaves.Count == 1)
+                            {
+                                InsertKeyWordAndDisplay(eventAndGoalExtraText[10], leavesInPile);
+                            }
+                            else if (ThingsInPileOfLeaves.Count == 2)
+                            {
+                                InsertKeyWordAndDisplay(eventAndGoalExtraText[11], leavesInPile);
+                            }
+                            else if (ThingsInPileOfLeaves.Count == 3)
+                            {
+                                InsertKeyWordAndDisplay(eventAndGoalExtraText[12], leavesInPile);
+                            }
                         }
-                        else if (ThingsInPileOfLeaves.Count == 2)
+                        // Pile of leaves is not in inventory.
+                        else
                         {
-                            InsertKeyWordAndDisplay(eventAndGoalExtraText[11], leavesInPile);
-                        }
-                        else if (ThingsInPileOfLeaves.Count == 3)
-                        {
-                            InsertKeyWordAndDisplay(eventAndGoalExtraText[12], leavesInPile);
+                            // Says "You don't have a pile of leaves to look at." (if not changed).
+                            Reply(eventAndGoalExtraText[13]);
                         }
                     }
-                    // Pile of leaves is not in inventory.
+                    // Special case for looking at the den.
+                    else if (thingId == ThingId.Dirt)
+                    {
+                        // Changes depending on the state of the den.
+                        LookAtDen();
+                    }
+                    // Special case for looking at trash, tells you about trash you see or that there is none.
+                    else if (thingId == ThingId.Trash)
+                    {
+                        // Different depending on how much trash player has and depending on location.
+                        LookAtTrash();
+                    }
                     else
                     {
-                        // Says "You don't have a pile of leaves to look at." (if not changed).
-                        Reply(eventAndGoalExtraText[13]);
-                    }
-                }
-                // Special case for looking at the den.
-                else if (thingIdsFromCommand.Contains(ThingId.Dirt))
-                {
-                    // Changes depending on the state of the den.
-                    LookAtDen();
-                }
-                else
-                {
-                    // Output the correct response depending on if the location of the thing matches the location of the player or has inventory as location.
-                    // Checking every thing found in the command.
-                    foreach (string thing in thingKeysFromCommand)
-                    {
-                        ThingId thingId = ThingIdsByName[thing];
+                        // Output the correct response depending on if the location of the thing matches the location of the player or has inventory as location.
+                        // Checking every thing found in the command.
 
                         // Thing is at players location or in inventory.
                         if (ThingIsAvailable(thingId))
@@ -856,7 +866,7 @@ namespace Forest
                         // Thing is not in this location and not in inventory.
                         else
                         {
-                            // Says "You do not see {thing} here." (id not changed)
+                            // Says "You do not see {thing} here." (if not changed)
                             string[] thingArray = new string[] { thing };
                             InsertKeyWordAndDisplay(eventAndGoalExtraText[47], thingArray);
                         }
@@ -1010,7 +1020,107 @@ namespace Forest
         }
 
         // TODO FLYTTA SEN   vvvv
-        static void DropTrash(string[] words)
+        static void LookAtTrash()
+        {
+            if (ThingIsAvailable(ThingId.Trash))
+            {
+                // If player has trash in the inventory and there is no trash on the ground, display a message.
+                if (HaveThing(ThingId.Trash) && !ThingIsHere(ThingId.Trash))
+                {
+                    // If the player have one pice of trash.
+                    if (PileOfTrash.Count() == 1)
+                    {
+                        Reply(ThingsData[ThingId.Trash].Answers[0]);
+                    }
+                    // If the player have more the 1 trash.
+                    else
+                    {
+                        // Amount of trash.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                        // Text about how much trash the player have.
+                        InsertKeyWordAndDisplay(eventAndGoalExtraText[51], number);
+                    }
+                }
+                // If there is trash on the current location but not in players inventory, display message.
+                else if (ThingIsHere(ThingId.Trash) && !HaveThing(ThingId.Trash))
+                {
+                    // There is trash to see at the view point, in the trash cans. Special text.
+                    if (CurrentLocationId == LocationId.ViewPoint)
+                    {
+                        // Message about the mess humans leave behind.
+                        Reply(eventAndGoalExtraText[54]);
+                    }
+                    // For any other location.
+                    else
+                    {
+                        // Says "There is trash on the ground, who put that there?" (if not changed).
+                        Reply(eventAndGoalExtraText[52]);
+                    }
+                }
+                // If both, display another message.
+                else
+                {
+                    if (CurrentLocationId == LocationId.ViewPoint)
+                    {
+                        // Combination of how much trash player is carrying and trash on messy view point message.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+                        if (PileOfTrash.Count > 1)
+                        {
+                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[55], number);
+                        }
+                        else
+                        {
+                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[55]);
+                        }
+
+                    }
+                    else
+                    {
+                        // Combination of how much trash player is carrying and trash on ground message.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+                        if (PileOfTrash.Count > 1)
+                        {
+                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[53], number);
+                        }
+                        else
+                        {
+                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[53]);
+                        }
+                    }
+                }
+            }
+            // There is no trash here.
+            else
+            {
+                // Says "There is no trash around here, that's good!" (if not changed).
+                Reply(ThingsData[ThingId.Trash].Answers[2]);
+            }
+        }
+
+        static void PickUpTrash()
+        {
+            // Add trash to the pile.
+            PileOfTrash.Add(ThingId.Trash);
+
+            // If the player doesn't have any trash, put the thing in the inventory.
+            if (!HaveThing(ThingId.Trash))
+            {
+                GetThing(ThingId.Trash);
+                Reply(ThingsData[ThingId.Trash].Answers[0]);
+            }
+            // If the player already had trash, display the message about picking up more trash.
+            else
+            {
+                // Amount of trash.
+                string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                // Text about how much trash the player have.
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+            }
+        }
+
+        static void DropTrash()
         {
             if (CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
             {
@@ -1133,9 +1243,9 @@ namespace Forest
         static void GetTrashOrRope()
         {
             // Check how much trash the player have.
-            if (PileOfTrash.Count >= 10)
+            if (PiecesOfTrashCollected >= 10 && HaveThing(ThingId.Rope))
             {
-                // Player is carrying enough trash. Says "You didn't find anything." (if not changed).
+                // Player is carrying enough trash and have the rope. Says "You didn't find anything." (if not changed).
                 Reply(eventAndGoalExtraText[40]);
                 return;
             }
@@ -1143,7 +1253,7 @@ namespace Forest
             {
                 // Chance of getting rope.
                 var random = new Random();
-                int chanceForRope = random.Next(0, 10 - PileOfTrash.Count());
+                int chanceForRope = random.Next(0, 10 - Math.Min(PileOfTrash.Count(), 9));
 
                 if (chanceForRope == 0)
                 {
@@ -1153,38 +1263,16 @@ namespace Forest
                 }
                 else
                 {
-                    // Add trash to the pile.
-                    PileOfTrash.Add(ThingId.Trash);
+                    // Pick up trash.
+                    PickUpTrash();
                     PiecesOfTrashCollected++;
-
-                    // Amount of trash.
-                    string[] number = new string[] { PileOfTrash.Count().ToString() };
-
-                    // Text about how much trash the player have.
-                    InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
                 }
             }
             else
             {
-                // Add trash to the pile.
-                PileOfTrash.Add(ThingId.Trash);
+                // Pick up trash.
+                PickUpTrash();
                 PiecesOfTrashCollected++;
-
-                // If the player doesn't have any trash, put the thing in the inventory.
-                if (!HaveThing(ThingId.Trash))
-                {
-                    GetThing(ThingId.Trash);
-                    Reply(ThingsData[ThingId.Trash].Answers[0]);
-                }
-                // If the player already had trash, display the message about picking up more trash.
-                else
-                {
-                    // Amount of trash.
-                    string[] number = new string[] { PileOfTrash.Count().ToString() };
-
-                    // Text about how much trash the player have.
-                    InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
-                }
             }
         }
 

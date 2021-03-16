@@ -199,14 +199,14 @@ Description: Some trash.
 Answers:
 	Pick up: You found some trash.
 	Thing can not be picked up:
-	Thing is not here:
+	Thing is not here: There is no trash around here, that's good!
 	Already in inventory:
 	Drop possible: Wow.. you just put a piece of trash on the ground..
 	Drop not possible:
-	Can drop but lose thing: You put all the trash you were carrying where it is supposed to be, in the trash can! The forest thanks you!
+	Can drop but lose thing: You put all the trash you were carrying where it is supposed to be, in the trash can. The forest thanks you!
 	You do not have that: You don't have any trash.
 	Get this and lose another thing:
-Starting location: Nowhere
+Starting location: 19ViewPoint
 
 ID: Nail
 Name: Old rusty nail
