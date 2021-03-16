@@ -55,7 +55,8 @@ namespace Forest
         Necklace,
         Owl,
         Frog,
-        Dirt
+        Dirt,
+        Placeholder
     }
 
     enum Direction
@@ -149,25 +150,39 @@ namespace Forest
         // Thing helpers.
         // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, OldStick, LongStick, Rope, Nail, FishingRod, Necklace, Owl, Frog.    
         static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
-                                                                                                { "leaves", ThingId.OkLeaves },
-                                                                                                { "leafs", ThingId.OkLeaves },
-                                                                                                { "leaf", ThingId.OkLeaves },
+                                                                                                { "leaves", ThingId.PileOfLeaves },
+                                                                                                { "leafs", ThingId.PileOfLeaves },
+                                                                                                { "leaf", ThingId.PileOfLeaves },
+                                                                                                { "pile of leaves", ThingId.PileOfLeaves },
+                                                                                                { "pile of leafs", ThingId.PileOfLeaves },
+                                                                                                { "pile of leaf", ThingId.PileOfLeaves },
+                                                                                                { "big leaves", ThingId.OkLeaves },
+                                                                                                { "big leafs", ThingId.OkLeaves },
+                                                                                                { "big leaf", ThingId.OkLeaves },
+                                                                                                { "old leaves", ThingId.OldLeaves },
+                                                                                                { "old leafs", ThingId.OldLeaves },
+                                                                                                { "old leaf", ThingId.OldLeaves },
+                                                                                                { "soft leaves", ThingId.SoftLeaves },
+                                                                                                { "soft leafs", ThingId.SoftLeaves },
+                                                                                                { "soft leaf", ThingId.SoftLeaves },
                                                                                                 { "grass", ThingId.Grass },
                                                                                                 { "berries", ThingId.Berries },
                                                                                                 { "berry", ThingId.Berries },
                                                                                                 { "honey", ThingId.Beehive },
                                                                                                 { "fish", ThingId.Fish },
-                                                                                                { "stick", ThingId.OldStick },
+                                                                                                { "stick", ThingId.OldStick }, /*changes witch one it refers to based on location*/
+                                                                                                { "old stick", ThingId.OldStick },
+                                                                                                { "long stick", ThingId.LongStick },
                                                                                                 { "rope", ThingId.Rope },
                                                                                                 { "trash", ThingId.Trash },
                                                                                                 { "garbage", ThingId.Trash },
                                                                                                 { "nail", ThingId.Nail },
+                                                                                                { "fishing rod", ThingId.FishingRod },
                                                                                                 { "rod", ThingId.FishingRod },
                                                                                                 { "necklace", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
-                                                                                                { "den", ThingId.Dirt },
-                                                                                                { "pile", ThingId.PileOfLeaves} };
+                                                                                                { "den", ThingId.Dirt } };
 
         static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
@@ -180,6 +195,8 @@ namespace Forest
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
         // For puzzle: fishing.
         static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
+        static List<ThingId> PileOfTrash = new List<ThingId> { };
+        static int PiecesOfTrashCollected = 0;
 
 
         #endregion
@@ -371,26 +388,17 @@ namespace Forest
         static void HandlePlayerAction()
         {
             // Ask player what they want to do.
-            Console.ForegroundColor = NarrativeColor;
-            Print("Whats next?");
-
-            Console.ForegroundColor = PromptColor;
-            Console.Write("> ");
-
-            string command = Console.ReadLine().ToLowerInvariant();
-
-            // Split the command into words.
-            char[] splitChars = { ' ', ',', '.' };
-            string[] words = command.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+            string[] words = AskForInput(eventAndGoalExtraText[38]);
 
             // Assuming the first word in the command is a verb. If there is no entered words the verb string stays empty.
             string verb = "";
-            if (command != "")
+            if (words[0] != "")
             {
                 verb = words[0].Trim();
             }
 
             // TODO add something for if the player writes "go", "walk" or something like that, change the verb to the second word? witch should be a direction?
+            // TODO add list of combined commands, and add it to the ask for input method.
 
             // Call the right handler for the given verb.
             switch (verb)
@@ -478,9 +486,11 @@ namespace Forest
                 case "bend":
                     // TODO for bending nail.
                     break;
+
                 case "search":
-                    // TODO for searching things at view point.
+                    HandleSearch(words);
                     break;
+
                 case "use":
                     // TODO for using fishing rod.
                     break;
@@ -706,6 +716,10 @@ namespace Forest
                             DropPileOfLeavesOutsideOfDen();
                             break;
 
+                        case ThingId.Trash:
+                            DropTrash(words);
+                            break;
+
                         // Player is trying to drop something that they can't drop here.
                         default:
                             Reply(ThingsData[thingId].Answers[5]);
@@ -783,9 +797,9 @@ namespace Forest
             if (thingKeysFromCommand.Count > 0)
             {
                 // Special case for pile of leaves.
-                if (thingKeysFromCommand.Contains("pile"))
+                if (thingIdsFromCommand.Contains(ThingId.PileOfLeaves))
                 {
-                    ThingId thingId = ThingIdsByName["pile"];
+                    ThingId thingId = ThingId.PileOfLeaves;
 
                     // Thing is at players location or in inventory.
                     if (ThingIsAvailable(thingId))
@@ -985,18 +999,193 @@ namespace Forest
             // Searching through things at the view point.
             if (CurrentLocationId == LocationId.ViewPoint)
             {
-                foreach (string word in words)
+                SearchAtViewPoint(words);
+            }
+            else
+            {
+                Reply(eventAndGoalExtraText[43]);
+            }
+        }
+
+        // TODO FLYTTA SEN   vvvv
+        static void DropTrash(string[] words)
+        {
+            if (CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
+            {
+                // Drop all the trash in the trash can
+                PileOfTrash.Clear();
+                LoseThing(ThingId.Trash);
+                // Drop and lose message about putting trash in trash can.
+                Reply(ThingsData[ThingId.Trash].Answers[6]);
+            }
+            else
+            {
+                if (PileOfTrash.Count > 1)
                 {
-                    if (ThingsToSearch.Contains(word))
-                    {
-                        // Random if trash or rope
-                        // bool for if rope was collected
-                        // list of how much trash you have
-                        // messages
-                    }
+                    // Drop one pice of trash, add it to the current location and display a bad message about droping trash on the ground.
+                    AddThingToLocation(ThingId.Trash);
+                    PileOfTrash.Remove(ThingId.Trash);
+                    Reply(ThingsData[ThingId.Trash].Answers[4]);
+                }
+                else
+                {
+                    // Drop the last trash and take it away from inventory
+                    DropThing(ThingId.Trash);
+                    PileOfTrash.Remove(ThingId.Trash);
+                    Reply(ThingsData[ThingId.Trash].Answers[4] + " " + eventAndGoalExtraText[42]);
                 }
             }
         }
+
+        /// <summary>
+        /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
+        /// </summary>
+        /// <param name="narrative"></param>
+        /// <returns>An string array with all words that the pleyer entered.</returns>
+        static string[] AskForInput(string narrative)
+        {
+            Console.ForegroundColor = NarrativeColor;
+            Print(narrative);
+
+            //
+            Console.ForegroundColor = PromptColor;
+            Console.Write("> ");
+
+            // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
+            string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
+
+            return words;
+        }
+
+        /// <summary>
+        /// Splits a string at everything that isn't a letter and also checks for words that become one of my key words when combined.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>An array of single words and/or combined words.</returns>
+        static string[] SplitCommand(string command)
+        {
+            // Split the string for everything that isnt a letter.
+            string[] words = Regex.Split(command, @"[^a-zA-Z]+");
+
+            for (int word = 0; word < words.Length - 1; word++)
+            {
+                // Combining this word and the next.
+                string twoWords = words[word] + " " + words[word + 1];
+                string threeWords = "";
+
+                if (word + 2 < words.Length)
+                {
+                    threeWords = twoWords + " " + words[word + 2];
+                }
+
+                // Looking for words that belong together.
+                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords))
+                {
+                    // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
+                    words[word] = twoWords;
+                }
+                else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
+                {
+                    // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
+                    words[word] = threeWords;
+                }
+            }
+
+            return words;
+        }
+
+        static void SearchAtViewPoint(string[] words)
+        {
+            // Go through all words to see if there is something searchable.
+            foreach (string word in words)
+            {
+                // Search if there is a match.
+                if (ThingsToSearch.Contains(word))
+                {
+                    // Gives the player a rope, trash or nothing.
+                    GetTrashOrRope();
+
+                    // If there was a search happening we do not continue with this method.
+                    return;
+                }
+            }
+
+            // If there was no successful search, check if the player entered something to search at all.
+            if (words.Length > 1)
+            {
+                // The player wrote what to search but it was not a searchable thing.
+                // Says "What you are trying to search through is not here." (if not changed).
+                Reply(eventAndGoalExtraText[39]);
+            }
+            // If there was no more words than "search".
+            else
+            {
+                // Ask for new input. Says "What do you want to search through?" (if not changed).
+                string[] newWords = AskForInput(eventAndGoalExtraText[37]);
+                // Search again.
+                SearchAtViewPoint(newWords);
+            }
+        }
+
+        static void GetTrashOrRope()
+        {
+            // Check how much trash the player have.
+            if (PileOfTrash.Count >= 10)
+            {
+                // Player is carrying enough trash. Says "You didn't find anything." (if not changed).
+                Reply(eventAndGoalExtraText[40]);
+                return;
+            }
+            else if (PiecesOfTrashCollected >= 2 && !HaveThing(ThingId.Rope))
+            {
+                // Chance of getting rope.
+                var random = new Random();
+                int chanceForRope = random.Next(0, 10 - PileOfTrash.Count());
+
+                if (chanceForRope == 0)
+                {
+                    // Player gets a rope.
+                    GetThing(ThingId.Rope);
+                    Reply(ThingsData[ThingId.Rope].Answers[0]);
+                }
+                else
+                {
+                    // Add trash to the pile.
+                    PileOfTrash.Add(ThingId.Trash);
+                    PiecesOfTrashCollected++;
+
+                    // Amount of trash.
+                    string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                    // Text about how much trash the player have.
+                    InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+                }
+            }
+            else
+            {
+                // Add trash to the pile.
+                PileOfTrash.Add(ThingId.Trash);
+                PiecesOfTrashCollected++;
+
+                // If the player doesn't have any trash, put the thing in the inventory.
+                if (!HaveThing(ThingId.Trash))
+                {
+                    GetThing(ThingId.Trash);
+                    Reply(ThingsData[ThingId.Trash].Answers[0]);
+                }
+                // If the player already had trash, display the message about picking up more trash.
+                else
+                {
+                    // Amount of trash.
+                    string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                    // Text about how much trash the player have.
+                    InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+                }
+            }
+        }
+
+        // TODO FLYTTA SEN ^^^^
 
         static void TalkToOwl()
         {
@@ -1620,6 +1809,15 @@ namespace Forest
         static void LoseThing(ThingId thingId)
         {
             ThingsCurrentLocations[thingId].Remove(LocationId.Inventory);
+        }
+
+        /// <summary>
+        /// Add a thing to the current location, without losing a thing.
+        /// </summary>
+        /// <param name="thingId"></param>
+        static void AddThingToLocation(ThingId thingId)
+        {
+            ThingsCurrentLocations[thingId].Add(CurrentLocationId);
         }
 
         /// <summary>

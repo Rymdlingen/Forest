@@ -71,3 +71,17 @@
 35You are carrying a pile of leaves on the windy path back to the den, the wind gets stronger and start blowing your leaves away.
 
 36You don't have that, so you can't drop it.
+
+37What do you want to search through?
+
+38What do you want to do?
+
+39What you are trying to search through is not here.
+
+40You didn't find anything.
+
+41You found more trash, you have @ pieces of trash now.
+
+42You have got rid of all the trash you had.
+
+43There is nothing you want to search through.

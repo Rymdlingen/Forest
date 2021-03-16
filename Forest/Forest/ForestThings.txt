@@ -197,14 +197,14 @@ ID: Trash
 Name: Trash
 Description: Some trash.
 Answers:
-	Pick up:
+	Pick up: You found some trash.
 	Thing can not be picked up:
 	Thing is not here:
 	Already in inventory:
-	Drop possible:
+	Drop possible: Wow.. you just put a piece of trash on the ground..
 	Drop not possible:
-	Can drop but lose thing:
-	You do not have that:
+	Can drop but lose thing: You put all the trash you were carrying where it is supposed to be, in the trash can! The forest thanks you!
+	You do not have that: You don't have any trash.
 	Get this and lose another thing:
 Starting location: Nowhere
 
@@ -261,6 +261,11 @@ Starting location: Nowhere
 ID: Frog
 Name: Frog
 Description: (NOT DONE) Frog NPC
+Starting location: Nowhere
+
+ID: Placeholder
+Name: Placeholder
+Description: A placeholder used for, for example, differentiating between trash collected and trash in possession.
 Starting location: Nowhere
 
 Notes:

@@ -130,7 +130,7 @@ Directions:
 
 ID: 19ViewPoint
 Name: View point
-Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view and search around the picnic tables and trash cans to see if there is something useful left behind. The view point is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
+Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view and search through the left behind picnics, the trash cans and around the tables to see if there is something useful just lying around. The view point is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
 Directions:
     Southwest: 18Waterfall
 
