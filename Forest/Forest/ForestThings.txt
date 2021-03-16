@@ -208,6 +208,21 @@ Answers:
 	Get this and lose another thing:
 Starting location: 19ViewPoint
 
+ID: Binoculars
+Name: Binoculars
+Description: A set of binoculars used to take a good look at the view, but they can also be turned to look back into the forest.
+Answers:
+	Pick up: <Can't>
+	Thing can not be picked up: They are fastened to the wooden deck, you can't move them.
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
+Starting location: <LocationID>
+
 ID: Nail
 Name: Old rusty nail
 Description: It's an old rusty nail, how did it end up in the forest?
