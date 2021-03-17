@@ -111,3 +111,21 @@
 55There is also trash both on the ground around the tables and picnic blankets and in the overflowing trash cans, the humans are always leaving such a mess behind.
 
 56You are carrying some trash.
+
+57You read the instructions on the binoculars, it says: \n"*View Magnifier 3000*\nVery high tech (possibly a bit over engineered) binoculars, offering you the best close ups of your breathtaking, scenic view (view not included).\nUse the buttons with arrows (in the bottom right corner of the view magnifier) to adjust the direction of the binoculars to your liking.\nEnjoy your increased vision, you are welcome!"\nThe binoculars look old and they are probably not so very high tech as they ones were, but most of the time they work just fine.
+
+58When you push the button the binoculars rotate a tiny bit to the left.
+
+59The binoculars rotate to the right, a lot! Seems to be a sensitive button.
+
+60The binoculars tilt slightly up when you press the button, but after a few seconds they drop down again.
+
+61A quick and big tilt down. "I'm not sure it is supposed to work like this" you think to yourself.
+
+62Where do you want to look?
+
+63The binoculars beeps and from its speaker you hear "Invalid input, shutting down". Better read the instructions if you want to try again.
+
+64You hear a crackle from the binoculars speaker followed by a message "You have reached the limit for free inputs, please add more coins". You don't have any coins, but that doesn't matter, the coin input is broken and next time you will get new free inputs anyway.
+
+65The binoculars are looking north towards the forest and in the short seconds that they stayed tilted a bit up you saw something between the tree trunks.

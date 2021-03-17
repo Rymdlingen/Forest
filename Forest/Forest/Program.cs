@@ -203,6 +203,9 @@ namespace Forest
         static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
+        static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
+        static List<string> EnteredArrows = new List<string>();
+        static bool HiddenPathFound = false;
 
 
         #endregion
@@ -215,7 +218,7 @@ namespace Forest
         static void Print(string text)
         {
             // Split text into lines that don't exceed the window width.
-            int maximumLineLength = Console.WindowWidth - 1;
+            int maximumLineLength = Console.WindowWidth - 2;
             // If there is \n written in the text, that line is ended even if it's shorter then the maximum line length.
             MatchCollection lineMatches = Regex.Matches(text, @"([^\\]{1," + maximumLineLength + @"})(?:$|\s|\\n)");
 
@@ -262,6 +265,185 @@ namespace Forest
         #endregion
 
         #region Interaction helpers
+        /// <summary>
+        /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
+        /// </summary>
+        /// <param name="narrative"></param>
+        /// <returns>An string array with all words that the pleyer entered.</returns>
+        static string[] AskForInput(string narrative)
+        {
+            // Display the narrative.
+            Console.ForegroundColor = NarrativeColor;
+            Print(narrative);
+
+            // Line where player writes.
+            Console.ForegroundColor = PromptColor;
+            Console.Write("> ");
+
+            // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
+            string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
+
+            return words;
+        }
+
+        /// <summary>
+        /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
+        /// </summary>
+        /// <param name="narrative"></param>
+        /// <returns>An string array with all words that the pleyer entered.</returns>
+        static void AskForInputForBinoculars()
+        {
+            // TODO MOVE TO EVENT??
+            while (EnteredArrows.Count() < CorrectArrows.Count())
+            {
+                // Display the narrative.
+                Console.ForegroundColor = NarrativeColor;
+                Print(eventAndGoalExtraText[62]);
+
+                // Line where player writes.
+                Console.ForegroundColor = PromptColor;
+                Console.Write("> ");
+
+                var key = Console.ReadKey().Key;
+
+                // If player press an arrow key.
+                if (key == ConsoleKey.LeftArrow)
+                {
+                    // Move binoculars left.
+                    Reply(eventAndGoalExtraText[58]);
+                    EnteredArrows.Add("left");
+                }
+                else if (key == ConsoleKey.RightArrow)
+                {
+                    // Move binoculars right.
+                    Reply(eventAndGoalExtraText[59]);
+                    EnteredArrows.Add("right");
+                }
+                else if (key == ConsoleKey.UpArrow)
+                {
+                    // Move binoculars up.
+                    Reply(eventAndGoalExtraText[60]);
+                    EnteredArrows.Add("up");
+                }
+                else if (key == ConsoleKey.DownArrow)
+                {
+                    // Move binoculars down.
+                    Reply(eventAndGoalExtraText[61]);
+                    EnteredArrows.Add("down");
+                }
+                else
+                {
+                    // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
+                    string[] words = Console.ReadLine().ToLowerInvariant().Split(' ', ',', '.');
+
+                    foreach (string word in words)
+                    {
+                        // If the word is a valid direction.
+                        if (CorrectArrows.Contains(word))
+                        {
+                            // Move the camera and break out of this else statement.
+                            MoveBinoculars(word);
+                            break;
+                        }
+                    }
+
+                    // Message from the binoculars about invalid input, "quit" the event and display the current location instead.
+                    Reply(eventAndGoalExtraText[63]);
+                    EnteredArrows.Clear();
+                    PressAnyKeyToContinue();
+                    DisplayNewLocation();
+                    return;
+                }
+            }
+
+            if (EnteredArrows == CorrectArrows && !HiddenPathFound)
+            {
+                // MADE IT!
+                // Unlock hiden path
+                // TODO add extra description to old tree and waterfall about hidden path
+
+                // Text about seeing something in the forest.
+                Reply(eventAndGoalExtraText[65]);
+                HiddenPathFound = true;
+            }
+            else
+            {
+                // Message abot reached limit of inputs, "quit" the event and display the current location instead.
+                Reply(eventAndGoalExtraText[64]);
+                EnteredArrows.Clear();
+            }
+
+            PressAnyKeyToContinue();
+            DisplayNewLocation();
+        }
+
+        static void MoveBinoculars(string word)
+        {
+
+            // Add movement to list.
+            EnteredArrows.Add(word);
+
+            // Display message about movement.
+            if (word == "left")
+            {
+                // Move binoculars left.
+                Reply(eventAndGoalExtraText[58]);
+            }
+            else if (word == "right")
+            {
+                // Move binoculars right.
+                Reply(eventAndGoalExtraText[59]);
+            }
+            else if (Console.ReadKey().Key == ConsoleKey.UpArrow)
+            {
+                // Move binoculars up.
+                Reply(eventAndGoalExtraText[60]);
+            }
+            else if (Console.ReadKey().Key == ConsoleKey.DownArrow)
+            {
+                // Move binoculars down.
+                Reply(eventAndGoalExtraText[61]);
+            }
+
+        }
+
+        /// <summary>
+        /// Splits a string at everything that isn't a letter and also checks for words that become one of my key words when combined.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>An array of single words and/or combined words.</returns>
+        static string[] SplitCommand(string command)
+        {
+            // Split the string for everything that isnt a letter.
+            string[] words = Regex.Split(command, @"[^a-zA-Z]+");
+
+            for (int word = 0; word < words.Length - 1; word++)
+            {
+                // Combining this word and the next.
+                string twoWords = words[word] + " " + words[word + 1];
+                string threeWords = "";
+
+                if (word + 2 < words.Length)
+                {
+                    threeWords = twoWords + " " + words[word + 2];
+                }
+
+                // Looking for words that belong together.
+                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords))
+                {
+                    // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
+                    words[word] = twoWords;
+                }
+                else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
+                {
+                    // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
+                    words[word] = threeWords;
+                }
+            }
+
+            return words;
+        }
+
         /// <summary>
         /// Checks every word to see if they match any Direction enum.
         /// </summary>
@@ -489,16 +671,13 @@ namespace Forest
                     break;
 
                 // For fishing puzzle.
-                case "bend":
-                    // TODO for bending nail.
-                    break;
-
                 case "search":
                     HandleSearch(words);
                     break;
 
                 case "use":
-                    // TODO for using fishing rod.
+                    // TODO for using fishing rod adn binoculars.
+                    HandleUse(words);
                     break;
 
                 // Inventory.
@@ -1025,271 +1204,75 @@ namespace Forest
             }
         }
 
-        // TODO FLYTTA SEN   vvvv
-        static void LookAtTrash()
+        static void HandleUse(string[] words)
         {
-            if (ThingIsAvailable(ThingId.Trash))
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
             {
-                // If player has trash in the inventory and there is no trash on the ground, display a message.
-                if (HaveThing(ThingId.Trash) && !ThingIsHere(ThingId.Trash))
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
                 {
-                    // If the player have one pice of trash.
-                    if (PileOfTrash.Count() == 1)
-                    {
-                        // Says "You are carrying some trash." (if not changed).
-                        Reply(eventAndGoalExtraText[56]);
-                    }
-                    // If the player have more the 1 trash.
-                    else
-                    {
-                        // Amount of trash.
-                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+                    ThingId thingId = ThingIdsByName[thing];
 
-                        // Text about how much trash the player have.
-                        InsertKeyWordAndDisplay(eventAndGoalExtraText[51], number);
-                    }
-                }
-                // If there is trash on the current location but not in players inventory, display message.
-                else if (ThingIsHere(ThingId.Trash) && !HaveThing(ThingId.Trash))
-                {
-                    // There is trash to see at the view point, in the trash cans. Special text.
-                    if (CurrentLocationId == LocationId.ViewPoint)
+                    // Thing is not in this location.
+                    if (!ThingIsAvailable(thingId))
                     {
-                        // Message about the mess humans leave behind.
-                        Reply(eventAndGoalExtraText[54]);
-                    }
-                    // For any other location.
-                    else
-                    {
-                        // Says "There is trash on the ground, who put that there?" (if not changed).
-                        Reply(eventAndGoalExtraText[52]);
-                    }
-                }
-                // If both, display another message.
-                else
-                {
-                    if (CurrentLocationId == LocationId.ViewPoint)
-                    {
-                        // Combination of how much trash player is carrying and trash on messy view point message.
-                        string[] number = new string[] { PileOfTrash.Count().ToString() };
-                        if (PileOfTrash.Count > 1)
-                        {
-                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[55], number);
-                        }
-                        else
-                        {
-                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[55]);
-                        }
+                        // Not here.
+                        // Says "Can't do that" (if not changed).
+                        Reply(eventAndGoalExtraText[26]);
 
+                        return;
                     }
-                    else
+
+                    // Thing is one of these things and can eventually be used.
+                    switch (thingId)
                     {
-                        // Combination of how much trash player is carrying and trash on ground message.
-                        string[] number = new string[] { PileOfTrash.Count().ToString() };
-                        if (PileOfTrash.Count > 1)
-                        {
-                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[53], number);
-                        }
-                        else
-                        {
-                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[53]);
-                        }
+                        case ThingId.Binoculars:
+                            UseBinoculars();
+                            break;
+
+                        case ThingId.FishingRod:
+                            UseFishingRod();
+                            break;
                     }
+
+                    // If teh code makes it here, the thing can't be used.
+                    // Says "Can't do that" (if not changed).
+                    Reply(eventAndGoalExtraText[26]);
                 }
             }
-            // There is no trash here.
+            // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // Says "There is no trash around here, that's good!" (if not changed).
-                Reply(ThingsData[ThingId.Trash].Answers[2]);
+                // Says "Can't do that" (if not changed).
+                Reply(eventAndGoalExtraText[26]);
             }
         }
 
-        static void PickUpTrash()
+        // TODO MOVE LATER vvvvv
+
+        static void UseBinoculars()
         {
-            // Add trash to the pile.
-            PileOfTrash.Add(ThingId.Trash);
+            Console.Clear();
+            // Instructions for using binoculars
+            Reply(eventAndGoalExtraText[57]);
+            AskForInputForBinoculars();
 
-            // If the player doesn't have any trash, put the thing in the inventory.
-            if (!HaveThing(ThingId.Trash))
-            {
-                GetThing(ThingId.Trash);
-                Reply(ThingsData[ThingId.Trash].Answers[0]);
-            }
-            // If the player already had trash, display the message about picking up more trash.
-            else
-            {
-                // Amount of trash.
-                string[] number = new string[] { PileOfTrash.Count().ToString() };
 
-                // Text about how much trash the player have.
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
-            }
-
-            // If the player is picking up trash from any other location the view point, remove the trash from that location.
-            if (CurrentLocationId != LocationId.ViewPoint)
-            {
-                RemoveThingFromLocation(ThingId.Trash);
-            }
         }
 
-        static void DropTrash()
+        static void UseFishingRod()
         {
-            if (CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
-            {
-                // Drop all the trash in the trash can
-                PileOfTrash.Clear();
-                LoseThing(ThingId.Trash);
-                // Drop and lose message about putting trash in trash can.
-                Reply(ThingsData[ThingId.Trash].Answers[6]);
-            }
-            else
-            {
-                if (PileOfTrash.Count > 1)
-                {
-                    // Drop one pice of trash, add it to the current location and display a bad message about droping trash on the ground.
-                    AddThingToLocation(ThingId.Trash);
-                    PileOfTrash.Remove(ThingId.Trash);
-                    Reply(ThingsData[ThingId.Trash].Answers[4]);
-                }
-                else
-                {
-                    // Drop the last trash and take it away from inventory
-                    DropThing(ThingId.Trash);
-                    PileOfTrash.Remove(ThingId.Trash);
-                    Reply(ThingsData[ThingId.Trash].Answers[4] + " " + eventAndGoalExtraText[42]);
-                }
-            }
+
         }
 
-        /// <summary>
-        /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
-        /// </summary>
-        /// <param name="narrative"></param>
-        /// <returns>An string array with all words that the pleyer entered.</returns>
-        static string[] AskForInput(string narrative)
-        {
-            // Display the narrative.
-            Console.ForegroundColor = NarrativeColor;
-            Print(narrative);
-
-            // Line where player writes.
-            Console.ForegroundColor = PromptColor;
-            Console.Write("> ");
-
-            // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
-            string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
-
-            return words;
-        }
-
-        /// <summary>
-        /// Splits a string at everything that isn't a letter and also checks for words that become one of my key words when combined.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns>An array of single words and/or combined words.</returns>
-        static string[] SplitCommand(string command)
-        {
-            // Split the string for everything that isnt a letter.
-            string[] words = Regex.Split(command, @"[^a-zA-Z]+");
-
-            for (int word = 0; word < words.Length - 1; word++)
-            {
-                // Combining this word and the next.
-                string twoWords = words[word] + " " + words[word + 1];
-                string threeWords = "";
-
-                if (word + 2 < words.Length)
-                {
-                    threeWords = twoWords + " " + words[word + 2];
-                }
-
-                // Looking for words that belong together.
-                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords))
-                {
-                    // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
-                    words[word] = twoWords;
-                }
-                else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
-                {
-                    // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
-                    words[word] = threeWords;
-                }
-            }
-
-            return words;
-        }
-
-        static void SearchAtViewPoint(string[] words)
-        {
-            // Go through all words to see if there is something searchable.
-            foreach (string word in words)
-            {
-                // Search if there is a match.
-                if (ThingsToSearch.Contains(word))
-                {
-                    // Gives the player a rope, trash or nothing.
-                    GetTrashOrRope();
-
-                    // If there was a search happening we do not continue with this method.
-                    return;
-                }
-            }
-
-            // If there was no successful search, check if the player entered something to search at all.
-            if (words.Length > 1)
-            {
-                // The player wrote what to search but it was not a searchable thing.
-                // Says "What you are trying to search through is not here." (if not changed).
-                Reply(eventAndGoalExtraText[39]);
-            }
-            // If there was no more words than "search".
-            else
-            {
-                // Ask for new input. Says "What do you want to search through?" (if not changed).
-                string[] newWords = AskForInput(eventAndGoalExtraText[37]);
-                // Search again.
-                SearchAtViewPoint(newWords);
-            }
-        }
-
-        static void GetTrashOrRope()
-        {
-            // Check how much trash the player have.
-            if (PiecesOfTrashCollected >= 10 && HaveThing(ThingId.Rope))
-            {
-                // Player is carrying enough trash and have the rope. Says "You didn't find anything." (if not changed).
-                Reply(eventAndGoalExtraText[40]);
-                return;
-            }
-            else if (PiecesOfTrashCollected >= 2 && !HaveThing(ThingId.Rope))
-            {
-                // Chance of getting rope.
-                var random = new Random();
-                int chanceForRope = random.Next(0, 10 - Math.Min(PileOfTrash.Count(), 9));
-
-                if (chanceForRope == 0)
-                {
-                    // Player gets a rope.
-                    GetThing(ThingId.Rope);
-                    Reply(ThingsData[ThingId.Rope].Answers[0]);
-                }
-                else
-                {
-                    // Pick up trash.
-                    PickUpTrash();
-                    PiecesOfTrashCollected++;
-                }
-            }
-            else
-            {
-                // Pick up trash.
-                PickUpTrash();
-                PiecesOfTrashCollected++;
-            }
-        }
-
-        // TODO FLYTTA SEN ^^^^
+        // TODO MOVE LATER ^^^^
 
         static void TalkToOwl()
         {
@@ -1428,6 +1411,7 @@ namespace Forest
             // TODO change text, and probably other things as well
         }
 
+        // Events connected to cozy den goal.
         static void LookAtDen()
         {
             // One thing in den.
@@ -1452,24 +1436,6 @@ namespace Forest
             {
                 Reply(ThingsData[ThingId.Dirt].Description);
             }
-        }
-
-        static void DenGoalCompleted()
-        {
-            GoalCompleted[Goal.DenMadeCozy] = true;
-
-            // Print text that tells the player the puzzle is done.
-            Console.Clear();
-            Reply(eventAndGoalExtraText[17]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[18]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[19]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[20]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[21]);
-            PressAnyKeyToContinueAndClear();
         }
 
         static void DropThingInDen(ThingId thingId)
@@ -1507,6 +1473,31 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Text about completeing the cozy den goal.
+        /// </summary>
+        static void DenGoalCompleted()
+        {
+            GoalCompleted[Goal.DenMadeCozy] = true;
+
+            // Print text that tells the player the puzzle is done.
+            Console.Clear();
+            Reply(eventAndGoalExtraText[17]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[18]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[19]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[20]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[21]);
+            PressAnyKeyToContinueAndClear();
+        }
+
+        // Events about the leaves for cozy den goal.
+        /// <summary>
+        /// Drops all leaves in the pile if droped at the leafy forest (used for giving the ability to clear the pile).
+        /// </summary>
         static void DropPileOfLeavesOutsideOfDen()
         {
             if (CurrentLocationId == LocationId.LeafyForestNorth || CurrentLocationId == LocationId.LeafyForestMiddle || CurrentLocationId == LocationId.LeafyForestSouth)
@@ -1525,6 +1516,10 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Add leaves to the leaf pile and the leaf pile to the inventory.
+        /// </summary>
+        /// <param name="thingId"></param>
         static void PickUpLeaves(ThingId thingId)
         {
             if (ThingsInPileOfLeaves.Contains(thingId))
@@ -1567,6 +1562,33 @@ namespace Forest
             }
         }
 
+        /// <summary>
+        /// Removes the leaf pile from inventory and clears the leaf list.
+        /// </summary>
+        static void LoseLeafPile()
+        {
+            LoseThing(ThingId.PileOfLeaves);
+            ThingsInPileOfLeaves.Clear();
+        }
+
+        /// <summary>
+        /// Event text for losing leaves when going down the waterslide.
+        /// </summary>
+        static void LoseLeavesWhenGoingDownWaterSlide()
+        {
+            // Display an extra message if player was holding the pile of leaves when sliding down the river.
+            if (HaveThing(ThingId.PileOfLeaves))
+            {
+                PressAnyKeyToContinue();
+                // Text about losing the leaves.
+                Print(eventAndGoalExtraText[27]);
+                LoseLeafPile();
+            }
+        }
+
+        /// <summary>
+        /// Walking on the oath from leafy forest to den, if the leaves are in the correct order in the pile, player successfully brings the leaves with them.
+        /// </summary>
         static void BringLeavesToDen()
         {
             Console.Clear();
@@ -1632,29 +1654,218 @@ namespace Forest
             MovePlayerToNewLocation(LocationId.Den);
         }
 
+        // Events about the fishing puzzle.
+        static void LookAtTrash()
+        {
+            if (ThingIsAvailable(ThingId.Trash))
+            {
+                // If player has trash in the inventory and there is no trash on the ground, display a message.
+                if (HaveThing(ThingId.Trash) && !ThingIsHere(ThingId.Trash))
+                {
+                    // If the player have one pice of trash.
+                    if (PileOfTrash.Count() == 1)
+                    {
+                        // Says "You are carrying some trash." (if not changed).
+                        Reply(eventAndGoalExtraText[56]);
+                    }
+                    // If the player have more the 1 trash.
+                    else
+                    {
+                        // Amount of trash.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                        // Text about how much trash the player have.
+                        InsertKeyWordAndDisplay(eventAndGoalExtraText[51], number);
+                    }
+                }
+                // If there is trash on the current location but not in players inventory, display message.
+                else if (ThingIsHere(ThingId.Trash) && !HaveThing(ThingId.Trash))
+                {
+                    // There is trash to see at the view point, in the trash cans. Special text.
+                    if (CurrentLocationId == LocationId.ViewPoint)
+                    {
+                        // Message about the mess humans leave behind.
+                        Reply(eventAndGoalExtraText[54]);
+                    }
+                    // For any other location.
+                    else
+                    {
+                        // Says "There is trash on the ground, who put that there?" (if not changed).
+                        Reply(eventAndGoalExtraText[52]);
+                    }
+                }
+                // If both, display another message.
+                else
+                {
+                    if (CurrentLocationId == LocationId.ViewPoint)
+                    {
+                        // Combination of how much trash player is carrying and trash on messy view point message.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+                        if (PileOfTrash.Count > 1)
+                        {
+                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[55], number);
+                        }
+                        else
+                        {
+                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[55]);
+                        }
+
+                    }
+                    else
+                    {
+                        // Combination of how much trash player is carrying and trash on ground message.
+                        string[] number = new string[] { PileOfTrash.Count().ToString() };
+                        if (PileOfTrash.Count > 1)
+                        {
+                            InsertKeyWordAndDisplay(eventAndGoalExtraText[51] + " " + eventAndGoalExtraText[53], number);
+                        }
+                        else
+                        {
+                            Reply(eventAndGoalExtraText[56] + " " + eventAndGoalExtraText[53]);
+                        }
+                    }
+                }
+            }
+            // There is no trash here.
+            else
+            {
+                // Says "There is no trash around here, that's good!" (if not changed).
+                Reply(ThingsData[ThingId.Trash].Answers[2]);
+            }
+        }
+
+        static void PickUpTrash()
+        {
+            // Add trash to the pile.
+            PileOfTrash.Add(ThingId.Trash);
+
+            // If the player doesn't have any trash, put the thing in the inventory.
+            if (!HaveThing(ThingId.Trash))
+            {
+                GetThing(ThingId.Trash);
+                Reply(ThingsData[ThingId.Trash].Answers[0]);
+            }
+            // If the player already had trash, display the message about picking up more trash.
+            else
+            {
+                // Amount of trash.
+                string[] number = new string[] { PileOfTrash.Count().ToString() };
+
+                // Text about how much trash the player have.
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+            }
+
+            // If the player is picking up trash from any other location the view point, remove the trash from that location.
+            if (CurrentLocationId != LocationId.ViewPoint)
+            {
+                RemoveThingFromLocation(ThingId.Trash);
+            }
+        }
+
+        static void DropTrash()
+        {
+            if (CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
+            {
+                // Drop all the trash in the trash can
+                PileOfTrash.Clear();
+                LoseThing(ThingId.Trash);
+                // Drop and lose message about putting trash in trash can.
+                Reply(ThingsData[ThingId.Trash].Answers[6]);
+            }
+            else
+            {
+                if (PileOfTrash.Count > 1)
+                {
+                    // Drop one pice of trash, add it to the current location and display a bad message about droping trash on the ground.
+                    AddThingToLocation(ThingId.Trash);
+                    PileOfTrash.Remove(ThingId.Trash);
+                    Reply(ThingsData[ThingId.Trash].Answers[4]);
+                }
+                else
+                {
+                    // Drop the last trash and take it away from inventory
+                    DropThing(ThingId.Trash);
+                    PileOfTrash.Remove(ThingId.Trash);
+                    Reply(ThingsData[ThingId.Trash].Answers[4] + " " + eventAndGoalExtraText[42]);
+                }
+            }
+        }
+
+        static void SearchAtViewPoint(string[] words)
+        {
+            // Go through all words to see if there is something searchable.
+            foreach (string word in words)
+            {
+                // Search if there is a match.
+                if (ThingsToSearch.Contains(word))
+                {
+                    // Gives the player a rope, trash or nothing.
+                    GetTrashOrRope();
+
+                    // If there was a search happening we do not continue with this method.
+                    return;
+                }
+            }
+
+            // If there was no successful search, check if the player entered something to search at all.
+            if (words.Length > 1)
+            {
+                // The player wrote what to search but it was not a searchable thing.
+                // Says "What you are trying to search through is not here." (if not changed).
+                Reply(eventAndGoalExtraText[39]);
+            }
+            // If there was no more words than "search".
+            else
+            {
+                // Ask for new input. Says "What do you want to search through?" (if not changed).
+                string[] newWords = AskForInput(eventAndGoalExtraText[37]);
+                // Search again.
+                SearchAtViewPoint(newWords);
+            }
+        }
+
+        static void GetTrashOrRope()
+        {
+            // Check how much trash the player have.
+            if (PiecesOfTrashCollected >= 10 && HaveThing(ThingId.Rope))
+            {
+                // Player is carrying enough trash and have the rope. Says "You didn't find anything." (if not changed).
+                Reply(eventAndGoalExtraText[40]);
+                return;
+            }
+            else if (PiecesOfTrashCollected >= 2 && !HaveThing(ThingId.Rope))
+            {
+                // Chance of getting rope.
+                var random = new Random();
+                int chanceForRope = random.Next(0, 10 - Math.Min(PileOfTrash.Count(), 9));
+
+                if (chanceForRope == 0)
+                {
+                    // Player gets a rope.
+                    GetThing(ThingId.Rope);
+                    Reply(ThingsData[ThingId.Rope].Answers[0]);
+                }
+                else
+                {
+                    // Pick up trash.
+                    PickUpTrash();
+                    PiecesOfTrashCollected++;
+                }
+            }
+            else
+            {
+                // Pick up trash.
+                PickUpTrash();
+                PiecesOfTrashCollected++;
+            }
+        }
+
+        // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
             // Changing the current location to the new location and displaying the new location information.
             CurrentLocationId = newLocationId;
             DisplayNewLocation();
-        }
-
-        static void LoseLeafPile()
-        {
-            LoseThing(ThingId.PileOfLeaves);
-            ThingsInPileOfLeaves.Clear();
-        }
-
-        static void LoseLeavesWhenGoingDownWaterSlide()
-        {
-            // Display an extra message if player was holding the pile of leaves when sliding down the river.
-            if (HaveThing(ThingId.PileOfLeaves))
-            {
-                PressAnyKeyToContinue();
-                // Text about losing the leaves.
-                Print(eventAndGoalExtraText[27]);
-                LoseLeafPile();
-            }
         }
 
         static void GoDownWaterSlide()
@@ -1670,8 +1881,6 @@ namespace Forest
         }
 
         // TODO add event about floting on the river
-        // TODO add event fro walking on the long path
-        // TODO add event for cozy den goal completed
         // TODO add event for trying to cross the river and getting quest
         // TODO add event about bees and flowers
         // TODO add event for fishing

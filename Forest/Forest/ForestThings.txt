@@ -210,7 +210,7 @@ Starting location: 19ViewPoint
 
 ID: Notes
 Name: Notes
-Description: There is notes scribbled in the bark of the trees all over this place, you read some of them. \n \n"I accidentally dropped my favorite rock from the cliff on the other side of the river. If you find it please give it to me! \n From Fox" \n \n"Left..right..left..left..down.. in the middle of the secret path is where I hid the sharp, not straight thing" \n \n"Hello! Looking for friends to play hide and seek with, find me if you want to play!"
+Description: There is notes scribbled in the bark of the trees all over this place, you read some of them. \n"I accidentally dropped my favorite rock from the cliff on the other side of the river. If you find it please give it to me! \n   From Fox" \n"Left..right..down..left..left..up.. in the middle of the secret path is where I hid the sharp, not straight thing" \n"Hello! Looking for friends to play hide and seek with, find me if you want to play!"
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
