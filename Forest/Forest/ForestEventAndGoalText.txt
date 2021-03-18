@@ -128,4 +128,4 @@
 
 64You hear a crackle from the binoculars speaker followed by a message "You have reached the limit for free inputs, please add more coins". You don't have any coins, but that doesn't matter, the coin input is broken and next time you will get new free inputs anyway.
 
-65The binoculars are looking north towards the forest and in the short seconds that they stayed tilted a bit up you saw something between the tree trunks.
+65The binoculars are looking north towards the forest and in the short seconds that they stay tilted a bit up you see something between the tree trunks.

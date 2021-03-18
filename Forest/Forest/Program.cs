@@ -293,74 +293,115 @@ namespace Forest
         /// <returns>An string array with all words that the pleyer entered.</returns>
         static void AskForInputForBinoculars()
         {
+            string newWords = "";
+            bool newInput = true;
+            bool isValidInput = false;
+
             // TODO MOVE TO EVENT??
             while (EnteredArrows.Count() < CorrectArrows.Count())
             {
-                // Display the narrative.
-                Console.ForegroundColor = NarrativeColor;
-                Print(eventAndGoalExtraText[62]);
+                if (newInput)
+                {
+                    newInput = false;
+                    isValidInput = false;
 
-                // Line where player writes.
-                Console.ForegroundColor = PromptColor;
-                Console.Write("> ");
+                    // Display the narrative.
+                    Console.ForegroundColor = NarrativeColor;
+                    Print(eventAndGoalExtraText[62]);
 
+                    // Line where player writes.
+                    Console.ForegroundColor = PromptColor;
+                    Console.Write("> ");
+                }
+
+                // Get the next key that is pressed.
                 var key = Console.ReadKey().Key;
 
                 // If player press an arrow key.
-                if (key == ConsoleKey.LeftArrow)
+                if (key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow || key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow)
                 {
-                    // Move binoculars left.
-                    Reply(eventAndGoalExtraText[58]);
-                    EnteredArrows.Add("left");
+                    // Move binoculars.
+                    string word = key.ToString().Remove(key.ToString().Length - 5);
+                    MoveBinoculars(word.ToLower());
+                    newInput = true;
                 }
-                else if (key == ConsoleKey.RightArrow)
-                {
-                    // Move binoculars right.
-                    Reply(eventAndGoalExtraText[59]);
-                    EnteredArrows.Add("right");
-                }
-                else if (key == ConsoleKey.UpArrow)
-                {
-                    // Move binoculars up.
-                    Reply(eventAndGoalExtraText[60]);
-                    EnteredArrows.Add("up");
-                }
-                else if (key == ConsoleKey.DownArrow)
-                {
-                    // Move binoculars down.
-                    Reply(eventAndGoalExtraText[61]);
-                    EnteredArrows.Add("down");
-                }
+                // If player pressed anything else.
                 else
                 {
-                    // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
-                    string[] words = Console.ReadLine().ToLowerInvariant().Split(' ', ',', '.');
-
-                    foreach (string word in words)
+                    // If eneter where pressed the input is done.
+                    if (key == ConsoleKey.Enter)
                     {
-                        // If the word is a valid direction.
-                        if (CorrectArrows.Contains(word))
+                        // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
+                        string[] words = SplitCommand(newWords.ToLower());
+
+                        // Clear words in preperation for next input.
+                        newWords = "";
+
+                        // Check if any words are valid inputs.
+                        foreach (string word in words)
                         {
-                            // Move the camera and break out of this else statement.
-                            MoveBinoculars(word);
-                            break;
+                            // If the word is a valid direction.
+                            if (CorrectArrows.Contains(word))
+                            {
+                                // Move the camera and break out of this else statement.
+                                MoveBinoculars(word);
+                                isValidInput = true;
+                                newInput = true;
+                            }
+                            else
+                            {
+                                // If the words contains an invalid word, go to invalid input message and stop looking throug the words.
+                                isValidInput = false;
+                                break;
+                            }
+                        }
+
+                        // At least one input was not valid, "exit" binoculars.
+                        if (!isValidInput)
+                        {
+                            // Message from the binoculars about invalid input, "quit" the event and display the current location instead.
+                            Console.WriteLine();
+                            Reply(eventAndGoalExtraText[63]);
+
+                            // Clear the previous entered arrows.
+                            EnteredArrows.Clear();
+                            PressAnyKeyToContinue();
+
+                            // Clear and display location description ("exit" binoculars).
+                            DisplayNewLocation();
+                            return;
                         }
                     }
-
-                    // Message from the binoculars about invalid input, "quit" the event and display the current location instead.
-                    Reply(eventAndGoalExtraText[63]);
-                    EnteredArrows.Clear();
-                    PressAnyKeyToContinue();
-                    DisplayNewLocation();
-                    return;
+                    // If space was pressed ad an space instead of text ("Spacebar") to words.
+                    else if (key == ConsoleKey.Spacebar)
+                    {
+                        newWords += " ";
+                    }
+                    // If backspace is pressed, remove tha last input.
+                    else if (key == ConsoleKey.Backspace)
+                    {
+                        newWords = newWords.Remove(newWords.Length - 1);
+                        Console.CursorLeft--;
+                        Console.Write(" ");
+                        Console.CursorLeft--;
+                    }
+                    // Add input to words.
+                    else
+                    {
+                        newWords += key;
+                    }
                 }
             }
 
-            if (EnteredArrows == CorrectArrows && !HiddenPathFound)
+            // Check if the entered sequence is correct or not, when the number of entered directions are the same as in the correct answer.
+            if (EnteredArrows.SequenceEqual(CorrectArrows))
             {
                 // MADE IT!
                 // Unlock hiden path
                 // TODO add extra description to old tree and waterfall about hidden path
+
+                // Clear the entered arrows.
+                EnteredArrows.Clear();
 
                 // Text about seeing something in the forest.
                 Reply(eventAndGoalExtraText[65]);
@@ -373,6 +414,7 @@ namespace Forest
                 EnteredArrows.Clear();
             }
 
+            // "Exit" binoculars. Clear and show description about location.
             PressAnyKeyToContinue();
             DisplayNewLocation();
         }
@@ -383,23 +425,26 @@ namespace Forest
             // Add movement to list.
             EnteredArrows.Add(word);
 
+            Console.CursorLeft = 0;
+            Console.WriteLine("> " + word.ToString().PadRight(Console.WindowWidth - word.Length - 3 - 1, ' '));
+
             // Display message about movement.
-            if (word == "left")
+            if (word.Contains("left"))
             {
                 // Move binoculars left.
                 Reply(eventAndGoalExtraText[58]);
             }
-            else if (word == "right")
+            else if (word.Contains("right"))
             {
                 // Move binoculars right.
                 Reply(eventAndGoalExtraText[59]);
             }
-            else if (Console.ReadKey().Key == ConsoleKey.UpArrow)
+            else if (word.Contains("up"))
             {
                 // Move binoculars up.
                 Reply(eventAndGoalExtraText[60]);
             }
-            else if (Console.ReadKey().Key == ConsoleKey.DownArrow)
+            else if (word.Contains("down"))
             {
                 // Move binoculars down.
                 Reply(eventAndGoalExtraText[61]);
