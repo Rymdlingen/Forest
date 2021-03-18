@@ -239,8 +239,8 @@ Answers:
 Starting location: 18Waterfall
 
 ID: Nail
-Name: Old rusty nail
-Description: It's an old rusty nail, how did it end up in the forest?
+Name: Old, rusty, not straight nail
+Description: It's an old rusty nail, it is curved with a long blunt end and a short pointy end. How did it end up in the forest?
 Answers: <Just guides the code to start making an array for the upcoming 8 lines>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>

@@ -17,7 +17,6 @@ namespace Forest
         MossyForestEntrance,
         MossyForestNorth,
         MossyForestSouth,
-        BearsToilet,
         SparseForest,
         Glade,
         BeeForest,
@@ -121,8 +120,6 @@ namespace Forest
         const ConsoleColor PromptColor = ConsoleColor.DarkGray;
         const int PrintPauseMilliseconds = 150;
 
-        static bool beenTBearToiletBefore = false;
-
         // static List<string> load;
 
         // Text documents (that have data that is not parsed and stored somewhere else, or that needs to be accessed from a method without sending it as a parameter to that method).
@@ -206,8 +203,7 @@ namespace Forest
         static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
         static List<string> EnteredArrows = new List<string>();
         static bool HiddenPathFound = false;
-
-
+        static bool NailFound = false;
         #endregion
 
         #region Output helpers
@@ -284,172 +280,6 @@ namespace Forest
             string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
 
             return words;
-        }
-
-        /// <summary>
-        /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
-        /// </summary>
-        /// <param name="narrative"></param>
-        /// <returns>An string array with all words that the pleyer entered.</returns>
-        static void AskForInputForBinoculars()
-        {
-            string newWords = "";
-            bool newInput = true;
-            bool isValidInput = false;
-
-            // TODO MOVE TO EVENT??
-            while (EnteredArrows.Count() < CorrectArrows.Count())
-            {
-                if (newInput)
-                {
-                    newInput = false;
-                    isValidInput = false;
-
-                    // Display the narrative.
-                    Console.ForegroundColor = NarrativeColor;
-                    Print(eventAndGoalExtraText[62]);
-
-                    // Line where player writes.
-                    Console.ForegroundColor = PromptColor;
-                    Console.Write("> ");
-                }
-
-                // Get the next key that is pressed.
-                var key = Console.ReadKey().Key;
-
-                // If player press an arrow key.
-                if (key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow || key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow)
-                {
-                    // Move binoculars.
-                    string word = key.ToString().Remove(key.ToString().Length - 5);
-                    MoveBinoculars(word.ToLower());
-                    newInput = true;
-                }
-                // If player pressed anything else.
-                else
-                {
-                    // If eneter where pressed the input is done.
-                    if (key == ConsoleKey.Enter)
-                    {
-                        // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
-                        string[] words = SplitCommand(newWords.ToLower());
-
-                        // Clear words in preperation for next input.
-                        newWords = "";
-
-                        // Check if any words are valid inputs.
-                        foreach (string word in words)
-                        {
-                            // If the word is a valid direction.
-                            if (CorrectArrows.Contains(word))
-                            {
-                                // Move the camera and break out of this else statement.
-                                MoveBinoculars(word);
-                                isValidInput = true;
-                                newInput = true;
-                            }
-                            else
-                            {
-                                // If the words contains an invalid word, go to invalid input message and stop looking throug the words.
-                                isValidInput = false;
-                                break;
-                            }
-                        }
-
-                        // At least one input was not valid, "exit" binoculars.
-                        if (!isValidInput)
-                        {
-                            // Message from the binoculars about invalid input, "quit" the event and display the current location instead.
-                            Console.WriteLine();
-                            Reply(eventAndGoalExtraText[63]);
-
-                            // Clear the previous entered arrows.
-                            EnteredArrows.Clear();
-                            PressAnyKeyToContinue();
-
-                            // Clear and display location description ("exit" binoculars).
-                            DisplayNewLocation();
-                            return;
-                        }
-                    }
-                    // If space was pressed ad an space instead of text ("Spacebar") to words.
-                    else if (key == ConsoleKey.Spacebar)
-                    {
-                        newWords += " ";
-                    }
-                    // If backspace is pressed, remove tha last input.
-                    else if (key == ConsoleKey.Backspace)
-                    {
-                        newWords = newWords.Remove(newWords.Length - 1);
-                        Console.CursorLeft--;
-                        Console.Write(" ");
-                        Console.CursorLeft--;
-                    }
-                    // Add input to words.
-                    else
-                    {
-                        newWords += key;
-                    }
-                }
-            }
-
-            // Check if the entered sequence is correct or not, when the number of entered directions are the same as in the correct answer.
-            if (EnteredArrows.SequenceEqual(CorrectArrows))
-            {
-                // MADE IT!
-                // Unlock hiden path
-                // TODO add extra description to old tree and waterfall about hidden path
-
-                // Clear the entered arrows.
-                EnteredArrows.Clear();
-
-                // Text about seeing something in the forest.
-                Reply(eventAndGoalExtraText[65]);
-                HiddenPathFound = true;
-            }
-            else
-            {
-                // Message abot reached limit of inputs, "quit" the event and display the current location instead.
-                Reply(eventAndGoalExtraText[64]);
-                EnteredArrows.Clear();
-            }
-
-            // "Exit" binoculars. Clear and show description about location.
-            PressAnyKeyToContinue();
-            DisplayNewLocation();
-        }
-
-        static void MoveBinoculars(string word)
-        {
-
-            // Add movement to list.
-            EnteredArrows.Add(word);
-
-            Console.CursorLeft = 0;
-            Console.WriteLine("> " + word.ToString().PadRight(Console.WindowWidth - word.Length - 3 - 1, ' '));
-
-            // Display message about movement.
-            if (word.Contains("left"))
-            {
-                // Move binoculars left.
-                Reply(eventAndGoalExtraText[58]);
-            }
-            else if (word.Contains("right"))
-            {
-                // Move binoculars right.
-                Reply(eventAndGoalExtraText[59]);
-            }
-            else if (word.Contains("up"))
-            {
-                // Move binoculars up.
-                Reply(eventAndGoalExtraText[60]);
-            }
-            else if (word.Contains("down"))
-            {
-                // Move binoculars down.
-                Reply(eventAndGoalExtraText[61]);
-            }
-
         }
 
         /// <summary>
@@ -614,6 +444,7 @@ namespace Forest
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
             Console.ReadKey();
+            Console.CursorLeft = 0;
         }
         #endregion
 
@@ -772,29 +603,8 @@ namespace Forest
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
             // Checking if the direction is availible for the current location.
-            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Directions[direction] == LocationId.BearsToilet)
-            {
-                // TODO make method or delete this.
-                if (!beenTBearToiletBefore)
-                {
-                    LocationId oldLocation = CurrentLocationId;
-                    // Changing the current location to the new location and displaying the new location information.
-                    LocationId newLocation = currentLocation.Directions[direction];
-                    CurrentLocationId = newLocation;
-                    DisplayNewLocation();
-                    PressAnyKeyToContinueAndClear();
-                    CurrentLocationId = oldLocation;
-                    DisplayNewLocation();
-                    beenTBearToiletBefore = true;
-                }
-                else
-                {
-                    Reply("You don't want to go there again!");
-                }
-
-            }
             // If the player is going from the leafy forest to the den and have the pile of leaves, start event about leaves blowing in the wind.
-            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
+            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
             {
                 BringLeavesToDen();
             }
@@ -809,6 +619,12 @@ namespace Forest
             {
                 // If the player tries to go from the river to the leafy forest (climbing up the waterstream).
                 Print(eventAndGoalExtraText[1]);
+            }
+            // When moving from waterfall to old tree for the first time, event about finding nail starts.
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.Waterfall && currentLocation.Directions[direction] == LocationId.SouthEastForest && !NailFound)
+            {
+                // Text about finding nail.
+                FindNail();
             }
             // Normal move.
             else if (currentLocation.Directions.ContainsKey(direction))
@@ -1280,14 +1096,14 @@ namespace Forest
                     {
                         case ThingId.Binoculars:
                             UseBinoculars();
-                            break;
+                            return;
 
                         case ThingId.FishingRod:
                             UseFishingRod();
-                            break;
+                            return;
                     }
 
-                    // If teh code makes it here, the thing can't be used.
+                    // If the code makes it here, the thing can't be used.
                     // Says "Can't do that" (if not changed).
                     Reply(eventAndGoalExtraText[26]);
                 }
@@ -1301,16 +1117,6 @@ namespace Forest
         }
 
         // TODO MOVE LATER vvvvv
-
-        static void UseBinoculars()
-        {
-            Console.Clear();
-            // Instructions for using binoculars
-            Reply(eventAndGoalExtraText[57]);
-            AskForInputForBinoculars();
-
-
-        }
 
         static void UseFishingRod()
         {
@@ -1700,6 +1506,7 @@ namespace Forest
         }
 
         // Events about the fishing puzzle.
+        // Trash.
         static void LookAtTrash()
         {
             if (ThingIsAvailable(ThingId.Trash))
@@ -1905,6 +1712,207 @@ namespace Forest
             }
         }
 
+        // Binoculars and nail.
+        static void UseBinoculars()
+        {
+            string newWords = "";
+            bool newInput = true;
+            bool isValidInput = false;
+
+            Console.Clear();
+            // Instructions for using binoculars
+            Reply(eventAndGoalExtraText[57]);
+
+            // As long as the entered arrows are less then the number of arrows in the correct answer, ask for input.
+            while (EnteredArrows.Count() < CorrectArrows.Count())
+            {
+                // Ask for input.
+                if (newInput)
+                {
+                    newInput = false;
+                    isValidInput = false;
+
+                    // Display the narrative.
+                    Console.ForegroundColor = NarrativeColor;
+                    Print(eventAndGoalExtraText[62]);
+
+                    // Line where player writes.
+                    Console.ForegroundColor = PromptColor;
+                    Console.Write("> ");
+                }
+
+                // Get the next key that is pressed.
+                var key = Console.ReadKey().Key;
+
+                // If player press an arrow key.
+                if (key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow || key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow)
+                {
+                    // Move binoculars.
+                    string word = key.ToString().Remove(key.ToString().Length - 5);
+                    MoveBinoculars(word.ToLower());
+                    newInput = true;
+                }
+                // If player pressed anything else.
+                else
+                {
+                    // If enter was pressed the input is done.
+                    if (key == ConsoleKey.Enter)
+                    {
+                        // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
+                        string[] words = SplitCommand(newWords.ToLower());
+
+                        // Clear words in preperation for next input.
+                        newWords = "";
+
+                        // Check if any words are valid inputs.
+                        foreach (string word in words)
+                        {
+                            // If the word is a valid direction.
+                            if (CorrectArrows.Contains(word))
+                            {
+                                // Move the camera and break out of this else statement.
+                                MoveBinoculars(word);
+                                isValidInput = true;
+                                newInput = true;
+                            }
+                            else
+                            {
+                                // If the words contains an invalid word, go to invalid input message and stop looking throug the words.
+                                isValidInput = false;
+                                break;
+                            }
+                        }
+
+                        // At least one input was not valid, "exit" binoculars.
+                        if (!isValidInput)
+                        {
+                            // Message from the binoculars about invalid input, "quit" the event and display the current location instead.
+                            Console.WriteLine();
+                            Reply(eventAndGoalExtraText[63]);
+
+                            // Clear the previous entered arrows.
+                            EnteredArrows.Clear();
+                            PressAnyKeyToContinue();
+
+                            // Clear and display location description ("exit" binoculars).
+                            DisplayNewLocation();
+                            return;
+                        }
+                    }
+                    // If space was pressed add a space instead of text ("Spacebar") to words.
+                    else if (key == ConsoleKey.Spacebar)
+                    {
+                        newWords += " ";
+                    }
+                    // If backspace is pressed, remove tha last input.
+                    else if (key == ConsoleKey.Backspace)
+                    {
+                        newWords = newWords.Remove(newWords.Length - 1);
+                        Console.CursorLeft--;
+                        Console.Write(" ");
+                        Console.CursorLeft--;
+                    }
+                    // Add input to words.
+                    else
+                    {
+                        newWords += key;
+                    }
+                }
+            }
+
+            // Check if the entered sequence is correct or not, when the number of entered directions are the same as in the correct answer.
+            if (EnteredArrows.SequenceEqual(CorrectArrows))
+            {
+                // MADE IT!
+                // Different if the hidden path was found before or not.
+                if (!HiddenPathFound)
+                {
+                    // Add connection between waterfall and old tree, now it's possible to move to old tree from waterfall.
+                    LocationsData[LocationId.Waterfall].Directions[Direction.North] = LocationId.SouthEastForest;
+
+                    // The path is found!!
+                    HiddenPathFound = true;
+
+                    // Text about seeing something in the forest.
+                    Reply(eventAndGoalExtraText[65]);
+                }
+                else
+                {
+                    // Text about the hidden path.
+                    Reply(eventAndGoalExtraText[66]);
+                }
+                // TODO add extra description to old tree and waterfall about hidden path
+
+                // Clear the entered arrows.
+                EnteredArrows.Clear();
+            }
+            else
+            {
+                // Message abot reached limit of inputs, "quit" the event and display the current location instead.
+                Reply(eventAndGoalExtraText[64]);
+                EnteredArrows.Clear();
+            }
+
+            // "Exit" binoculars. Clear and show description about location.
+            PressAnyKeyToContinue();
+            DisplayNewLocation();
+        }
+
+        static void MoveBinoculars(string word)
+        {
+            // Add movement to list.
+            EnteredArrows.Add(word);
+
+            Console.CursorLeft = 0;
+            Console.WriteLine("> " + word.ToString().PadRight(Console.WindowWidth - word.Length - 3 - 1, ' '));
+
+            // Display message about movement.
+            if (word.Contains("left"))
+            {
+                // Move binoculars left.
+                Reply(eventAndGoalExtraText[58]);
+            }
+            else if (word.Contains("right"))
+            {
+                // Move binoculars right.
+                Reply(eventAndGoalExtraText[59]);
+            }
+            else if (word.Contains("up"))
+            {
+                // Move binoculars up.
+                Reply(eventAndGoalExtraText[60]);
+            }
+            else if (word.Contains("down"))
+            {
+                // Move binoculars down.
+                Reply(eventAndGoalExtraText[61]);
+            }
+        }
+
+        static void FindNail()
+        {
+            // Add the connection fron old tree to waterfall.
+            LocationsData[LocationId.SouthEastForest].Directions[Direction.South] = LocationId.Waterfall;
+
+            NailFound = true;
+            GetThing(ThingId.Nail);
+
+            // Text about almost stepping on a rusty nail.
+            Console.Clear();
+            Reply(eventAndGoalExtraText[71]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[72]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[73]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[74]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[75]);
+            PressAnyKeyToContinue();
+
+            MovePlayerToNewLocation(LocationId.SouthEastForest);
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -1989,6 +1997,9 @@ namespace Forest
             LookAtLocation();
         }
 
+        /// <summary>
+        /// Checks id extra description is needed after a normal location description, and diaplays.
+        /// </summary>
         static void AddExtraDescription()
         {
             // Check for extra text for Den.
@@ -2014,6 +2025,49 @@ namespace Forest
                 }
 
                 return;
+            }
+
+            // TODO CHANGE THIS TO FINDING THE NAIL (SO DESCRIPTIONS CHANGE AFER WALKING THE PATH ONCE!!)
+            // Add extra text if the hidden path is found.
+            if (!NailFound)
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // At location waterfall.
+                if (CurrentLocationId == LocationId.Waterfall)
+                {
+                    // When hidden path is not found.
+                    if (!HiddenPathFound)
+                    {
+                        Print(eventAndGoalExtraText[67]);
+                    }
+                    // When path is found but not walked.
+                    else
+                    {
+                        // "What did I see in the north?"
+                        Print(eventAndGoalExtraText[68]);
+                    }
+
+                }
+            }
+            // Hidden path is walked on.
+            else if (NailFound)
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // Add text for description about connection between waterfall and old tree.
+                // At location waterfall.
+                if (CurrentLocationId == LocationId.Waterfall)
+                {
+                    Print(eventAndGoalExtraText[69]);
+                }
+                // For old tree in south east forest.
+                else if (CurrentLocationId == LocationId.SouthEastForest)
+                {
+                    Print(eventAndGoalExtraText[70]);
+                }
             }
         }
 
@@ -2142,7 +2196,7 @@ namespace Forest
         }
 
         /// <summary>
-        /// Duplicates and adds a certain thing to the inventory.
+        /// Adds a certain thing to the inventory (without removing it from any place).
         /// </summary>
         /// <param name="thingId"></param>
         static void GetThing(ThingId thingId)
@@ -2587,7 +2641,6 @@ namespace Forest
         }*/
         #endregion
 
-        // TODO remove toilet after visiting once and change current location to 3.
         // TODO puzzle about fishing
         // TODO finding necklace
         // TODO text about trying necklace and dream

@@ -20,7 +20,6 @@ Name: Forest
 Description: The forest is getting denser, darker and there is some small patches of dark green moss on the ground. To the east and south east are narrow paths leading deeper into the dark forest, going to the west would eventually lead you back to the den.
 Directions:
     West: 2NorthForest
-    Southwest: 6BearsToilet
     Southeast: 5MossyForestSouth
     East: 4MossyForestNorth
 
@@ -37,10 +36,6 @@ Description: There is a small clearing between some smaller spruces, the sun alm
 Directions:
     North: 4MossyForestNorth
     Northwest: 3MossyForestEntrance
-
-ID: 6BearsToilet
-Name: Small path to hidden part of the forest.
-Description: (NOT DONE) Oh.. this seems to be Bears toilet.. it smells awful here, better leave quickly!
 
 ID: 7SparseForest
 Name: Sparse forest
@@ -99,10 +94,9 @@ Directions:
 
 ID: 15SouthEastForest
 Name: Forest
-Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree inte whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. Through the dense forest and the birds songs you cant't even hear the big waterfall that is to the south of this place. Your den is just to the northwest of here, you made sure to live close to the tree so you can go here and think about the stories whenever you want.
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree inte whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here and think about the stories whenever you want.
 Directions:
     Northwest: 1Den
-    South: 18Waterfall
 
 ID: 16WestRiver
 Name: River
@@ -122,9 +116,8 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. This part of the view point have binoculars that give a closer look at the view. From here there is a small path that leads to the big old tree, it's well hidden so you can only find it if you know where it is. 
+Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. This part of the view point have binoculars that give a closer look at the view.
 Directions:
-    North: 15SouthEastForest
     West: 17EastRiver
     Northeast: 19ViewPoint
 
