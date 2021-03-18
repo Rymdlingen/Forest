@@ -253,9 +253,24 @@ Answers: <Just guides the code to start making an array for the upcoming 8 lines
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: Nowhere
 
-ID: FishingRod
+ID: FishingRodLong
 Name: Fishing rod
-Description: You feel overwhelmingly proud when you look at the fishing rod you made yourself! It's made out of a stick, a rope and an old bent nail as the hook.
+Description: You feel overwhelmingly proud when you look at the fishing rod you made yourself! It's made out of a long stick, a rope and an old, rusty nail as the hook.
+Answers:
+	Pick up: <Won't happen>
+	Thing can not be picked up: <Won't happen>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <Won't happen>
+	Drop possible: <Won't happen, could be possible but would require extra message to be put at the location for telling the player it's there>
+	Drop not possible: You made it yourself, you don't want to lose it!
+	Can drop but lose thing: "There is good ways and bad ways for catching fish, this is a bad way!" you say as you throw the fishing rod in the dam, never to be seen again.
+	You do not have that: You can't do that, you threw the fishing rod in the dam.. remember?
+	Get this and lose another thing: <Won't happen>	
+Starting location: Nowhere
+
+ID: FishingRodOld
+Name: Fishing rod
+Description: You feel overwhelmingly proud when you look at the fishing rod you made yourself! It's made out of an old stick, a rope and an old, rusty nail as the hook.
 Answers:
 	Pick up: <Won't happen>
 	Thing can not be picked up: <Won't happen>

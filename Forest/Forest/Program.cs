@@ -52,7 +52,8 @@ namespace Forest
         Notes,
         Binoculars,
         Nail,
-        FishingRod,
+        FishingRodLong,
+        FishingRodOld,
         Necklace,
         Owl,
         Frog,
@@ -169,7 +170,7 @@ namespace Forest
                                                                                                 { "berry", ThingId.Berries },
                                                                                                 { "honey", ThingId.Beehive },
                                                                                                 { "fish", ThingId.Fish },
-                                                                                                { "stick", ThingId.OldStick }, /*changes witch one it refers to based on location*/
+                                                                                                { "stick", ThingId.OldStick }, /* TODO changes witch one it refers to based on location*/
                                                                                                 { "old stick", ThingId.OldStick },
                                                                                                 { "long stick", ThingId.LongStick },
                                                                                                 { "rope", ThingId.Rope },
@@ -180,8 +181,8 @@ namespace Forest
                                                                                                 { "binoculars", ThingId.Binoculars },
                                                                                                 { "telescope", ThingId.Binoculars },
                                                                                                 { "nail", ThingId.Nail },
-                                                                                                { "fishing rod", ThingId.FishingRod },
-                                                                                                { "rod", ThingId.FishingRod },
+                                                                                                { "fishing rod", ThingId.FishingRodOld }, /* TODO change to the rod tha player makes*/
+                                                                                                { "rod", ThingId.FishingRodOld }, /* TODO change to the rod tha player makes*/
                                                                                                 { "necklace", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
@@ -280,6 +281,58 @@ namespace Forest
             string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
 
             return words;
+        }
+
+        /// <summary>
+        /// Special method for choosing between old and long stick (dosn't make a difference between having a thing
+        /// </summary>
+        static ThingId AskWitchStick()
+        {
+            ThingId choosenStick = ThingId.OldStick;
+
+            // The player has to choose what stick to use, as long as they have two sticks they are stuck in this loop.
+            do
+            {
+                // Ask witch one they mean.
+                string[] words = AskForInput(eventAndGoalExtraText[76]);
+
+                for (int word = 0; word < words.Length; word++)
+                {
+                    if (words[word] == "old")
+                    {
+                        words[word] = "old stick";
+                    }
+                    else if (words[word] == "long")
+                    {
+                        words[word] = "long stick";
+                    }
+                }
+
+                var thingIds = new List<ThingId>(GetThingIdsFromWords(words));
+
+                foreach (ThingId thingId in thingIds)
+                {
+                    if (thingId == ThingId.LongStick)
+                    {
+                        LoseThing(ThingId.LongStick);
+                        choosenStick = ThingId.LongStick;
+                    }
+                    else if (thingId == ThingId.OldStick)
+                    {
+                        LoseThing(ThingId.OldStick);
+                        choosenStick = ThingId.OldStick;
+                    }
+                }
+
+                if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
+                {
+                    // Text about having to choose.
+                    Reply(eventAndGoalExtraText[77]);
+                }
+            }
+            while (HaveThing(ThingId.LongStick) && HaveThing(ThingId.OldStick));
+
+            return choosenStick;
         }
 
         /// <summary>
@@ -1098,7 +1151,8 @@ namespace Forest
                             UseBinoculars();
                             return;
 
-                        case ThingId.FishingRod:
+                        case ThingId.FishingRodLong:
+                        case ThingId.FishingRodOld:
                             UseFishingRod();
                             return;
                     }
@@ -1120,7 +1174,7 @@ namespace Forest
 
         static void UseFishingRod()
         {
-
+            Fishing();
         }
 
         // TODO MOVE LATER ^^^^
@@ -1220,6 +1274,12 @@ namespace Forest
                     PreviousThingsInDen.Clear();
                     PreviousThingsInDen.AddRange(ThingsInDen);
                 }
+            }
+
+            // TODO add bool about puzzle started
+            if (HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
+            {
+                CombineToFishingRod();
             }
 
             if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
@@ -1506,6 +1566,70 @@ namespace Forest
         }
 
         // Events about the fishing puzzle.
+        static void Fishing()
+        {
+            Console.Clear();
+
+            ThingId fishingRod = ThingId.FishingRodLong;
+
+            // Check witch fishing rod the player has.
+            if (HaveThing(ThingId.FishingRodLong))
+            {
+                fishingRod = ThingId.FishingRodLong;
+            }
+            else if (HaveThing(ThingId.FishingRodOld))
+            {
+                fishingRod = ThingId.FishingRodOld;
+            }
+
+            // The name of the fishing rod.
+            string[] fishingRodName = new string[] { ThingsData[fishingRod].Name };
+
+            // Text about starting to fish, sit down with you rod made out of choosen stick.
+            InsertKeyWordAndDisplay(eventAndGoalExtraText[81], fishingRodName);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[82]);
+            PressAnyKeyToContinue();
+
+            if (fishingRod == ThingId.FishingRodLong)
+            {
+                // You wait and wait and wait, nothing happens.
+                Reply(eventAndGoalExtraText[83]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[84]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[85]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[83]);
+                PressAnyKeyToContinue();
+                PressAnyKeyToContinue();
+                PressAnyKeyToContinue();
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[86]);
+                PressAnyKeyToContinue();
+            }
+            else if (fishingRod == ThingId.FishingRodOld)
+            {
+                // Gets a fish on the hook but the rod breakes.
+                Reply(eventAndGoalExtraText[87]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[88]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[89]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[90]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[91]);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[92]);
+                PressAnyKeyToContinue();
+            }
+
+            // Text about catching fish and throwing rod away.
+            Reply(eventAndGoalExtraText[93]);
+            GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+        }
+
         // Trash.
         static void LookAtTrash()
         {
@@ -1913,6 +2037,61 @@ namespace Forest
             MovePlayerToNewLocation(LocationId.SouthEastForest);
         }
 
+        static void CombineToFishingRod()
+        {
+            // Text about having an idea!
+            Reply(eventAndGoalExtraText[78]);
+            PressAnyKeyToContinueAndClear();
+
+            // Text about combinin nail and rope.
+            Reply(eventAndGoalExtraText[79]);
+
+            // Use the nail and rope.
+            LoseThing(ThingId.Nail);
+            LoseThing(ThingId.Rope);
+
+            ThingId choosenStick = ThingId.OldStick;
+            // Use one of the sticks.
+            if (HaveThing(ThingId.LongStick) && HaveThing(ThingId.OldStick))
+            {
+                // Have booth so ask witch one to use.
+                choosenStick = AskWitchStick();
+            }
+            // Only have long stick, use it.
+            else if (HaveThing(ThingId.LongStick))
+            {
+                LoseThing(ThingId.LongStick);
+                choosenStick = ThingId.LongStick;
+            }
+            // Only have old stick, use it.
+            else if (HaveThing(ThingId.OldStick))
+            {
+                LoseThing(ThingId.OldStick);
+                choosenStick = ThingId.OldStick;
+            }
+
+            // Get the name of the choosen stick.
+            string[] choosenStickName = new string[] { ThingsData[choosenStick].Name.ToLower() };
+
+            // Text about making fishing rod.
+            InsertKeyWordAndDisplay(eventAndGoalExtraText[80], choosenStickName);
+
+            // Get the fishing rod based on witch stick was used.
+            if (choosenStick == ThingId.FishingRodOld)
+            {
+                // Old.
+                GetThing(ThingId.FishingRodOld);
+            }
+            else if (choosenStick == ThingId.FishingRodLong)
+            {
+                // Long.
+                GetThing(ThingId.FishingRodLong);
+            }
+
+            PressAnyKeyToContinue();
+            DisplayNewLocation();
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -1937,7 +2116,6 @@ namespace Forest
         // TODO add event for trying to cross the river and getting quest
         // TODO add event about bees and flowers
         // TODO add event for fishing
-        // TODO event for looking through binoculars (NO, wont have time)
         #endregion
 
         #region Display helpers
@@ -1948,15 +2126,12 @@ namespace Forest
         {
             // Display current location description.
             LocationData currentLocationData = LocationsData[CurrentLocationId];
-            // Check for special text (digits)
-            // Check if the corresponding bool tells the text should be shown
-            // MAke a new string with all the text that should be shown
-            // Print that string instead of the whole description
             Print(currentLocationData.Description);
             AddExtraDescription();
             Console.WriteLine();
 
-            //This is now already written in the descriptions, but I will keep the code in case I change my mind.
+            // TODO For testing purposes vvvvvvvv
+
             // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
 
@@ -1984,6 +2159,8 @@ namespace Forest
                 }
                 Console.WriteLine();
             }
+
+            // TODO For testing purposes ^^^^^^^^
         }
 
         /// <summary>
