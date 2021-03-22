@@ -116,7 +116,7 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. This part of the view point have binoculars that give a closer look at the view.
+Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. This part of the view point have some old, once considered high tech binoculars that can give a closer look at the view.
 Directions:
     West: 17EastRiver
     Northeast: 19ViewPoint

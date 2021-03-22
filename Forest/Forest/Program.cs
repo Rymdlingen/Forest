@@ -170,7 +170,7 @@ namespace Forest
                                                                                                 { "berry", ThingId.Berries },
                                                                                                 { "honey", ThingId.Beehive },
                                                                                                 { "fish", ThingId.Fish },
-                                                                                                { "stick", ThingId.OldStick }, /* TODO changes witch one it refers to based on location*/
+                                                                                                { "stick", ThingId.OldStick },
                                                                                                 { "old stick", ThingId.OldStick },
                                                                                                 { "long stick", ThingId.LongStick },
                                                                                                 { "rope", ThingId.Rope },
@@ -188,7 +188,7 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt } };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
                                                                                                                      {ThingId.PileOfLeaves, LocationId.Den },
                                                                                                                      {ThingId.Grass, LocationId.Den }};
@@ -198,6 +198,7 @@ namespace Forest
         static List<ThingId> ThingsInDen = new List<ThingId>();
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
         // For puzzle: fishing.
+        static bool FishingPuzzleStarted = false;
         static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
@@ -288,49 +289,52 @@ namespace Forest
         /// </summary>
         static ThingId AskWitchStick()
         {
-            ThingId choosenStick = ThingId.OldStick;
+            ThingId choosenStick = ThingId.Placeholder;
 
-            // The player has to choose what stick to use, as long as they have two sticks they are stuck in this loop.
-            do
+            // The player has to choose what stick to use.
+
+            // Ask witch one they mean.
+            Console.WriteLine();
+            string[] words = AskForInput(eventAndGoalExtraText[76]);
+
+            for (int word = 0; word < words.Length; word++)
             {
-                // Ask witch one they mean.
-                string[] words = AskForInput(eventAndGoalExtraText[76]);
-
-                for (int word = 0; word < words.Length; word++)
+                if (words[word] == "old")
                 {
-                    if (words[word] == "old")
-                    {
-                        words[word] = "old stick";
-                    }
-                    else if (words[word] == "long")
-                    {
-                        words[word] = "long stick";
-                    }
+                    words[word] = "old stick";
                 }
-
-                var thingIds = new List<ThingId>(GetThingIdsFromWords(words));
-
-                foreach (ThingId thingId in thingIds)
+                else if (words[word] == "long")
                 {
-                    if (thingId == ThingId.LongStick)
-                    {
-                        LoseThing(ThingId.LongStick);
-                        choosenStick = ThingId.LongStick;
-                    }
-                    else if (thingId == ThingId.OldStick)
-                    {
-                        LoseThing(ThingId.OldStick);
-                        choosenStick = ThingId.OldStick;
-                    }
+                    words[word] = "long stick";
                 }
-
-                if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
+                else if (words[word] == "stick")
                 {
-                    // Text about having to choose.
-                    Reply(eventAndGoalExtraText[77]);
+                    words[word] = "";
                 }
             }
-            while (HaveThing(ThingId.LongStick) && HaveThing(ThingId.OldStick));
+
+            var thingIds = new List<ThingId>(GetThingIdsFromWords(words));
+
+            // Choose a stick based on the input.
+            foreach (ThingId thingId in thingIds)
+            {
+                if (thingId == ThingId.LongStick)
+                {
+                    return choosenStick = ThingId.LongStick;
+                }
+                else if (thingId == ThingId.OldStick)
+                {
+                    return choosenStick = ThingId.OldStick;
+                }
+            }
+
+            if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
+            {
+                // Text about not understanding.
+                Console.ForegroundColor = NarrativeColor;
+                Console.WriteLine();
+                Reply(eventAndGoalExtraText[77]);
+            }
 
             return choosenStick;
         }
@@ -361,11 +365,14 @@ namespace Forest
                 {
                     // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
                     words[word] = twoWords;
+                    words[word + 1] = "";
                 }
                 else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
                 {
                     // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
                     words[word] = threeWords;
+                    words[word + 1] = "";
+                    words[word + 2] = "";
                 }
             }
 
@@ -745,17 +752,21 @@ namespace Forest
                         case ThingId.OldLeaves:
                         case ThingId.SoftLeaves:
                             PickUpLeaves(thingId);
-                            break;
+                            return;
 
                         case ThingId.Trash:
                             PickUpTrash();
-                            break;
+                            return;
+
+                        case ThingId.Fish:
+                            StartFishingPuzzle();
+                            return;
 
                         default:
                             // Picked it up!
                             Reply(ThingsData[thingId].Answers[0]);
                             GetThing(thingId);
-                            break;
+                            return;
                     }
                 }
             }
@@ -880,6 +891,13 @@ namespace Forest
             {
                 // Says "You are carrying these things:" (if not changed).
                 Reply(eventAndGoalExtraText[49] + thingsInInventory[0] + ".");
+
+                // If the player looks in the inventory, have the puzzle about fishing started and have all the things to make a fishing rod, the things combine to a fishing rod.
+                if (FishingPuzzleStarted && HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
+                {
+                    PressAnyKeyToContinue();
+                    CombineToFishingRod();
+                }
             }
             // If there is no things in the inventory, tell the player that.
             else
@@ -939,24 +957,56 @@ namespace Forest
                             // Says "You don't have a pile of leaves to look at." (if not changed).
                             Reply(eventAndGoalExtraText[13]);
                         }
+
+                        // Only lock at the first thing.
+                        return;
                     }
                     // Special case for looking at the den.
                     else if (thingId == ThingId.Dirt)
                     {
                         // Changes depending on the state of the den.
                         LookAtDen();
+
+                        // Only lock at the first thing.
+                        return;
                     }
                     // Special case for looking at trash, tells you about trash you see or that there is none.
                     else if (thingId == ThingId.Trash)
                     {
                         // Different depending on how much trash player has and depending on location.
                         LookAtTrash();
+
+                        // Only lock at the first thing.
+                        return;
+                    }
+                    // Special case for looking at stick.
+                    else if (thingId == ThingId.LongStick || thingId == ThingId.OldStick)
+                    {
+                        LookAtStick(words);
+
+                        // Only lock at the first thing.
+                        return;
+                    }
+                    // Special case for looking at fish and puzzle about fishing is not started.
+                    else if (thingId == ThingId.Fish)
+                    {
+                        if (HaveThing(ThingId.Fish))
+                        {
+                            Reply(ThingsData[ThingId.Fish].Description);
+                        }
+                        else if (!FishingPuzzleStarted)
+                        {
+                            // Trigger the event for starting the fishing puzzle.
+                            StartFishingPuzzle();
+                        }
+                        else if (FishingPuzzleStarted)
+                        {
+                            // Description about how player is trying to catch the fish.
+                            Reply(eventAndGoalExtraText[99]);
+                        }
                     }
                     else
                     {
-                        // Output the correct response depending on if the location of the thing matches the location of the player or has inventory as location.
-                        // Checking every thing found in the command.
-
                         // Thing is at players location or in inventory.
                         if (ThingIsAvailable(thingId))
                         {
@@ -969,6 +1019,9 @@ namespace Forest
                             string[] thingArray = new string[] { thing };
                             InsertKeyWordAndDisplay(eventAndGoalExtraText[47], thingArray);
                         }
+
+                        // Only lock at the first thing.
+                        return;
                     }
                 }
             }
@@ -984,6 +1037,12 @@ namespace Forest
                 Reply(eventAndGoalExtraText[46]);
             }
         }
+
+        // TODO MOVE LATER vvvvv
+
+        // Nothing to move right now.
+
+        // TODO MOVE LATER ^^^^
 
         static void HandleTalk(string[] words)
         {
@@ -1170,15 +1229,6 @@ namespace Forest
             }
         }
 
-        // TODO MOVE LATER vvvvv
-
-        static void UseFishingRod()
-        {
-            Fishing();
-        }
-
-        // TODO MOVE LATER ^^^^
-
         static void TalkToOwl()
         {
             // TODO
@@ -1231,6 +1281,16 @@ namespace Forest
                     }
                 }
 
+                // Key word stick refers to the stick at current location.
+                if (CurrentLocationId == LocationId.LeafyForestNorth)
+                {
+                    ThingIdsByName["stick"] = ThingId.LongStick;
+                }
+                else if (CurrentLocationId == LocationId.MossyForestNorth)
+                {
+                    ThingIdsByName["stick"] = ThingId.OldStick;
+                }
+
                 // Storing the current location as the previous location before moving on to the next command.
                 PreviousLocation = CurrentLocationId;
             }
@@ -1276,12 +1336,6 @@ namespace Forest
                 }
             }
 
-            // TODO add bool about puzzle started
-            if (HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
-            {
-                CombineToFishingRod();
-            }
-
             if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
                 // TODO
@@ -1307,7 +1361,7 @@ namespace Forest
                 // TODO
             }
 
-            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned]))
+            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish)))
             {
                 EndGame();
             }
@@ -1566,68 +1620,96 @@ namespace Forest
         }
 
         // Events about the fishing puzzle.
-        static void Fishing()
+        static void StartFishingPuzzle()
         {
-            Console.Clear();
-
-            ThingId fishingRod = ThingId.FishingRodLong;
-
-            // Check witch fishing rod the player has.
-            if (HaveThing(ThingId.FishingRodLong))
+            if (!FishingPuzzleStarted)
             {
-                fishingRod = ThingId.FishingRodLong;
-            }
-            else if (HaveThing(ThingId.FishingRodOld))
-            {
-                fishingRod = ThingId.FishingRodOld;
-            }
-
-            // The name of the fishing rod.
-            string[] fishingRodName = new string[] { ThingsData[fishingRod].Name };
-
-            // Text about starting to fish, sit down with you rod made out of choosen stick.
-            InsertKeyWordAndDisplay(eventAndGoalExtraText[81], fishingRodName);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[82]);
-            PressAnyKeyToContinue();
-
-            if (fishingRod == ThingId.FishingRodLong)
-            {
-                // You wait and wait and wait, nothing happens.
-                Reply(eventAndGoalExtraText[83]);
+                // Start instructions for fishing puzzle.
+                FishingPuzzleStarted = true;
+                Reply(eventAndGoalExtraText[97]);
                 PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[84]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[85]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[83]);
-                PressAnyKeyToContinue();
-                PressAnyKeyToContinue();
-                PressAnyKeyToContinue();
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[86]);
+                Reply(eventAndGoalExtraText[98]);
                 PressAnyKeyToContinue();
             }
-            else if (fishingRod == ThingId.FishingRodOld)
+            else
             {
-                // Gets a fish on the hook but the rod breakes.
-                Reply(eventAndGoalExtraText[87]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[88]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[89]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[90]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[91]);
-                PressAnyKeyToContinue();
-                Reply(eventAndGoalExtraText[92]);
-                PressAnyKeyToContinue();
+                // You cant get it, need to find a way to do it like the humans do.
+                Reply(eventAndGoalExtraText[100]);
             }
+        }
 
-            // Text about catching fish and throwing rod away.
-            Reply(eventAndGoalExtraText[93]);
-            GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+        static void UseFishingRod()
+        {
+            if (CurrentLocationId == LocationId.EastRiver)
+            {
+                Console.Clear();
+
+                // Data about the long rod as default.
+                ThingId fishingRod = ThingId.FishingRodLong;
+                ThingId stick = ThingId.LongStick;
+
+                // Change to data aboit the old rod if thats what the player has.
+                if (HaveThing(ThingId.FishingRodOld))
+                {
+                    fishingRod = ThingId.FishingRodOld;
+                    stick = ThingId.OldStick;
+                }
+
+                // The name of the fishing rod.
+                string[] stickName = new string[] { ThingsData[stick].Name.ToLower() };
+
+                // Text about starting to fish, sit down with you rod made out of choosen stick.
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[81], stickName);
+                PressAnyKeyToContinue();
+                Reply(eventAndGoalExtraText[82]);
+                PressAnyKeyToContinue();
+
+                if (fishingRod == ThingId.FishingRodLong)
+                {
+                    // You wait and wait and wait, nothing happens.
+                    Reply(eventAndGoalExtraText[83]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[84]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[85]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[83]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[101]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[101]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[101]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[86]);
+                    PressAnyKeyToContinue();
+                }
+                else if (fishingRod == ThingId.FishingRodOld)
+                {
+                    // Gets a fish on the hook but the rod breakes.
+                    Reply(eventAndGoalExtraText[87]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[88]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[89]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[90]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[91]);
+                    PressAnyKeyToContinue();
+                    Reply(eventAndGoalExtraText[92]);
+                    PressAnyKeyToContinue();
+                }
+
+                // Text about catching fish and throwing rod away.
+                Reply(eventAndGoalExtraText[93]);
+                GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+            }
+            else
+            {
+                //Says "There is no good spots for fishing here." (if not changed)
+                Reply(eventAndGoalExtraText[96]);
+            }
         }
 
         // Trash.
@@ -2060,15 +2142,15 @@ namespace Forest
             // Only have long stick, use it.
             else if (HaveThing(ThingId.LongStick))
             {
-                LoseThing(ThingId.LongStick);
                 choosenStick = ThingId.LongStick;
             }
             // Only have old stick, use it.
             else if (HaveThing(ThingId.OldStick))
             {
-                LoseThing(ThingId.OldStick);
                 choosenStick = ThingId.OldStick;
             }
+
+            LoseThing(choosenStick);
 
             // Get the name of the choosen stick.
             string[] choosenStickName = new string[] { ThingsData[choosenStick].Name.ToLower() };
@@ -2077,19 +2159,70 @@ namespace Forest
             InsertKeyWordAndDisplay(eventAndGoalExtraText[80], choosenStickName);
 
             // Get the fishing rod based on witch stick was used.
-            if (choosenStick == ThingId.FishingRodOld)
+            if (choosenStick == ThingId.OldStick)
             {
                 // Old.
                 GetThing(ThingId.FishingRodOld);
+                // Would like a better way for this to avoid hard coded text, maybe look for values and change them?
+                ThingIdsByName["rod"] = ThingId.FishingRodOld;
+                ThingIdsByName["fishing rod"] = ThingId.FishingRodOld;
             }
-            else if (choosenStick == ThingId.FishingRodLong)
+            else if (choosenStick == ThingId.LongStick)
             {
                 // Long.
                 GetThing(ThingId.FishingRodLong);
+                // Would like a better way for this to avoid hard coded text, maybe look for values and change them?
+                ThingIdsByName["rod"] = ThingId.FishingRodLong;
+                ThingIdsByName["fishing rod"] = ThingId.FishingRodLong;
             }
 
             PressAnyKeyToContinue();
             DisplayNewLocation();
+        }
+
+        static void LookAtStick(string[] words)
+        {
+            // If player already specified witch stick to look at and that stick is here.
+            if ((words.Contains("old stick") && ThingIsAvailable(ThingId.OldStick)) || (words.Contains("long stick") && ThingIsAvailable(ThingId.LongStick)))
+            {
+                if (words.Contains("old stick"))
+                {
+                    // Look at old stick.
+                    Reply(ThingsData[ThingId.OldStick].Description);
+                }
+                else
+                {
+                    // Look at long stick.
+                    Reply(ThingsData[ThingId.LongStick].Description);
+                }
+            }
+            // If both sticks are around, ask witch one they mean.
+            else if (ThingIsAvailable(ThingId.OldStick) && ThingIsAvailable(ThingId.LongStick))
+            {
+                ThingId choosenStick = AskWitchStick();
+
+                if (choosenStick == ThingId.Placeholder)
+                {
+                    return;
+                }
+
+                Reply(ThingsData[choosenStick].Description);
+            }
+            else if (ThingIsAvailable(ThingId.OldStick))
+            {
+                // Look at old stick.
+                Reply(ThingsData[ThingId.OldStick].Description);
+            }
+            else if (ThingIsAvailable(ThingId.LongStick))
+            {
+                // Look at long stick.
+                Reply(ThingsData[ThingId.LongStick].Description);
+            }
+            else
+            {
+                // Says "There is no such thing to look at." (if not changed).
+                Reply(eventAndGoalExtraText[46]);
+            }
         }
 
         // Other events.
@@ -2130,6 +2263,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
+            /*
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -2161,6 +2295,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
+            */
         }
 
         /// <summary>
@@ -2204,7 +2339,6 @@ namespace Forest
                 return;
             }
 
-            // TODO CHANGE THIS TO FINDING THE NAIL (SO DESCRIPTIONS CHANGE AFER WALKING THE PATH ONCE!!)
             // Add extra text if the hidden path is found.
             if (!NailFound)
             {
@@ -2818,7 +2952,6 @@ namespace Forest
         }*/
         #endregion
 
-        // TODO puzzle about fishing
         // TODO finding necklace
         // TODO text about trying necklace and dream
         // TODO end of part 1

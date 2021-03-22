@@ -135,14 +135,14 @@ Starting location: 9BeeForest
 
 ID: Fish
 Name: Fish
-Description: There is a lot of big fishes swimming in the dam, they thrive here in the calm water of the natural dam.
+Description: It is a fish from the dam. There is a lot of big fishes swimming in the dam, they thrive there in the calm and warm water.
 Answers:
 	Pick up:
 	Thing can not be picked up: <special message about the puzzle>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
-	Drop not possible: <Thing can't be dropped here>
+	Drop not possible: You don't want to let that fish go!
 	Can drop but lose thing: You set the fish free! Hope it finds its way back to the water.
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
@@ -154,8 +154,8 @@ Description: A branch that fell from one of the spruces a long time ago.
 Answers:
 	Pick up: You picked up an old stick.
 	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
-	Already in inventory: <You can't have the same thing twice>
+	Thing is not here: There is no extra interesting sticks around to take a closer look at.
+	Already in inventory: You already have an old stick, you don't need another one.
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
@@ -169,7 +169,7 @@ Description: There is a lot of long sticks lying on the ground.
 Answers:
 	Pick up: You grabbed the longest one you could find.
 	Thing can not be picked up: <Not possible to pick up, message about why>
-	Thing is not here: <You can't see such a thing>
+	Thing is not here: There is no extra interesting sticks around to take a closer look at.
 	Already in inventory: One is enough.
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
@@ -225,7 +225,7 @@ Starting location: 14SouthForest
 
 ID: Binoculars
 Name: Binoculars
-Description: A set of binoculars used to take a good look at the view, but they can also be turned to look back into the forest.
+Description: It is a set of really old binoculars, a long time ago the where on the edge of what technology could accomplish. They are used to take a good look at the view, but they can also be turned to look back into the forest.
 Answers:
 	Pick up: <Can't>
 	Thing can not be picked up: They are fastened to the wooden deck, you can't move them.
@@ -310,7 +310,7 @@ Starting location: Nowhere
 
 ID: Placeholder
 Name: Placeholder
-Description: A placeholder used for, for example, differentiating between trash collected and trash in possession.
+Description: A placeholder.
 Starting location: Nowhere
 
 Notes:
