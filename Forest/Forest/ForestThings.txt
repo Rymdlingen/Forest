@@ -118,12 +118,12 @@ Answers: <Just guides the code to start making an array for the upcoming 8 lines
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>
 Starting location: 15SouthEastForest
 
-ID: Flower
-Name: Flower
-Description: (NOT DONE)
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+ID: Flowers
+Name: Flowers
+Description: (NOT DONE) all the flowers.
+Answers:
 	Pick up: <Message about picking this up>
-	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing can not be picked up: The flowers are important to the bees, they make honey out of them, better not pick the flowers since more flowers equals more yummy honey!
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
@@ -131,12 +131,27 @@ Answers: <Just guides the code to start making an array for the upcoming 8 lines
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
-Starting location: 9BeeForest
+Starting location: 8Glade
+
+ID: Flower
+Name: Flower
+Description: A red poppy, smells amazing.
+Answers:
+	Pick up: Such a nice flower might be useful for something.
+	Thing can not be picked up: You don't want to take the flower away from the happy bees.
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: You put down your flower on the ground, a bunch of bees immediately fly over to the flower.
+	Drop not possible: No use throwing your flower away!
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: Nowhere
 
 ID: Bee
 Name: Bee
-Description: (NOT DONE) Lonely bee.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+Description: There is a lonely bee flying around, it looks lost.
+Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
@@ -146,7 +161,22 @@ Answers: <Just guides the code to start making an array for the upcoming 8 lines
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
-Starting location: 9BeeForest
+Starting location: 3MossyForestEntrance
+
+ID: Honey
+Name: Honey
+Description: A jar of honey, it's a gift from the bees.
+Answers:
+	Pick up: <Message about picking this up>
+	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: Nowhere
 
 ID: Fish
 Name: Fish

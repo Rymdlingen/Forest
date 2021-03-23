@@ -201,3 +201,17 @@
 100You are trying to catch a fish like the humans do it, so you can't just catch it with your paw like you usually do. You need to find a way to make something similar to the rod the humans use.
 
 101...
+
+102You gathered an armful of long, soft grass from the meadow. You tried to avoid the flowers, since it's better to leave them for the bees, but you accidentally picked one up.
+
+103There is a lonely bee flying around, it looks lost, but it seems to like your flower.
+
+104There is a bee following you, it really likes your flower!
+
+105There is a lonely bee flying around, it looks lost.
+
+106The bee starts flying around you and is buzzing happily, this is where the bee lives. It seems happy you helped it find it's way home.
+
+107The bee is still following you even though you guided it home, it seems to like your flower very much.
+
+108Your bee friend joins the other bees. It look like it's very happy about being home and to have brought such a nice flower with it.

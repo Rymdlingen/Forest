@@ -44,7 +44,9 @@ namespace Forest
         PileOfLeaves,
         Berries,
         Flower,
+        Flowers,
         Bee,
+        Honey,
         Fish,
         OldStick,
         LongStick,
@@ -170,8 +172,9 @@ namespace Forest
                                                                                                 { "berries", ThingId.Berries },
                                                                                                 { "berry", ThingId.Berries },
                                                                                                 { "flower", ThingId.Flower },
-                                                                                                { "flowers", ThingId.Flower },
+                                                                                                { "flowers", ThingId.Flowers },
                                                                                                 { "bee", ThingId.Bee },
+                                                                                                { "honey", ThingId.Honey },
                                                                                                 { "fish", ThingId.Fish },
                                                                                                 { "stick", ThingId.OldStick },
                                                                                                 { "old stick", ThingId.OldStick },
@@ -191,10 +194,8 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt } };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish };
-        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { {ThingId.Moss, LocationId.Den },
-                                                                                                                     {ThingId.PileOfLeaves, LocationId.Den },
-                                                                                                                     {ThingId.Grass, LocationId.Den }};
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower };
+        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { { ThingId.Flower, LocationId.BeeForest } };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         // For puzzle: make den cozy.
         static List<ThingId> ThingsInPileOfLeaves = new List<ThingId>();
@@ -209,6 +210,9 @@ namespace Forest
         static List<string> EnteredArrows = new List<string>();
         static bool HiddenPathFound = false;
         static bool NailFound = false;
+        // For puzzle: lost bee and honey.
+        static bool BeeHasBeenInBeeForest = false;
+        static bool BeeIsHome = false;
         #endregion
 
         #region Output helpers
@@ -607,6 +611,7 @@ namespace Forest
                 // TODO interacting verbs, probably need more of them
                 case "eat":
                     // TODO for eating fish and other things.
+                    HandleEat(words);
                     break;
 
                 // For fishing puzzle.
@@ -669,11 +674,18 @@ namespace Forest
             // If the player is going from the leafy forest to the den and have the pile of leaves, start event about leaves blowing in the wind.
             if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
             {
+                // Move the bee if the previous location had the bee and player have the flower.
+                MoveBee(LocationId.Den);
+
+                // Tries to bring the leaves to the den.
                 BringLeavesToDen();
             }
             // If the player is trying to go from the south leafy forest to the west river, they go on the waterslide and a special text is displayed as they are taken to the east part of the river because of currents in the west river.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestSouth && currentLocation.Directions[direction] == LocationId.WestRiver)
             {
+                // Move the bee if the previous location had the bee and player have the flower.
+                MoveBee(LocationId.EastRiver);
+
                 // Event for going down waterslide.
                 GoDownWaterSlide();
             }
@@ -686,6 +698,9 @@ namespace Forest
             // When moving from waterfall to old tree for the first time, event about finding nail starts.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.Waterfall && currentLocation.Directions[direction] == LocationId.SouthEastForest && !NailFound)
             {
+                // Move the bee if the previous location had the bee and player have the flower.
+                MoveBee(LocationId.SouthEastForest);
+
                 // Text about finding nail.
                 FindNail();
             }
@@ -693,6 +708,10 @@ namespace Forest
             else if (currentLocation.Directions.ContainsKey(direction))
             {
                 LocationId newLocation = currentLocation.Directions[direction];
+
+                // Move the bee if the previous location had the bee and player have the flower.
+                MoveBee(newLocation);
+
                 // Changing the current location to the new location and displaying the new location information.
                 MovePlayerToNewLocation(newLocation);
             }
@@ -751,6 +770,10 @@ namespace Forest
                     // Thing is pickable and at players location.
                     switch (thingId)
                     {
+                        case ThingId.Grass:
+                            PickUpGrassAndGetFlower();
+                            return;
+
                         case ThingId.OkLeaves:
                         case ThingId.OldLeaves:
                         case ThingId.SoftLeaves:
@@ -801,7 +824,7 @@ namespace Forest
                     // Special case for dropping leaves in the leafy forest.
                     if (thingId == ThingId.OldLeaves || thingId == ThingId.OkLeaves || thingId == ThingId.SoftLeaves)
                     {
-                        // TODO Could make it so the correct type of lef sis dropped if specified, othervise the whole pile. Also need to know if player writes pile of leaf
+                        // TODO Could make it so the correct type of leafs is dropped if specified, othervise the whole pile. Also need to know if player writes pile of leaf
                         DropPileOfLeavesOutsideOfDen();
 
                         return;
@@ -836,6 +859,10 @@ namespace Forest
 
                         case ThingId.Trash:
                             DropTrash();
+                            break;
+
+                        case ThingId.Flower:
+                            DropFlower();
                             break;
 
                         // Player is trying to drop something that they can't drop here.
@@ -1043,7 +1070,34 @@ namespace Forest
 
         // TODO MOVE LATER vvvvv
 
-        // Nothing to move right now.
+        static void DropFlower()
+        {
+            if (CurrentLocationId == LocationId.BeeForest)
+            {
+                // Drop flower.
+                DropThing(ThingId.Flower);
+
+                // Different text depending on if the bee is there or not.
+                if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
+                {
+                    // Bee joins the other bees around the droped flower.
+                    Reply(ThingsData[ThingId.Bee].Answers[4] + eventAndGoalExtraText[108]);
+
+                    // Can't pick up flower anymore.
+                    ThingsYouCanGet.Remove(ThingId.Flower);
+                }
+                else
+                {
+                    // Normal drop with text about bees liking the flower.
+                    Reply(ThingsData[ThingId.Flower].Answers[4]);
+                }
+            }
+            else
+            {
+                // NO drop.
+                Reply(ThingsData[ThingId.Flower].Answers[5]);
+            }
+        }
 
         // TODO MOVE LATER ^^^^
 
@@ -1163,6 +1217,63 @@ namespace Forest
             {
                 // TODO text
                 Reply($"I don't understand.");
+            }
+        }
+
+        static void HandleEat(string[] words)
+        {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    // Thing is not in this location or in the inventory.
+                    if (!ThingIsAvailable(thingId))
+                    {
+                        // Not here.
+                        Reply(ThingsData[thingId].Answers[2]);
+                        return;
+                    }
+
+                    // Thing is available.
+                    switch (thingId)
+                    {
+                        case ThingId.Fish:
+                            // TODO
+                            return;
+
+                        case ThingId.Flower:
+                            // TODO
+                            return;
+
+                        case ThingId.Honey:
+                            // TODO
+                            return;
+
+                        default:
+                            // TODO
+                            // Picked it up!
+                            Reply(ThingsData[thingId].Answers[0]);
+                            GetThing(thingId);
+                            return;
+                    }
+                }
+            }
+            // If there was no matching words and keys then the thing doesn't exist.
+            else
+            {
+                // TODO
+                // Says "There is no such thing that you can pick up here." (if not changed).
+                Reply(eventAndGoalExtraText[5]);
             }
         }
 
@@ -2228,6 +2339,27 @@ namespace Forest
             }
         }
 
+        // Events about honey an bees.
+        /// <summary>
+        /// Checks if bee needs to be move when player goes to a new location.
+        /// </summary>
+        static void MoveBee(LocationId newLocation)
+        {
+            // Move the bee if the previous location had the bee and player have the flower.
+            if (ThingsCurrentLocations[ThingId.Bee].Contains(CurrentLocationId) && HaveThing(ThingId.Flower))
+            {
+                MoveThing(ThingId.Bee, CurrentLocationId, newLocation);
+            }
+
+            // If the bee gets to the bee forest, change the bool that is used to display the correct text.
+            if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
+            {
+                // Text about bee making it back home.
+                Reply(eventAndGoalExtraText[106]);
+                BeeHasBeenInBeeForest = true;
+            }
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -2248,6 +2380,13 @@ namespace Forest
             MovePlayerToNewLocation(LocationId.EastRiver);
         }
 
+        static void PickUpGrassAndGetFlower()
+        {
+            GetThing(ThingId.Grass);
+            GetThing(ThingId.Flower);
+            Reply(eventAndGoalExtraText[102]);
+        }
+
         // TODO add event about floting on the river
         // TODO add event for trying to cross the river and getting quest
         // TODO add event about bees and flowers
@@ -2266,7 +2405,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-            /*
+
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -2298,7 +2437,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
-            */
+
         }
 
         /// <summary>
@@ -2338,35 +2477,28 @@ namespace Forest
                 {
                     Print(eventAndGoalExtraText[2]);
                 }
-
-                return;
             }
 
-            // Add extra text if the hidden path is found.
-            if (!NailFound)
+            // Add extra text if the hidden path is found. At location waterfall.
+            if (!NailFound && CurrentLocationId == LocationId.Waterfall)
             {
                 // TODO color
                 Console.WriteLine();
 
-                // At location waterfall.
-                if (CurrentLocationId == LocationId.Waterfall)
+                // When hidden path is not found.
+                if (!HiddenPathFound)
                 {
-                    // When hidden path is not found.
-                    if (!HiddenPathFound)
-                    {
-                        Print(eventAndGoalExtraText[67]);
-                    }
-                    // When path is found but not walked.
-                    else
-                    {
-                        // "What did I see in the north?"
-                        Print(eventAndGoalExtraText[68]);
-                    }
-
+                    Print(eventAndGoalExtraText[67]);
+                }
+                // When path is found but not walked.
+                else
+                {
+                    // "What did I see in the north?"
+                    Print(eventAndGoalExtraText[68]);
                 }
             }
             // Hidden path is walked on.
-            else if (NailFound)
+            else if (NailFound && (CurrentLocationId == LocationId.Waterfall || CurrentLocationId == LocationId.SouthEastForest))
             {
                 // TODO color
                 Console.WriteLine();
@@ -2381,6 +2513,48 @@ namespace Forest
                 else if (CurrentLocationId == LocationId.SouthEastForest)
                 {
                     Print(eventAndGoalExtraText[70]);
+                }
+            }
+
+            // About the bee and the flower.
+            if (ThingIsHere(ThingId.Bee))
+            {
+                // Different text depending on if the player have the flower.
+                if (HaveThing(ThingId.Flower))
+                {
+                    // TODO color
+                    Console.WriteLine();
+
+                    // Text for if the bee has been in the bee forest but player didn't drop the flower and bee is still following.
+                    if (BeeHasBeenInBeeForest)
+                    {
+                        // Bee didn't stay home, seems to like your flower too much.
+                        Reply(eventAndGoalExtraText[107]);
+                    }
+                    // Text about bee following.
+                    else
+                    {
+                        // Different text depending on the location, bees starting location or not.
+                        if (CurrentLocationId == ThingsData[ThingId.Bee].StartingLocationId[0])
+                        {
+                            // Says "There is a lonely bee flying around, it looks lost, but it seems to like your flower." (if not changed)
+                            Print(eventAndGoalExtraText[103]);
+                        }
+                        else
+                        {
+                            // Says "The bee follows you, it really likes you flower." (if not changed)
+                            Print(eventAndGoalExtraText[104]);
+                        }
+                    }
+                }
+                // Don't have the flower.
+                else if (!HaveThing(ThingId.Flower))
+                {
+                    // TODO color
+                    Console.WriteLine();
+
+                    // Says "There is a lonely bee flying around, it looks lost." (if not changed)
+                    Print(eventAndGoalExtraText[105]);
                 }
             }
         }
@@ -2403,7 +2577,6 @@ namespace Forest
             newSentence = newSentence + sentence.Split('@')[split];
             Reply(newSentence);
         }
-
         #endregion
 
         #region Event helpers
@@ -2470,17 +2643,17 @@ namespace Forest
         }
 
         /// <summary>
-        /// Changes a certain things location to a certain location.
+        /// Changes a certain things location from a location to a location.
         /// </summary>
         /// <param name="thingId"></param>
-        /// <param name="locationId"></param>
-        static void MoveThing(ThingId thingId, LocationId locationId)
+        /// <param name="fromLocation"></param>
+        /// <param name="toLocation"></param>
+        static void MoveThing(ThingId thingId, LocationId fromLocation, LocationId toLocation)
         {
-            // TODO IS THIS WHAT I WANT???
-            // Removes the thing from the current location.
-            RemoveThingFromLocation(thingId);
+            // Removes the thing from a location.
+            ThingsCurrentLocations[thingId].Remove(fromLocation);
             // Adds the thing to a new location.
-            ThingsCurrentLocations[thingId].Add(locationId);
+            ThingsCurrentLocations[thingId].Add(toLocation);
         }
 
         /// <summary>
@@ -2524,7 +2697,7 @@ namespace Forest
         /// <param name="thingId"></param>
         static void DropThing(ThingId thingId)
         {
-            ThingsCurrentLocations[thingId].Remove(LocationId.Inventory);
+            LoseThing(thingId);
             AddThingToLocation(thingId);
         }
 
