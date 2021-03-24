@@ -210,8 +210,10 @@
 
 105There is a lonely bee flying around, it looks lost.
 
-106The bee starts flying around you and is buzzing happily, this is where the bee lives. It seems happy you helped it find it's way home.
+106The bee is flying in circles around you and is buzzing happily, this is where the bee lives. It seems happy you helped it find it's way home.
 
 107The bee is still following you even though you guided it home, it seems to like your flower very much.
 
 108Your bee friend joins the other bees. It look like it's very happy about being home and to have brought such a nice flower with it.
+
+109The flower that you put on the ground before is still there, the bees seem to realy like to have it around.

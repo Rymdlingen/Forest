@@ -1081,7 +1081,7 @@ namespace Forest
                 if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
                 {
                     // Bee joins the other bees around the droped flower.
-                    Reply(ThingsData[ThingId.Bee].Answers[4] + eventAndGoalExtraText[108]);
+                    Reply(ThingsData[ThingId.Flower].Answers[4] + " " + eventAndGoalExtraText[108]);
 
                     // Can't pick up flower anymore.
                     ThingsYouCanGet.Remove(ThingId.Flower);
@@ -2354,9 +2354,13 @@ namespace Forest
             // If the bee gets to the bee forest, change the bool that is used to display the correct text.
             if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
             {
-                // Text about bee making it back home.
-                Reply(eventAndGoalExtraText[106]);
                 BeeHasBeenInBeeForest = true;
+
+                // If the flower is at the bee forest (not in inventory) when bee is there, bee is home (and stays home).
+                if (ThingIsHere(ThingId.Flower))
+                {
+                    BeeIsHome = true;
+                }
             }
         }
 
@@ -2519,43 +2523,60 @@ namespace Forest
             // About the bee and the flower.
             if (ThingIsHere(ThingId.Bee))
             {
-                // Different text depending on if the player have the flower.
-                if (HaveThing(ThingId.Flower))
-                {
-                    // TODO color
-                    Console.WriteLine();
+                // TODO color
+                Console.WriteLine();
 
-                    // Text for if the bee has been in the bee forest but player didn't drop the flower and bee is still following.
-                    if (BeeHasBeenInBeeForest)
+                if (CurrentLocationId == LocationId.BeeForest)
+                {
+                    if (HaveThing(ThingId.Flower))
                     {
-                        // Bee didn't stay home, seems to like your flower too much.
-                        Reply(eventAndGoalExtraText[107]);
+                        // Text about bee making it back home.
+                        Reply(eventAndGoalExtraText[106]);
                     }
-                    // Text about bee following.
-                    else
+                }
+                else
+                {
+                    // Different text depending on if the player have the flower.
+                    if (HaveThing(ThingId.Flower))
                     {
-                        // Different text depending on the location, bees starting location or not.
-                        if (CurrentLocationId == ThingsData[ThingId.Bee].StartingLocationId[0])
+                        // Text for if the bee has been in the bee forest but player didn't drop the flower and bee is still following.
+                        if (BeeHasBeenInBeeForest)
                         {
-                            // Says "There is a lonely bee flying around, it looks lost, but it seems to like your flower." (if not changed)
-                            Print(eventAndGoalExtraText[103]);
+                            // Bee didn't stay home, seems to like your flower too much.
+                            Reply(eventAndGoalExtraText[107]);
                         }
+                        // Text about bee following.
                         else
                         {
-                            // Says "The bee follows you, it really likes you flower." (if not changed)
-                            Print(eventAndGoalExtraText[104]);
+                            // Different text depending on the location, bees starting location or not.
+                            if (CurrentLocationId == ThingsData[ThingId.Bee].StartingLocationId[0])
+                            {
+                                // Says "There is a lonely bee flying around, it looks lost, but it seems to like your flower." (if not changed)
+                                Print(eventAndGoalExtraText[103]);
+                            }
+                            else
+                            {
+                                // Says "The bee follows you, it really likes you flower." (if not changed)
+                                Print(eventAndGoalExtraText[104]);
+                            }
                         }
                     }
+                    // Don't have the flower.
+                    else if (!HaveThing(ThingId.Flower))
+                    {
+                        // Says "There is a lonely bee flying around, it looks lost." (if not changed)
+                        Print(eventAndGoalExtraText[105]);
+                    }
                 }
-                // Don't have the flower.
-                else if (!HaveThing(ThingId.Flower))
-                {
-                    // TODO color
-                    Console.WriteLine();
+            }
+            // Add extra description for flower on the ground in the bee forest.
+            else if (CurrentLocationId == LocationId.BeeForest && ThingIsHere(ThingId.Flower))
+            {
+                // TODO color
+                Console.WriteLine();
 
-                    // Says "There is a lonely bee flying around, it looks lost." (if not changed)
-                    Print(eventAndGoalExtraText[105]);
-                }
+                // Text about bees liking the flower on the ground.
+                Reply(eventAndGoalExtraText[109]);
             }
         }
 

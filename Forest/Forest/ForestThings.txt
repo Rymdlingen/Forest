@@ -123,7 +123,7 @@ Name: Flowers
 Description: (NOT DONE) all the flowers.
 Answers:
 	Pick up: <Message about picking this up>
-	Thing can not be picked up: The flowers are important to the bees, they make honey out of them, better not pick the flowers since more flowers equals more yummy honey!
+	Thing can not be picked up: The flowers are important to the bees, they make honey out of them, better not pick the flowers since more flowers in the meadow equals more yummy honey!
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
@@ -137,7 +137,7 @@ ID: Flower
 Name: Flower
 Description: A red poppy, smells amazing.
 Answers:
-	Pick up: Such a nice flower might be useful for something.
+	Pick up: It might come in useful to have something that bees like, you picked the flower up.
 	Thing can not be picked up: You don't want to take the flower away from the happy bees.
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
