@@ -194,7 +194,7 @@ namespace Forest
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt } };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { { ThingId.Flower, LocationId.BeeForest } };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         // For puzzle: make den cozy.
@@ -213,6 +213,8 @@ namespace Forest
         // For puzzle: lost bee and honey.
         static bool BeeHasBeenInBeeForest = false;
         static bool BeeIsHome = false;
+        static bool HoneyPuzzleStarted = false;
+        static bool HaveTriedToEatFlower = false;
         #endregion
 
         #region Output helpers
@@ -671,8 +673,14 @@ namespace Forest
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
             // Checking if the direction is availible for the current location.
+            // For giving instructions about eating a flower.
+            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.BeeForest && currentLocation.Directions[direction] == LocationId.Glade && BeeIsHome && !HoneyPuzzleStarted)
+            {
+                // Will trigger the start of eating flowers once.
+                GetIdeaAboutHoney();
+            }
             // If the player is going from the leafy forest to the den and have the pile of leaves, start event about leaves blowing in the wind.
-            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
             {
                 // Move the bee if the previous location had the bee and player have the flower.
                 MoveBee(LocationId.Den);
@@ -1070,34 +1078,7 @@ namespace Forest
 
         // TODO MOVE LATER vvvvv
 
-        static void DropFlower()
-        {
-            if (CurrentLocationId == LocationId.BeeForest)
-            {
-                // Drop flower.
-                DropThing(ThingId.Flower);
 
-                // Different text depending on if the bee is there or not.
-                if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
-                {
-                    // Bee joins the other bees around the droped flower.
-                    Reply(ThingsData[ThingId.Flower].Answers[4] + " " + eventAndGoalExtraText[108]);
-
-                    // Can't pick up flower anymore.
-                    ThingsYouCanGet.Remove(ThingId.Flower);
-                }
-                else
-                {
-                    // Normal drop with text about bees liking the flower.
-                    Reply(ThingsData[ThingId.Flower].Answers[4]);
-                }
-            }
-            else
-            {
-                // NO drop.
-                Reply(ThingsData[ThingId.Flower].Answers[5]);
-            }
-        }
 
         // TODO MOVE LATER ^^^^
 
@@ -1183,7 +1164,7 @@ namespace Forest
                     else
                     {
                         // Says "doesn't need cleaning."
-                        Reply(Capitalize(thing) + eventAndGoalExtraText[24]);
+                        Reply(Capitalize(thing) + " " + eventAndGoalExtraText[24]);
                     }
                 }
             }
@@ -1248,22 +1229,48 @@ namespace Forest
                     switch (thingId)
                     {
                         case ThingId.Fish:
-                            // TODO
+                            // TODO for swiming over river
                             return;
 
-                        case ThingId.Flower:
-                            // TODO
+                        case ThingId.Flowers:
+                            // If the honey puzzle is started allow player to eat flower otherwise no.
+                            if (HoneyPuzzleStarted)
+                            {
+                                // If player hasn't already tried to eat flower.
+                                if (!HaveTriedToEatFlower)
+                                {
+                                    // Text about eating a flower and then leaving the honey making to the bees.
+                                    Reply(eventAndGoalExtraText[115]);
+                                    HaveTriedToEatFlower = true;
+                                }
+                                else
+                                {
+                                    // Flowers are not tasty, no eat.
+                                    Reply(eventAndGoalExtraText[116]);
+                                }
+                            }
+                            else
+                            {
+                                // Says "Better not eat that." (if not changed).
+                                Reply(eventAndGoalExtraText[114]);
+                            }
                             return;
 
                         case ThingId.Honey:
-                            // TODO
+                            // TODO for swiming over river
                             return;
 
                         default:
-                            // TODO
-                            // Picked it up!
-                            Reply(ThingsData[thingId].Answers[0]);
-                            GetThing(thingId);
+                            if (words.Length > 1)
+                            {
+                                // Says "Better not eat that." (if not changed).
+                                Reply(eventAndGoalExtraText[114]);
+                            }
+                            else
+                            {
+                                // Says "Maybe you should find something to eat." (if not changed).
+                                Reply(eventAndGoalExtraText[117]);
+                            }
                             return;
                     }
                 }
@@ -1271,9 +1278,8 @@ namespace Forest
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // TODO
-                // Says "There is no such thing that you can pick up here." (if not changed).
-                Reply(eventAndGoalExtraText[5]);
+                // Says "Better not eat that." (if not changed).
+                Reply(eventAndGoalExtraText[114]);
             }
         }
 
@@ -1352,8 +1358,6 @@ namespace Forest
         {
             // TODO
         }
-
-        // TODO add more game events
         #endregion
 
         #region Game Rules
@@ -1405,6 +1409,20 @@ namespace Forest
                     ThingIdsByName["stick"] = ThingId.OldStick;
                 }
 
+                // Key word "flower" and "flowers" changes between meaning one flower and many.
+                if (ThingIsAvailable(ThingId.Flower) || CurrentLocationId == LocationId.BeeForest)
+                {
+                    // Key word "flower" and "flowers" now means one flower.
+                    ThingIdsByName["flower"] = ThingId.Flower;
+                    ThingIdsByName["flowers"] = ThingId.Flower;
+                }
+                else
+                {
+                    // Key word "flower" and "flowers" now means many flowers.
+                    ThingIdsByName["flower"] = ThingId.Flowers;
+                    ThingIdsByName["flowers"] = ThingId.Flowers;
+                }
+
                 // Storing the current location as the previous location before moving on to the next command.
                 PreviousLocation = CurrentLocationId;
             }
@@ -1448,6 +1466,12 @@ namespace Forest
                     PreviousThingsInDen.Clear();
                     PreviousThingsInDen.AddRange(ThingsInDen);
                 }
+            }
+
+            // If the player has tried to make honey by eating a flower and the flower is still located at nowhere, move the honey to the den, as a gift from the bees.
+            if (HaveTriedToEatFlower && ThingAt(ThingId.Honey, LocationId.Nowhere))
+            {
+                MoveThing(ThingId.Honey, LocationId.Nowhere, LocationId.Den);
             }
 
             if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
@@ -2339,7 +2363,7 @@ namespace Forest
             }
         }
 
-        // Events about honey an bees.
+        // Events about honey and bees.
         /// <summary>
         /// Checks if bee needs to be move when player goes to a new location.
         /// </summary>
@@ -2355,13 +2379,57 @@ namespace Forest
             if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
             {
                 BeeHasBeenInBeeForest = true;
+            }
+        }
 
-                // If the flower is at the bee forest (not in inventory) when bee is there, bee is home (and stays home).
-                if (ThingIsHere(ThingId.Flower))
+        static void DropFlower()
+        {
+            if (CurrentLocationId == LocationId.BeeForest)
+            {
+                // Drop flower.
+                DropThing(ThingId.Flower);
+
+                // Different text depending on if the bee is there or not.
+                if (ThingsCurrentLocations[ThingId.Bee].Contains(LocationId.BeeForest))
                 {
+                    // Bee joins the other bees around the droped flower.
+                    Reply(ThingsData[ThingId.Flower].Answers[4] + " " + eventAndGoalExtraText[108]);
+
+                    // Can't pick up flower anymore.
+                    ThingsYouCanGet.Remove(ThingId.Flower);
+
+                    // If the flower is dropped at the bee forest when bee is there, bee is home (and stays home).
                     BeeIsHome = true;
                 }
+                else
+                {
+                    // Normal drop with text about bees liking the flower.
+                    Reply(ThingsData[ThingId.Flower].Answers[4]);
+                }
             }
+            else
+            {
+                // NO drop.
+                Reply(ThingsData[ThingId.Flower].Answers[5]);
+            }
+        }
+
+        static void GetIdeaAboutHoney()
+        {
+            Console.Clear();
+
+            // Text about having an idea to eat flowers to help make honey.
+            Reply(eventAndGoalExtraText[110]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[111]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[112]);
+            PressAnyKeyToContinue();
+
+            HoneyPuzzleStarted = true;
+
+            // Changing the current location to the new location and displaying the new location information.
+            MovePlayerToNewLocation(LocationId.Glade);
         }
 
         // Other events.
@@ -2481,6 +2549,14 @@ namespace Forest
                 {
                     Print(eventAndGoalExtraText[2]);
                 }
+
+                if (ThingIsHere(ThingId.Honey))
+                {
+                    // TODO color
+                    Console.WriteLine();
+
+                    Print(eventAndGoalExtraText[118]);
+                }
             }
 
             // Add extra text if the hidden path is found. At location waterfall.
@@ -2577,6 +2653,15 @@ namespace Forest
 
                 // Text about bees liking the flower on the ground.
                 Reply(eventAndGoalExtraText[109]);
+            }
+
+            // Description about idea about making honey.
+            if (CurrentLocationId == LocationId.Glade && HoneyPuzzleStarted && !HaveTriedToEatFlower)
+            {
+                // TODO color
+                Console.WriteLine();
+
+                Reply(eventAndGoalExtraText[113]);
             }
         }
 

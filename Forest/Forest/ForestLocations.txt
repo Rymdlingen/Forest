@@ -46,7 +46,7 @@ Directions:
 
 ID: 8Glade
 Name: Glade
-Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass, but the hardworking bees flying back and fort between the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep. (quest instruction for honey here??)
+Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass, but the hardworking bees flying back and fort between the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep.
 Directions:
     South: 7SparseForest
     East: 9BeeForest

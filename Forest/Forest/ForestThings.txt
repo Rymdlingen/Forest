@@ -120,11 +120,11 @@ Starting location: 15SouthEastForest
 
 ID: Flowers
 Name: Flowers
-Description: (NOT DONE) all the flowers.
+Description: The meadow is full of flowers of different colors and shapes, it looks amazing and the bees that live in this area thrive.
 Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: The flowers are important to the bees, they make honey out of them, better not pick the flowers since more flowers in the meadow equals more yummy honey!
-	Thing is not here: <You can't see such a thing>
+	Thing is not here: There is not many flowers here.
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: <Thing can't be dropped here>
@@ -135,7 +135,7 @@ Starting location: 8Glade
 
 ID: Flower
 Name: Flower
-Description: A red poppy, smells amazing.
+Description: A big red poppy, it smells amazing.
 Answers:
 	Pick up: It might come in useful to have something that bees like, you picked the flower up.
 	Thing can not be picked up: You don't want to take the flower away from the happy bees.
@@ -153,7 +153,7 @@ Name: Bee
 Description: There is a lonely bee flying around, it looks lost.
 Answers:
 	Pick up: <Message about picking this up>
-	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing can not be picked up: You don't want to catch the bee.
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
@@ -165,14 +165,14 @@ Starting location: 3MossyForestEntrance
 
 ID: Honey
 Name: Honey
-Description: A jar of honey, it's a gift from the bees.
+Description: The bees have left you a jar of honey as a gift for helping one of them find their way back to the beehive.
 Answers:
-	Pick up: <Message about picking this up>
+	Pick up: You picked up the jar of honey.
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
-	Drop not possible: <Thing can't be dropped here>
+	Drop not possible: It was a gift, it would be rude to throw it away.
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
