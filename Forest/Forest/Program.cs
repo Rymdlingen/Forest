@@ -43,6 +43,8 @@ namespace Forest
         SoftLeaves,
         PileOfLeaves,
         Berries,
+        Nuts,
+        Mushrooms,
         Flower,
         Flowers,
         Bee,
@@ -159,6 +161,7 @@ namespace Forest
                                                                                                 { "pile of leaves", ThingId.PileOfLeaves },
                                                                                                 { "pile of leafs", ThingId.PileOfLeaves },
                                                                                                 { "pile of leaf", ThingId.PileOfLeaves },
+                                                                                                { "pile", ThingId.PileOfLeaves },
                                                                                                 { "big leaves", ThingId.OkLeaves },
                                                                                                 { "big leafs", ThingId.OkLeaves },
                                                                                                 { "big leaf", ThingId.OkLeaves },
@@ -171,6 +174,10 @@ namespace Forest
                                                                                                 { "grass", ThingId.Grass },
                                                                                                 { "berries", ThingId.Berries },
                                                                                                 { "berry", ThingId.Berries },
+                                                                                                { "nuts", ThingId.Nuts },
+                                                                                                { "nut", ThingId.Nuts },
+                                                                                                { "mushrooms", ThingId.Mushrooms },
+                                                                                                { "mushroom", ThingId.Mushrooms },
                                                                                                 { "flower", ThingId.Flower },
                                                                                                 { "flowers", ThingId.Flowers },
                                                                                                 { "bee", ThingId.Bee },
@@ -215,6 +222,10 @@ namespace Forest
         static bool BeeIsHome = false;
         static bool HoneyPuzzleStarted = false;
         static bool HaveTriedToEatFlower = false;
+        // For puzzle: necklace.
+        static bool HaveTriedToSwimOverRiver = false;
+        static List<ThingId> EatenThings = new List<ThingId>();
+        static bool HaveSlept = false;
         #endregion
 
         #region Output helpers
@@ -577,6 +588,7 @@ namespace Forest
                     HandleGet(words);
                     break;
 
+                case "place":
                 case "drop":
                     HandleDrop(words);
                     break;
@@ -668,13 +680,24 @@ namespace Forest
             }
         }
 
+        // TODO MOVE LATER vvvvv
+
+
+        // TODO MOVE LATER ^^^^
+
         static void HandleMovement(Direction direction)
         {
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
             // Checking if the direction is availible for the current location.
+            // For trying to go south over river to cliffs.
+            if (direction == Direction.South && CurrentLocationId == LocationId.WestRiver)
+            {
+                // Checks if player can swim over river or not, moves player if nessesary and displayes the right text.
+                SwimOverRiver();
+            }
             // For giving instructions about eating a flower.
-            if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.BeeForest && currentLocation.Directions[direction] == LocationId.Glade && BeeIsHome && !HoneyPuzzleStarted)
+            else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.BeeForest && currentLocation.Directions[direction] == LocationId.Glade && BeeIsHome && !HoneyPuzzleStarted)
             {
                 // Will trigger the start of eating flowers once.
                 GetIdeaAboutHoney();
@@ -1076,12 +1099,6 @@ namespace Forest
             }
         }
 
-        // TODO MOVE LATER vvvvv
-
-
-
-        // TODO MOVE LATER ^^^^
-
         static void HandleTalk(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
@@ -1230,6 +1247,12 @@ namespace Forest
                     {
                         case ThingId.Fish:
                             // TODO for swiming over river
+                            // Add to eat list
+                            return;
+
+                        case ThingId.Honey:
+                            // TODO for swiming over river
+                            // Add to eat list
                             return;
 
                         case ThingId.Flowers:
@@ -1254,10 +1277,6 @@ namespace Forest
                                 // Says "Better not eat that." (if not changed).
                                 Reply(eventAndGoalExtraText[114]);
                             }
-                            return;
-
-                        case ThingId.Honey:
-                            // TODO for swiming over river
                             return;
 
                         default:
@@ -1499,7 +1518,7 @@ namespace Forest
                 // TODO
             }
 
-            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish)))
+            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish) && HaveThing(ThingId.Honey)))
             {
                 EndGame();
             }
@@ -2432,6 +2451,66 @@ namespace Forest
             MovePlayerToNewLocation(LocationId.Glade);
         }
 
+        //Events for swiming over river
+        static void SwimOverRiver()
+        {
+            if (HaveTriedToSwimOverRiver)
+            {
+                // Add if list of things eaten is long enough, can swim, else no swim
+                // TODO decide on this number v
+                if (EatenThings.Count > 4 /* have eaten enough*/)
+                {
+                    // If the player have slept, they can swim over to the other side of the river.
+                    if (HaveSlept)
+                    {
+                        Console.Clear();
+
+                        // Text about being ready to swim.
+                        Reply(eventAndGoalExtraText[119]);
+                        PressAnyKeyToContinue();
+
+                        // Move player to the new location and displays description.
+                        MovePlayerToNewLocation(LocationId.Cliffs);
+                    }
+                    else
+                    {
+                        // It's getting late, should go relax a bit and then sleep.
+                        Reply(eventAndGoalExtraText[120]);
+                    }
+                }
+                else
+                {
+                    // Bear needs to eat before going for a swim.
+                    Reply(eventAndGoalExtraText[121]);
+                }
+            }
+            else if (!HaveTriedToSwimOverRiver)
+            {
+                // Calls the start of the swim puzzle, is only called once.
+                StartSwimPuzzle();
+            }
+        }
+
+        static void StartSwimPuzzle()
+        {
+            Console.Clear();
+
+            // Text about wanting to swim over river but needing to eat first.
+            Reply(eventAndGoalExtraText[122]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[123]);
+            PressAnyKeyToContinue();
+
+            // Make things to eat appear and change puzzle to started.
+            MoveThing(ThingId.Berries, LocationId.Nowhere, LocationId.LeafyForestSouth);
+            MoveThing(ThingId.Mushrooms, LocationId.Nowhere, LocationId.MossyForestSouth);
+            MoveThing(ThingId.Nuts, LocationId.Nowhere, LocationId.Glade);
+            HaveTriedToSwimOverRiver = true;
+
+            // Display the river location to player again.
+            DisplayNewLocation();
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -2640,6 +2719,7 @@ namespace Forest
                     // Don't have the flower.
                     else if (!HaveThing(ThingId.Flower))
                     {
+                        // TODO should this be print and not reply?
                         // Says "There is a lonely bee flying around, it looks lost." (if not changed)
                         Print(eventAndGoalExtraText[105]);
                     }
@@ -2662,6 +2742,29 @@ namespace Forest
                 Console.WriteLine();
 
                 Reply(eventAndGoalExtraText[113]);
+            }
+
+            // If the current location have any of these things.
+            if (ThingIsHere(ThingId.Berries))
+            {
+                // TODO color
+                Console.WriteLine();
+
+                Reply(eventAndGoalExtraText[124]);
+            }
+            else if (ThingIsHere(ThingId.Mushrooms))
+            {
+                // TODO color
+                Console.WriteLine();
+
+                Reply(eventAndGoalExtraText[125]);
+            }
+            else if (ThingIsHere(ThingId.Nuts))
+            {
+                // TODO color
+                Console.WriteLine();
+
+                Reply(eventAndGoalExtraText[126]);
             }
         }
 

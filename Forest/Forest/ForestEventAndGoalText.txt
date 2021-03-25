@@ -156,7 +156,7 @@
 
 78Hmmm.. A rope, a nail and a stick, you can make something useful out of these things.
 
-79You start with combining the rope and the rusty nail, "PERFECT!" you shout excitedly, "It's exactly like a fikshingline with a hook!".
+79You start with combining the rope and the rusty nail, "PERFECT!" you shout excitedly, "It's exactly like a fishing line with a hook!".
 
 80You combine the line with a hook with the @, you have made a fishing rod!
 
@@ -234,4 +234,20 @@
 
 117Maybe you should find something to eat.
 
-118A jar of honey have appeared just outside the den, there is a flower on top of it, it looks like a gift.
+118A jar of honey has appeared just outside the den, there is a flower on top of it, it looks like a gift.
+
+119It sure is a tough task to swim across the river, but after a night full of adventurous dreams and with a stomach still full of fish and honey you are ready to swim across the river!
+
+120It's starting to get pretty late, the sun is quickly setting. You decide to wait with swimming over the river until tomorrow. It has been a day of hard work making your den cozy and gathering food. But before going to sleep for the night it would be nice to go relax for a bit.
+
+121You need to eat more to feel strong enough to swim over the river.
+
+122You are looking south over to the other side of the river, the river is roaring! It's forceful and it will not be easy to swim across.
+
+123You have hardly have anything to eat in a really long time, to be able to make it across the river you will need to first eat something.
+
+124There is a lot of berries growing on the ground, both blue and red ones.
+
+125Under the moss there is plenty of chanterelle mushrooms 
+
+126nuts
