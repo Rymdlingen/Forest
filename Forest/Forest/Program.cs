@@ -150,6 +150,29 @@ namespace Forest
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
 
+        // Direction helpers.
+        static Dictionary<string, Direction> DirectionIdsByName = new Dictionary<string, Direction>() { { "n", Direction.North },
+                                                                                                    { "north", Direction.North },
+                                                                                                    { "ne", Direction.Northeast },
+                                                                                                    { "northeast", Direction.Northeast },
+                                                                                                    { "north east", Direction.Northeast }, // TODO Make it work with space
+                                                                                                    { "e", Direction.East },
+                                                                                                    { "east", Direction.East },
+                                                                                                    { "se", Direction.Southeast },
+                                                                                                    { "southeast", Direction.Southeast },
+                                                                                                    { "south east", Direction.Southeast },
+                                                                                                    { "s", Direction.South },
+                                                                                                    { "south", Direction.South },
+                                                                                                    { "sw", Direction.Southwest },
+                                                                                                    { "southwest", Direction.Southwest },
+                                                                                                    { "south west", Direction.Southwest },
+                                                                                                    { "w", Direction.West },
+                                                                                                    { "west", Direction.West },
+                                                                                                    { "nw", Direction.Northwest },
+                                                                                                    { "northwest", Direction.Northwest },
+                                                                                                    { "north west", Direction.Northwest } };
+
+
         // Thing helpers.
         // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, OldStick, LongStick, Rope, Nail, FishingRod, Necklace, Owl, Frog.    
         static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
@@ -370,15 +393,15 @@ namespace Forest
                 }
 
                 // Looking for words that belong together.
-                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords))
+                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords) || DirectionIdsByName.ContainsKey(twoWords))
                 {
-                    // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
+                    // Replace the first word with the combined word (the second word is cleared).
                     words[word] = twoWords;
                     words[word + 1] = "";
                 }
                 else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
                 {
-                    // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
+                    // Replace the first word with the combined word (the second and third words is cleared).
                     words[word] = threeWords;
                     words[word + 1] = "";
                     words[word + 2] = "";
@@ -401,10 +424,12 @@ namespace Forest
             // For every word in the entered command, check if the word is a direction.
             foreach (string word in words)
             {
-                if (directions.Contains(Capitalize(word)))
+                // TODO add thing for double words
+                // change to dictionary, check if it contains the word as a key.
+                if (DirectionIdsByName.ContainsKey(word))
                 {
                     // If a word is a direction add it to the list of directions.
-                    direction = Enum.Parse<Direction>(Capitalize(word));
+                    direction = DirectionIdsByName[word];
                 }
             }
 
@@ -542,6 +567,7 @@ namespace Forest
                     HandleMovement(Direction.North);
                     break;
                 case "northwest":
+                case "north west":
                 case "nw":
                     HandleMovement(Direction.Northwest);
                     break;
@@ -550,6 +576,7 @@ namespace Forest
                     HandleMovement(Direction.West);
                     break;
                 case "southwest":
+                case "south west":
                 case "sw":
                     HandleMovement(Direction.Southwest);
                     break;
@@ -558,6 +585,7 @@ namespace Forest
                     HandleMovement(Direction.South);
                     break;
                 case "southeast":
+                case "south east":
                 case "se":
                     HandleMovement(Direction.Southeast);
                     break;
@@ -566,6 +594,7 @@ namespace Forest
                     HandleMovement(Direction.East);
                     break;
                 case "northeast":
+                case "north east":
                 case "ne":
                     HandleMovement(Direction.Northeast);
                     break;
