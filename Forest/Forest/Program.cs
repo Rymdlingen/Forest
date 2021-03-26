@@ -698,11 +698,6 @@ namespace Forest
             }
         }
 
-        // TODO MOVE LATER vvvvv
-
-
-        // TODO MOVE LATER ^^^^
-
         static void HandleMovement(Direction direction)
         {
             LocationData currentLocation = LocationsData[CurrentLocationId];
@@ -1236,6 +1231,27 @@ namespace Forest
             }
         }
 
+        // TODO MOVE LATER vvvvv
+
+        static void AddToListOfEatenThings(ThingId thingId)
+        {
+            // TODO finish texts
+            // use name of thing to show what is eaten.
+            if (EatenThings.Contains(thingId))
+            {
+                // already eaten that, need to eat something different
+                Reply(eventAndGoalExtraText[200]);
+            }
+            else
+            {
+                EatenThings.Add(thingId);
+                // Text about what was eaten and how many things are eaten now
+                Reply(eventAndGoalExtraText[200]);
+            }
+        }
+
+        // TODO MOVE LATER ^^^^
+
         static void HandleEat(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
@@ -1264,13 +1280,13 @@ namespace Forest
                     switch (thingId)
                     {
                         case ThingId.Fish:
-                            // TODO for swiming over river
-                            // Add to eat list
-                            return;
-
                         case ThingId.Honey:
-                            // TODO for swiming over river
-                            // Add to eat list
+                        case ThingId.Berries:
+                        case ThingId.Mushrooms:
+                        case ThingId.Nuts:
+                        case ThingId.Trash:
+                            AddToListOfEatenThings(thingId);
+                            // TODO
                             return;
 
                         case ThingId.Flowers:
