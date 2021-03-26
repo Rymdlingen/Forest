@@ -46,6 +46,7 @@ namespace Forest
         Flower,
         Flowers,
         Bee,
+        Bees,
         Honey,
         Fish,
         OldStick,
@@ -197,6 +198,7 @@ namespace Forest
                                                                                                 { "flower", ThingId.Flower },
                                                                                                 { "flowers", ThingId.Flowers },
                                                                                                 { "bee", ThingId.Bee },
+                                                                                                { "bees", ThingId.Bees },
                                                                                                 { "honey", ThingId.Honey },
                                                                                                 { "fish", ThingId.Fish },
                                                                                                 { "stick", ThingId.OldStick },
@@ -418,7 +420,6 @@ namespace Forest
         /// <returns>A list of thing ids that matched the words.</returns>
         static Direction GetDirectionFromWords(string[] words)
         {
-            string[] directions = Enum.GetNames(typeof(Direction));
             Direction direction = Direction.NoDirection;
 
             // For every word in the entered command, check if the word is a direction.
@@ -430,6 +431,9 @@ namespace Forest
                 {
                     // If a word is a direction add it to the list of directions.
                     direction = DirectionIdsByName[word];
+
+                    // If a direction was found break out of the loop.
+                    break;
                 }
             }
 
@@ -1450,6 +1454,29 @@ namespace Forest
                     // Key word "flower" and "flowers" now means many flowers.
                     ThingIdsByName["flower"] = ThingId.Flowers;
                     ThingIdsByName["flowers"] = ThingId.Flowers;
+                }
+
+                // Key word "bee" and "bees".
+                if (ThingIsHere(ThingId.Bees) || ThingIsHere(ThingId.Bee))
+                {
+                    if (ThingIsHere(ThingId.Bees) && ThingIsHere(ThingId.Bee))
+                    {
+                        // When many bees and the lonely bee is at the same place, the words mean different bees.
+                        ThingIdsByName["bee"] = ThingId.Bee;
+                        ThingIdsByName["bees"] = ThingId.Bees;
+                    }
+                    else if (ThingIsHere(ThingId.Bees))
+                    {
+                        // If only many bees are at players location, the words mean many bees.
+                        ThingIdsByName["bee"] = ThingId.Bees;
+                        ThingIdsByName["bees"] = ThingId.Bees;
+                    }
+                    else
+                    {
+                        // If only lonely bees is at players location, the words mean lonely bee.
+                        ThingIdsByName["bee"] = ThingId.Bee;
+                        ThingIdsByName["bees"] = ThingId.Bee;
+                    }
                 }
 
                 // Storing the current location as the previous location before moving on to the next command.

@@ -10,7 +10,7 @@ Directions:
 
 ID: 2NorthForest
 Name: Forest
-Description: You are in the entrance of the northern part of the forest, right here the forest is still full of life and patches of sun gets through the crowns of the old tress but to the east the forest is dark green, dense and the trees are mostly old spruces. To the south is the path back to your den.
+Description: You are in the entrance of the northern part of the forest, right here the forest is still full of life and patches of sun gets through the crowns of the old trees but to the east the forest is dark green, dense and the trees are mostly old spruces. To the south is the path back to your den.
 Directions:
     South: 1Den
     East: 3MossyForestEntrance
@@ -25,7 +25,7 @@ Directions:
 
 ID: 4MossyForestNorth
 Name: Forest
-Description: This part of the forest is dense, dark and mostly consists of old, tall spruce trees. On the ground there is some dark green moss but mostly the ground is covered by big old logs and long sticks fallen from the old trees. Almost all around you the trees grow so closely together that you never go there, but to the south there is a small path between two tall spruces and the path back towards the den is to the west.
+Description: This part of the forest is dense, dark and mostly consists of old, tall spruce trees. On the ground there is some dark green moss but mostly the ground is covered by big old logs and sticks fallen from the old trees. Almost all around you the trees grow so closely together that you never go there, but to the south there is a small path between two tall spruces and the path back towards the den is to the west.
 Directions:
     West: 3MossyForestEntrance
     South: 5MossyForestSouth
@@ -46,14 +46,14 @@ Directions:
 
 ID: 8Glade
 Name: Glade
-Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass, but the hardworking bees flying back and fort between the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep.
+Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass, but the hardworking bees flying back and forth between the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep. Your den is to the south of here.
 Directions:
     South: 7SparseForest
     East: 9BeeForest
 
 ID: 9BeeForest
 Name: Bee forest
-Description: This is the only part of the forest where bees still live. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up! They tirelessly fly back and forth from the glade in the west and their beehives.
+Description: This is the only part of the forest where bees still live, they are buzzing around the beehives in the trees. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up! They tirelessly fly back and forth from the glade in the west and their beehives.
 Directions:
     West: 8Glade
 
@@ -66,13 +66,13 @@ Directions:
 
 ID: 11LeafyForestNorth
 Name: Leafy forest
-Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small, the lowest branches are just out of your reach. Between the trees small streams of water is rippling down towards the river and most of the ground is covered in long sticks and the leaves that fell from the tress last year. For as long as you can see this kind of forest continues around you. "Probably nothing more to see" you think, the way back is to the south.
+Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small, the lowest branches are just out of your reach. Between the trees small streams of water is rippling down towards the river and most of the ground is covered in long sticks and the leaves that fell from the trees last year. For as long as you can see this kind of forest continues around you. "Probably nothing more to see" you think, the way back is to the south.
 Directions:
     South: 12LeafyForestMiddle
 
 ID: 12LeafyForestMiddle
 Name: Leafy forest
-Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are pretty big but they still look soft and pretty cozy. Between the tress water is rippling down from the forest in the north towards the river in the south. The path to the east leads back towards your den.
+Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are pretty big but they still look soft and pretty cozy. Between the trees water is rippling down from the forest in the north towards the river further through the forest to the south. The path to the east leads back towards your den.
 Directions:
     North: 11LeafyForestNorth
     South: 13LeafyForestSouth
@@ -94,13 +94,13 @@ Directions:
 
 ID: 15SouthEastForest
 Name: Forest
-Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree inte whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here and think about the stories whenever you want.
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
 Directions:
     Northwest: 1Den
 
 ID: 16WestRiver
 Name: River
-Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it eventually calms down in a natural dam before continuing down the cliffs. To the south, on the other side of the river, is a passage through the rocky edge of the river.
+Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it eventually calms down in a natural dam before continuing down the cliffs. On the other side of the river, is a path leading up from the rocky south edge of the river.
 Directions:
     North: 13LeafyForestSouth
     South: 20Cliffs
@@ -116,7 +116,7 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. This part of the view point have some old, once considered high tech binoculars that can give a closer look at the view.
+Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. At this part of the view point there is some old, once considered high tech binoculars that can give a closer look at the view.
 Directions:
     West: 17EastRiver
     Northeast: 19ViewPoint
