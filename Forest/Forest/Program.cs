@@ -828,6 +828,12 @@ namespace Forest
                             StartFishingPuzzle();
                             return;
 
+                        case ThingId.Honey:
+                            // Picked it up!
+                            Reply(ThingsData[thingId].Answers[0]);
+                            MoveThing(thingId, CurrentLocationId, LocationId.Inventory);
+                            return;
+
                         default:
                             // Picked it up!
                             Reply(ThingsData[thingId].Answers[0]);
@@ -1203,6 +1209,7 @@ namespace Forest
             // If the player only writes clean, ask what to clean.
             else if (words.Count() == 1)
             {
+                Console.WriteLine();
                 // Asking "What needs cleaning?" and handles the command.
                 string[] newCommand = AskForInput(eventAndGoalExtraText[45]);
                 HandleClean(newCommand);
@@ -1554,7 +1561,7 @@ namespace Forest
                 // TODO
             }
 
-            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish)))
+            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish) && HaveThing(ThingId.Honey)))
             {
                 EndGame();
             }
@@ -1564,7 +1571,7 @@ namespace Forest
         #region Events
         static void EndGame()
         {
-            Print("THE END! (Clearing this puzzle ends the game for now, since it's the only puzzle I have started working on)");
+            Print("THE END! (That was all the puzzles that are finished right now)");
             quitGame = true;
             // TODO change text, and probably other things as well
         }
@@ -1649,7 +1656,9 @@ namespace Forest
             Reply(eventAndGoalExtraText[20]);
             PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[21]);
-            PressAnyKeyToContinueAndClear();
+            PressAnyKeyToContinue();
+
+            DisplayNewLocation();
         }
 
         // Events about the leaves for cozy den goal.
@@ -2544,7 +2553,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-
+            /*
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -2576,7 +2585,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
-
+            */
         }
 
         /// <summary>
