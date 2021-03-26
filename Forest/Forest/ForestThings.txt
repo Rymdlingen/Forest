@@ -26,7 +26,7 @@ Answers:
 	Can drop but lose thing:
 	You do not have that:
 	Get this and lose another thing:
-Starting location: 4MossyForestNorth, 5MossyForestSouth, 1Den
+Starting location: 4MossyForestNorth, 5MossyForestSouth
 
 ID: Grass
 Name: Grass
@@ -41,7 +41,7 @@ Answers:
 	Can drop but lose thing:
 	You do not have that:
 	Get this and lose another thing:
-Starting location: 8Glade, 7SparseForest, 1Den
+Starting location: 8Glade
 
 ID: OldLeaves
 Name: Old leaves
@@ -56,7 +56,7 @@ Answers:
 	Can drop but lose thing:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 11LeafyForestNorth, 1Den
+Starting location: 11LeafyForestNorth
 
 ID: OkLeaves
 Name: Big leaves
@@ -71,7 +71,7 @@ Answers:
 	Can drop but lose thing:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 12LeafyForestMiddle, 1Den
+Starting location: 12LeafyForestMiddle
 
 ID: SoftLeaves
 Name: Soft leaves
@@ -86,7 +86,7 @@ Answers:
 	Can drop but lose thing:
 	You do not have that:
 	Get this and lose another thing: <todo>
-Starting location: 13LeafyForestSouth, 1Den
+Starting location: 13LeafyForestSouth
 
 ID: PileOfLeaves
 Name: Pile of leaves
@@ -192,6 +192,21 @@ Answers:
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: 3MossyForestEntrance
+
+ID: Bees
+Name: Bees
+Description: There is a lot of bees flying around, they are flying back and forth between the flowers in the glade and their hives. They are working hard to make some honey!
+Answers:
+	Pick up: <Message about picking this up>
+	Thing can not be picked up: You don't want to catch the bees.
+	Thing is not here: <You can't see such a thing>
+	Already in inventory: <You can't have the same thing twice>
+	Drop possible: <Message about the drop, what happen because of it?>
+	Drop not possible: <Thing can't be dropped here>
+	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
+	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
+Starting location: 8Glade, 9BeeForest
 
 ID: Honey
 Name: Honey

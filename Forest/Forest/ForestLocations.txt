@@ -53,7 +53,7 @@ Directions:
 
 ID: 9BeeForest
 Name: Bee forest
-Description: This is the only part of the forest where bees still live. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up! They tirelessly fly back and forth from the glade in the west and their beehives.
+Description: This is the only part of the forest where bees still live, they are buzzing around the beehives in the trees. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up! They tirelessly fly back and forth from the glade in the west and their beehives.
 Directions:
     West: 8Glade
 
