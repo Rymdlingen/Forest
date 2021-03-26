@@ -48,6 +48,7 @@ namespace Forest
         Flower,
         Flowers,
         Bee,
+        Bees,
         Honey,
         Fish,
         OldStick,
@@ -155,6 +156,29 @@ namespace Forest
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
 
+        // Direction helpers.
+        static Dictionary<string, Direction> DirectionIdsByName = new Dictionary<string, Direction>() { { "n", Direction.North },
+                                                                                                    { "north", Direction.North },
+                                                                                                    { "ne", Direction.Northeast },
+                                                                                                    { "northeast", Direction.Northeast },
+                                                                                                    { "north east", Direction.Northeast }, // TODO Make it work with space
+                                                                                                    { "e", Direction.East },
+                                                                                                    { "east", Direction.East },
+                                                                                                    { "se", Direction.Southeast },
+                                                                                                    { "southeast", Direction.Southeast },
+                                                                                                    { "south east", Direction.Southeast },
+                                                                                                    { "s", Direction.South },
+                                                                                                    { "south", Direction.South },
+                                                                                                    { "sw", Direction.Southwest },
+                                                                                                    { "southwest", Direction.Southwest },
+                                                                                                    { "south west", Direction.Southwest },
+                                                                                                    { "w", Direction.West },
+                                                                                                    { "west", Direction.West },
+                                                                                                    { "nw", Direction.Northwest },
+                                                                                                    { "northwest", Direction.Northwest },
+                                                                                                    { "north west", Direction.Northwest } };
+
+
         // Thing helpers.
         // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, OldStick, LongStick, Rope, Nail, FishingRod, Necklace, Owl, Frog.    
         static Dictionary<string, ThingId> ThingIdsByName = new Dictionary<string, ThingId>() { { "moss", ThingId.Moss },
@@ -198,6 +222,7 @@ namespace Forest
                                                                                                 { "flower", ThingId.Flower },
                                                                                                 { "flowers", ThingId.Flowers },
                                                                                                 { "bee", ThingId.Bee },
+                                                                                                { "bees", ThingId.Bees },
                                                                                                 { "honey", ThingId.Honey },
                                                                                                 { "fish", ThingId.Fish },
                                                                                                 { "fishes", ThingId.Fish },
@@ -228,7 +253,7 @@ namespace Forest
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
         // For puzzle: fishing.
         static bool FishingPuzzleStarted = false;
-        static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
+        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
         static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
@@ -369,7 +394,6 @@ namespace Forest
             if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
             {
                 // Text about not understanding.
-                Console.ForegroundColor = NarrativeColor;
                 Console.WriteLine();
                 Reply(eventAndGoalExtraText[77]);
             }
@@ -399,15 +423,15 @@ namespace Forest
                 }
 
                 // Looking for words that belong together.
-                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords))
+                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords) || DirectionIdsByName.ContainsKey(twoWords))
                 {
-                    // Replace the first word with the combined word. (the second word will still be at the next spot on its own)
+                    // Replace the first word with the combined word (the second word is cleared).
                     words[word] = twoWords;
                     words[word + 1] = "";
                 }
                 else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
                 {
-                    // Replace the first word with the combined word. (the second and third words will still be at the next spots on its own)
+                    // Replace the first word with the combined word (the second and third words is cleared).
                     words[word] = threeWords;
                     words[word + 1] = "";
                     words[word + 2] = "";
@@ -424,16 +448,20 @@ namespace Forest
         /// <returns>A list of thing ids that matched the words.</returns>
         static Direction GetDirectionFromWords(string[] words)
         {
-            string[] directions = Enum.GetNames(typeof(Direction));
             Direction direction = Direction.NoDirection;
 
             // For every word in the entered command, check if the word is a direction.
             foreach (string word in words)
             {
-                if (directions.Contains(Capitalize(word)))
+                // TODO add thing for double words
+                // change to dictionary, check if it contains the word as a key.
+                if (DirectionIdsByName.ContainsKey(word))
                 {
                     // If a word is a direction add it to the list of directions.
-                    direction = Enum.Parse<Direction>(Capitalize(word));
+                    direction = DirectionIdsByName[word];
+
+                    // If a direction was found break out of the loop.
+                    break;
                 }
             }
 
@@ -571,6 +599,7 @@ namespace Forest
                     HandleMovement(Direction.North);
                     break;
                 case "northwest":
+                case "north west":
                 case "nw":
                     HandleMovement(Direction.Northwest);
                     break;
@@ -579,6 +608,7 @@ namespace Forest
                     HandleMovement(Direction.West);
                     break;
                 case "southwest":
+                case "south west":
                 case "sw":
                     HandleMovement(Direction.Southwest);
                     break;
@@ -587,6 +617,7 @@ namespace Forest
                     HandleMovement(Direction.South);
                     break;
                 case "southeast":
+                case "south east":
                 case "se":
                     HandleMovement(Direction.Southeast);
                     break;
@@ -595,6 +626,7 @@ namespace Forest
                     HandleMovement(Direction.East);
                     break;
                 case "northeast":
+                case "north east":
                 case "ne":
                     HandleMovement(Direction.Northeast);
                     break;
@@ -830,6 +862,12 @@ namespace Forest
 
                         case ThingId.Fish:
                             StartFishingPuzzle();
+                            return;
+
+                        case ThingId.Honey:
+                            // Picked it up!
+                            Reply(ThingsData[thingId].Answers[0]);
+                            MoveThing(thingId, CurrentLocationId, LocationId.Inventory);
                             return;
 
                         default:
@@ -1201,6 +1239,7 @@ namespace Forest
             // If the player only writes clean, ask what to clean.
             else if (words.Count() == 1)
             {
+                Console.WriteLine();
                 // Asking "What needs cleaning?" and handles the command.
                 string[] newCommand = AskForInput(eventAndGoalExtraText[45]);
                 HandleClean(newCommand);
@@ -1476,6 +1515,29 @@ namespace Forest
                     ThingIdsByName["flowers"] = ThingId.Flowers;
                 }
 
+                // Key word "bee" and "bees".
+                if (ThingIsHere(ThingId.Bees) || ThingIsHere(ThingId.Bee))
+                {
+                    if (ThingIsHere(ThingId.Bees) && ThingIsHere(ThingId.Bee))
+                    {
+                        // When many bees and the lonely bee is at the same place, the words mean different bees.
+                        ThingIdsByName["bee"] = ThingId.Bee;
+                        ThingIdsByName["bees"] = ThingId.Bees;
+                    }
+                    else if (ThingIsHere(ThingId.Bees))
+                    {
+                        // If only many bees are at players location, the words mean many bees.
+                        ThingIdsByName["bee"] = ThingId.Bees;
+                        ThingIdsByName["bees"] = ThingId.Bees;
+                    }
+                    else
+                    {
+                        // If only lonely bees is at players location, the words mean lonely bee.
+                        ThingIdsByName["bee"] = ThingId.Bee;
+                        ThingIdsByName["bees"] = ThingId.Bee;
+                    }
+                }
+
                 // Storing the current location as the previous location before moving on to the next command.
                 PreviousLocation = CurrentLocationId;
             }
@@ -1570,7 +1632,7 @@ namespace Forest
         #region Events
         static void EndGame()
         {
-            Print("THE END! (Clearing this puzzle ends the game for now, since it's the only puzzle I have started working on)");
+            Print("THE END! (That was all the puzzles that are finished right now)");
             quitGame = true;
             // TODO change text, and probably other things as well
         }
@@ -1655,7 +1717,9 @@ namespace Forest
             Reply(eventAndGoalExtraText[20]);
             PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[21]);
-            PressAnyKeyToContinueAndClear();
+            PressAnyKeyToContinue();
+
+            DisplayNewLocation();
         }
 
         static void PickUpGrassAndGetFlower()
@@ -1909,7 +1973,10 @@ namespace Forest
 
                 // Text about catching fish and throwing rod away.
                 Reply(eventAndGoalExtraText[93]);
+                PressAnyKeyToContinue();
                 GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+
+                DisplayNewLocation();
             }
             else
             {
@@ -2338,12 +2405,21 @@ namespace Forest
             LoseThing(ThingId.Nail);
             LoseThing(ThingId.Rope);
 
-            ThingId choosenStick = ThingId.OldStick;
+            ThingId choosenStick = ThingId.Placeholder;
             // Use one of the sticks.
             if (HaveThing(ThingId.LongStick) && HaveThing(ThingId.OldStick))
             {
-                // Have booth so ask witch one to use.
-                choosenStick = AskWitchStick();
+                while (choosenStick == ThingId.Placeholder)
+                {
+                    // Have booth so ask witch one to use.
+                    choosenStick = AskWitchStick();
+
+                    // Extra text for choosing again.
+                    if (choosenStick == ThingId.Placeholder)
+                    {
+                        Reply(eventAndGoalExtraText[127]);
+                    }
+                }
             }
             // Only have long stick, use it.
             else if (HaveThing(ThingId.LongStick))
@@ -2622,7 +2698,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-
+            /*
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -2654,7 +2730,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
-
+            */
         }
 
         /// <summary>
