@@ -84,7 +84,8 @@ namespace Forest
     {
         DenCleaned,
         DenMadeCozy,
-        FishEaten,
+        EnoughFoodConsumed,
+
         StungByBee,
         NecklaceWorn,
         DreamtAboutShiftingShape,
@@ -143,8 +144,10 @@ namespace Forest
         static Dictionary<ThingId, List<LocationId>> ThingsCurrentLocations = new Dictionary<ThingId, List<LocationId>>();
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
+                                                                                   { Goal.EnoughFoodConsumed, false },
+
                                                                                    { Goal.DreamtAboutShiftingShape, false },
-                                                                                   { Goal.FishEaten, false },
+                                                                                   { Goal.EnoughFoodConsumed, false },
                                                                                    { Goal.GoOnAdventure, false },
                                                                                    { Goal.NecklaceWorn, false },
                                                                                    { Goal.StungByBee, false } };
@@ -174,15 +177,30 @@ namespace Forest
                                                                                                 { "grass", ThingId.Grass },
                                                                                                 { "berries", ThingId.Berries },
                                                                                                 { "berry", ThingId.Berries },
+                                                                                                { "blue", ThingId.Berries },
+                                                                                                { "red", ThingId.Berries },
+                                                                                                { "blueberries", ThingId.Berries },
+                                                                                                { "blueberry", ThingId.Berries },
+                                                                                                { "redberries", ThingId.Berries },
+                                                                                                { "redberry", ThingId.Berries },
                                                                                                 { "nuts", ThingId.Nuts },
                                                                                                 { "nut", ThingId.Nuts },
                                                                                                 { "mushrooms", ThingId.Mushrooms },
                                                                                                 { "mushroom", ThingId.Mushrooms },
+                                                                                                { "fungi", ThingId.Mushrooms },
+                                                                                                { "fungis", ThingId.Mushrooms },
+                                                                                                { "fungus", ThingId.Mushrooms },
+                                                                                                { "funguses", ThingId.Mushrooms },
+                                                                                                { "shroom", ThingId.Mushrooms },
+                                                                                                { "shrooms", ThingId.Mushrooms },
+                                                                                                { "chanterelle", ThingId.Mushrooms },
+                                                                                                { "chanterelles", ThingId.Mushrooms },
                                                                                                 { "flower", ThingId.Flower },
                                                                                                 { "flowers", ThingId.Flowers },
                                                                                                 { "bee", ThingId.Bee },
                                                                                                 { "honey", ThingId.Honey },
                                                                                                 { "fish", ThingId.Fish },
+                                                                                                { "fishes", ThingId.Fish },
                                                                                                 { "stick", ThingId.OldStick },
                                                                                                 { "old stick", ThingId.OldStick },
                                                                                                 { "long stick", ThingId.LongStick },
@@ -225,7 +243,7 @@ namespace Forest
         // For puzzle: necklace.
         static bool HaveTriedToSwimOverRiver = false;
         static List<ThingId> EatenThings = new List<ThingId>();
-        static bool HaveSlept = false;
+        static bool DidSleep = false;
         #endregion
 
         #region Output helpers
@@ -1493,12 +1511,20 @@ namespace Forest
                 MoveThing(ThingId.Honey, LocationId.Nowhere, LocationId.Den);
             }
 
+            if (GoalCompleted[Goal.EnoughFoodConsumed] && CurrentLocationId == LocationId.SouthEastForest)
+            {
+                // Start event about necklace.
+                Relax();
+            }
+
+
+            /*
             if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
                 // TODO
             }
 
-            if (!GoalCompleted[Goal.FishEaten])
+            if (!GoalCompleted[Goal.EnoughFoodConsumed])
             {
                 // TODO
             }
@@ -1516,7 +1542,7 @@ namespace Forest
             if (!GoalCompleted[Goal.StungByBee])
             {
                 // TODO
-            }
+            }*/
 
             if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish) && HaveThing(ThingId.Honey)))
             {
@@ -1614,6 +1640,13 @@ namespace Forest
             PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[21]);
             PressAnyKeyToContinueAndClear();
+        }
+
+        static void PickUpGrassAndGetFlower()
+        {
+            GetThing(ThingId.Grass);
+            GetThing(ThingId.Flower);
+            Reply(eventAndGoalExtraText[102]);
         }
 
         // Events about the leaves for cozy den goal.
@@ -2460,8 +2493,10 @@ namespace Forest
                 // TODO decide on this number v
                 if (EatenThings.Count > 4 /* have eaten enough*/)
                 {
+                    GoalCompleted[Goal.EnoughFoodConsumed] = true;
+
                     // If the player have slept, they can swim over to the other side of the river.
-                    if (HaveSlept)
+                    if (DidSleep)
                     {
                         Console.Clear();
 
@@ -2511,6 +2546,28 @@ namespace Forest
             DisplayNewLocation();
         }
 
+        // Events about necklace.
+        static void Relax()
+        {
+            // TODO
+
+            // Text aboy relaxing and thinking about the old stories, the beeing interupted by seeing something glimmer in the sun
+
+            // Add the necklace to this location.
+            MoveThing(ThingId.Necklace, ThingsCurrentLocations[ThingId.Necklace][0], CurrentLocationId);
+        }
+
+        // Put this in pick up, for necklace and other words (what words will refer to this object from te context of the text about seeing it?)
+        static void FindNecklace()
+        {
+            // TODO
+
+            // Text about the necklace, putting it on, trying to shift shape.
+
+            // Pick up the necklace.
+            GetThing(ThingId.Necklace);
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -2529,13 +2586,6 @@ namespace Forest
             PressAnyKeyToContinueAndClear();
             // Put the player at the dam.
             MovePlayerToNewLocation(LocationId.EastRiver);
-        }
-
-        static void PickUpGrassAndGetFlower()
-        {
-            GetThing(ThingId.Grass);
-            GetThing(ThingId.Flower);
-            Reply(eventAndGoalExtraText[102]);
         }
 
         // TODO add event about floting on the river
@@ -2741,6 +2791,7 @@ namespace Forest
                 // TODO color
                 Console.WriteLine();
 
+                // Text about going to try to eat a flower.
                 Reply(eventAndGoalExtraText[113]);
             }
 
@@ -2750,6 +2801,7 @@ namespace Forest
                 // TODO color
                 Console.WriteLine();
 
+                // Berries.
                 Reply(eventAndGoalExtraText[124]);
             }
             else if (ThingIsHere(ThingId.Mushrooms))
@@ -2757,6 +2809,7 @@ namespace Forest
                 // TODO color
                 Console.WriteLine();
 
+                // Mushrooms.
                 Reply(eventAndGoalExtraText[125]);
             }
             else if (ThingIsHere(ThingId.Nuts))
@@ -2764,6 +2817,7 @@ namespace Forest
                 // TODO color
                 Console.WriteLine();
 
+                // Nuts.
                 Reply(eventAndGoalExtraText[126]);
             }
         }
