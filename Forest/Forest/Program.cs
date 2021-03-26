@@ -228,7 +228,7 @@ namespace Forest
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
         // For puzzle: fishing.
         static bool FishingPuzzleStarted = false;
-        static List<string> ThingsToSearch = new List<string> { "bench", "table", "blanket", "trash", "can", "trashcan", "picnic" };
+        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
         static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
@@ -365,7 +365,6 @@ namespace Forest
             if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
             {
                 // Text about not understanding.
-                Console.ForegroundColor = NarrativeColor;
                 Console.WriteLine();
                 Reply(eventAndGoalExtraText[77]);
             }
@@ -1897,7 +1896,10 @@ namespace Forest
 
                 // Text about catching fish and throwing rod away.
                 Reply(eventAndGoalExtraText[93]);
+                PressAnyKeyToContinue();
                 GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+
+                DisplayNewLocation();
             }
             else
             {
@@ -2326,12 +2328,21 @@ namespace Forest
             LoseThing(ThingId.Nail);
             LoseThing(ThingId.Rope);
 
-            ThingId choosenStick = ThingId.OldStick;
+            ThingId choosenStick = ThingId.Placeholder;
             // Use one of the sticks.
             if (HaveThing(ThingId.LongStick) && HaveThing(ThingId.OldStick))
             {
-                // Have booth so ask witch one to use.
-                choosenStick = AskWitchStick();
+                while (choosenStick == ThingId.Placeholder)
+                {
+                    // Have booth so ask witch one to use.
+                    choosenStick = AskWitchStick();
+
+                    // Extra text for choosing again.
+                    if (choosenStick == ThingId.Placeholder)
+                    {
+                        Reply(eventAndGoalExtraText[127]);
+                    }
+                }
             }
             // Only have long stick, use it.
             else if (HaveThing(ThingId.LongStick))
