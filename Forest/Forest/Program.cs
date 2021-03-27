@@ -148,7 +148,6 @@ namespace Forest
                                                                                    { Goal.EnoughFoodConsumed, false },
 
                                                                                    { Goal.DreamtAboutShiftingShape, false },
-                                                                                   { Goal.EnoughFoodConsumed, false },
                                                                                    { Goal.GoOnAdventure, false },
                                                                                    { Goal.NecklaceWorn, false },
                                                                                    { Goal.StungByBee, false } };
@@ -267,7 +266,7 @@ namespace Forest
         static bool HaveTriedToEatFlower = false;
         // For puzzle: necklace.
         static bool HaveTriedToSwimOverRiver = false;
-        static List<ThingId> EatenThings = new List<ThingId>();
+        static List<ThingId> ListOfEatenThings = new List<ThingId>();
         static bool DidSleep = false;
         #endregion
 
@@ -725,7 +724,7 @@ namespace Forest
                 // Unvalid verb.
                 default:
                     // TODO change text?
-                    Reply("I don't understand");
+                    Reply("I don't understand ");
                     break;
             }
         }
@@ -965,7 +964,7 @@ namespace Forest
         static void HandleInventory()
         {
             string[] thingIds = Enum.GetNames(typeof(ThingId));
-            var thingsInInventory = new List<string>();
+            var thingsInInventoryList = new List<string>();
 
             // Go through all the things and find the ones that have inventory as location.
             foreach (string thing in thingIds)
@@ -974,35 +973,17 @@ namespace Forest
                 if (HaveThing(thingId))
                 {
                     // Add all things that has inventory as location to a list.
-                    thingsInInventory.Add(ThingsData[thingId].Name.ToLower());
-                }
-            }
-
-            // If there is more then one thing in the players inventory, format all the things into one string.
-            if (thingsInInventory.Count > 1)
-            {
-                // Add a new string that combines the last two things and adds "and" inbetween them.
-                thingsInInventory.Add(thingsInInventory[thingsInInventory.Count - 2] + eventAndGoalExtraText[50] + thingsInInventory[thingsInInventory.Count - 1]);
-                // Remove the two seperated words.
-                thingsInInventory.RemoveRange(thingsInInventory.Count - 3, 2);
-
-                // If there is more things then 2, add "," between all of them but the last two which are already combined with "and".
-                if (thingsInInventory.Count > 1)
-                {
-                    // Join all words together in a string.
-                    string joinList = String.Join(", ", thingsInInventory);
-                    // Remove all things in the list.
-                    thingsInInventory.Clear();
-                    // Add the formatted string with all the things to the list.
-                    thingsInInventory.Add(joinList);
+                    thingsInInventoryList.Add(ThingsData[thingId].Name.ToLower());
                 }
             }
 
             // If there is things in the inventory, display the list of things.
-            if (thingsInInventory.Count > 0)
+            if (thingsInInventoryList.Count > 0)
             {
+                string thingsInInventory = FormatListIntoString(thingsInInventoryList);
+
                 // Says "You are carrying these things:" (if not changed).
-                Reply(eventAndGoalExtraText[49] + thingsInInventory[0] + ".");
+                Reply(eventAndGoalExtraText[49] + thingsInInventory + ".");
 
                 // If the player looks in the inventory, have the puzzle about fishing started and have all the things to make a fishing rod, the things combine to a fishing rod.
                 if (FishingPuzzleStarted && HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
@@ -1272,20 +1253,63 @@ namespace Forest
 
         // TODO MOVE LATER vvvvv
 
-        static void AddToListOfEatenThings(ThingId thingId)
+        static string FormatListIntoString(List<string> things)
         {
-            // TODO finish texts
-            // use name of thing to show what is eaten.
-            if (EatenThings.Contains(thingId))
+            // If there is more then one thing in the players inventory, format all the things into one string.
+            if (things.Count > 1)
             {
-                // already eaten that, need to eat something different
-                Reply(eventAndGoalExtraText[200]);
+                // Add a new string that combines the last two things and adds "and" inbetween them.
+                things.Add(things[things.Count - 2] + eventAndGoalExtraText[50] + things[things.Count - 1]);
+                // Remove the two seperated words.
+                things.RemoveRange(things.Count - 3, 2);
+
+                // If there is more things then 2, add "," between all of them but the last two which are already combined with "and".
+                if (things.Count > 1)
+                {
+                    // Join all words together in a string.
+                    string joinList = String.Join(", ", things);
+                    // Remove all things in the list.
+                    things.Clear();
+                    // Add the formatted string with all the things to the list.
+                    things.Add(joinList);
+                }
+            }
+            return things[0].ToLower();
+        }
+
+        static void EatTheThing(ThingId thingId)
+        {
+            // Check if the thing was already eaten or not.
+            if (ListOfEatenThings.Contains(thingId))
+            {
+                // Text about player have already eaten that.
+                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[130], thing);
             }
             else
             {
-                EatenThings.Add(thingId);
-                // Text about what was eaten and how many things are eaten now
-                Reply(eventAndGoalExtraText[200]);
+                // Add the thing to eaten things and display a message.
+                ListOfEatenThings.Add(thingId);
+                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
+            }
+
+            // If the player has eaten more then one thing, tell the player all the things they already ate.
+            if (ListOfEatenThings.Count > 1)
+            {
+                var eatenThings = new List<string>();
+
+                // Get the name of all eaten things.
+                foreach (ThingId thing in ListOfEatenThings)
+                {
+                    eatenThings.Add(ThingsData[thing].Name.ToLower());
+                }
+
+                // Format the list.
+                eatenThings[0] = FormatListIntoString(eatenThings);
+
+                // Display all that is eaten.
+                Reply(eventAndGoalExtraText[128] + " " + eatenThings[0] + ".");
             }
         }
 
@@ -1324,7 +1348,7 @@ namespace Forest
                         case ThingId.Mushrooms:
                         case ThingId.Nuts:
                         case ThingId.Trash:
-                            AddToListOfEatenThings(thingId);
+                            EatTheThing(thingId);
                             // TODO
                             return;
 
@@ -2583,7 +2607,7 @@ namespace Forest
             {
                 // Add if list of things eaten is long enough, can swim, else no swim
                 // TODO decide on this number v
-                if (EatenThings.Count > 4 /* have eaten enough*/)
+                if (ListOfEatenThings.Count > 4 /* have eaten enough*/)
                 {
                     GoalCompleted[Goal.EnoughFoodConsumed] = true;
 

@@ -106,7 +106,7 @@ Starting location: Nowhere
 ID: Berries
 Name: Berries
 Description: The ground is covered in small bushes with delicious, juicy berries, blue ones and red ones. There is plenty!
-Answers: <Note: starts in LeafyForestSouth>
+Answers: <starts in LeafyForestSouth>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: There is no need to first pick the berries, you can eat them straight from the bushes.
 	Thing is not here: <You can't see such a thing>
@@ -121,7 +121,7 @@ Starting location: Nowhere
 ID: Nuts
 Name: Nuts
 Description: Almost covered by some leaves there is some nuts. It looks like a squirrel tried to burry them, but they probably forgot where they put them. "That would for sure never happen to me if I was a squirrel, I would hide them in my belly!" Bear thinks.
-Answers: <Note: starts in Glade>
+Answers: <starts in Glade>
 	Pick up: You picked up the nuts.
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
@@ -136,7 +136,7 @@ Starting location: Nowhere
 ID: Mushrooms
 Name: Mushrooms
 Description: Through the moss you can see a bunch of yellow mushrooms, it's chanterelles. Tasty!
-Answers: <Note: starts in MossyForestSouth>
+Answers: <starts in MossyForestSouth>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>

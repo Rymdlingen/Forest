@@ -253,3 +253,9 @@
 126Hidden away under some leaves you stumble upon some nuts, they where probably hidden and forgotten by a squirrel.
 
 127You have to choose, try again!
+
+128You have eaten
+
+129You ate some @.
+
+130You ate some more @.
