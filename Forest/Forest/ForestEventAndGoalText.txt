@@ -244,7 +244,7 @@
 
 122You are looking south over to the other side of the river, the river is roaring! It's forceful and it will not be easy to swim across.
 
-123You have hardly have anything to eat in a really long time, to be able to make it across the river you will need to first eat something.
+123You have hardly had anything to eat since winter sleep started, to be able to make it across the river you will need to eat something first.
 
 124There is a lot of berries growing on the ground, both blue and red ones.
 
@@ -259,3 +259,13 @@
 129You ate some @.
 
 130You ate some more @.
+
+131You take a quick refreshing bath in the water.
+
+132This is not a great place for just swimming around, better not go in the water without a good reason.
+
+133The dam is a great place for a nice swim! You swim around among the fishes for quite a while, it was a nice break, but better get on with something productive.
+
+134You can't swim here.
+
+135You can't swim in that direction.

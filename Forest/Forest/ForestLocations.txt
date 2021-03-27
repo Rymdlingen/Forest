@@ -87,7 +87,7 @@ Directions:
 
 ID: 14SouthForest
 Name: Forest
-Description: You are at the south edge of the old forest, the tree trunk are full of notes in the bark, this is the bulletin board of the old forest. You are in the middle between the den in the north and the river to the south.
+Description: You are at the south edge of the old forest, the tree trunks are full of notes in the bark, this is the bulletin board of the old forest. You are in the middle between the den in the north and the river to the south.
 Directions:
     North: 1Den
     South: 17EastRiver

@@ -444,7 +444,7 @@ namespace Forest
         /// Checks every word to see if they match any Direction enum.
         /// </summary>
         /// <param name="words"></param>
-        /// <returns>A list of thing ids that matched the words.</returns>
+        /// <returns>The first found direction.</returns>
         static Direction GetDirectionFromWords(string[] words)
         {
             Direction direction = Direction.NoDirection;
@@ -452,8 +452,7 @@ namespace Forest
             // For every word in the entered command, check if the word is a direction.
             foreach (string word in words)
             {
-                // TODO add thing for double words
-                // change to dictionary, check if it contains the word as a key.
+                // It directions by name contains the word as a key.
                 if (DirectionIdsByName.ContainsKey(word))
                 {
                     // If a word is a direction add it to the list of directions.
@@ -658,6 +657,11 @@ namespace Forest
                     // TODO go to "name of location" (or direction)
                     HandleGo(words);
                     break;
+
+                case "swim":
+                    HandleSwim(words);
+                    break;
+
                 case "give":
                     // TODO needed later for giving things to NPCs
                     break;
@@ -1251,67 +1255,65 @@ namespace Forest
             }
         }
 
-        // TODO MOVE LATER vvvvv
-
-        static string FormatListIntoString(List<string> things)
+        static void HandleSwim(string[] words)
         {
-            // If there is more then one thing in the players inventory, format all the things into one string.
-            if (things.Count > 1)
+            foreach (string word in words)
             {
-                // Add a new string that combines the last two things and adds "and" inbetween them.
-                things.Add(things[things.Count - 2] + eventAndGoalExtraText[50] + things[things.Count - 1]);
-                // Remove the two seperated words.
-                things.RemoveRange(things.Count - 3, 2);
-
-                // If there is more things then 2, add "," between all of them but the last two which are already combined with "and".
-                if (things.Count > 1)
+                // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
+                if (DirectionIdsByName.ContainsKey(word))
                 {
-                    // Join all words together in a string.
-                    string joinList = String.Join(", ", things);
-                    // Remove all things in the list.
-                    things.Clear();
-                    // Add the formatted string with all the things to the list.
-                    things.Add(joinList);
+                    if (DirectionIdsByName[word] == Direction.South && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.LeafyForestSouth))
+                    {
+                        HandleGo(words);
+                        return;
+                    }
                 }
             }
-            return things[0].ToLower();
-        }
 
-        static void EatTheThing(ThingId thingId)
-        {
-            // Check if the thing was already eaten or not.
-            if (ListOfEatenThings.Contains(thingId))
+            bool containsDirection = false;
+
+            foreach (string word in words)
             {
-                // Text about player have already eaten that.
-                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[130], thing);
+                // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
+                if (DirectionIdsByName.ContainsKey(word))
+                {
+                    containsDirection = true;
+                    break;
+                }
             }
+
+            // If the player tries to swim at a location with water (and not go in a direction).
+            if (!containsDirection && (CurrentLocationId == LocationId.SparseForest || CurrentLocationId == LocationId.LeafyForestNorth || CurrentLocationId == LocationId.LeafyForestMiddle || CurrentLocationId == LocationId.LeafyForestSouth))
+            {
+                // Taking a small bath in a stream.
+                Reply(eventAndGoalExtraText[131]);
+            }
+            else if (!containsDirection && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.Waterfall))
+            {
+                // No swim, dangerous water to swim around in.
+                Reply(eventAndGoalExtraText[132]);
+            }
+            else if (CurrentLocationId == LocationId.EastRiver && !containsDirection)
+            {
+                // Takes a swim in the dam.
+                Reply(eventAndGoalExtraText[133]);
+            }
+            else if (!containsDirection)
+            {
+                // No swiming here.
+                Reply(eventAndGoalExtraText[134]);
+            }
+            // If the player tries to swim in a direction.
             else
             {
-                // Add the thing to eaten things and display a message.
-                ListOfEatenThings.Add(thingId);
-                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
-            }
-
-            // If the player has eaten more then one thing, tell the player all the things they already ate.
-            if (ListOfEatenThings.Count > 1)
-            {
-                var eatenThings = new List<string>();
-
-                // Get the name of all eaten things.
-                foreach (ThingId thing in ListOfEatenThings)
-                {
-                    eatenThings.Add(ThingsData[thing].Name.ToLower());
-                }
-
-                // Format the list.
-                eatenThings[0] = FormatListIntoString(eatenThings);
-
-                // Display all that is eaten.
-                Reply(eventAndGoalExtraText[128] + " " + eatenThings[0] + ".");
+                // No swiming in that direction.
+                Reply(eventAndGoalExtraText[135]);
             }
         }
+
+        // TODO MOVE LATER vvvvv
+
+
 
         // TODO MOVE LATER ^^^^
 
@@ -1349,7 +1351,6 @@ namespace Forest
                         case ThingId.Nuts:
                         case ThingId.Trash:
                             EatTheThing(thingId);
-                            // TODO
                             return;
 
                         case ThingId.Flowers:
@@ -2684,6 +2685,42 @@ namespace Forest
             GetThing(ThingId.Necklace);
         }
 
+        static void EatTheThing(ThingId thingId)
+        {
+            // Check if the thing was already eaten or not.
+            if (ListOfEatenThings.Contains(thingId))
+            {
+                // Text about player have already eaten that.
+                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[130], thing);
+            }
+            else
+            {
+                // Add the thing to eaten things and display a message.
+                ListOfEatenThings.Add(thingId);
+                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
+            }
+
+            // If the player has eaten more then one thing, tell the player all the things they already ate.
+            if (ListOfEatenThings.Count > 1)
+            {
+                var eatenThings = new List<string>();
+
+                // Get the name of all eaten things.
+                foreach (ThingId thing in ListOfEatenThings)
+                {
+                    eatenThings.Add(ThingsData[thing].Name.ToLower());
+                }
+
+                // Format the list.
+                eatenThings[0] = FormatListIntoString(eatenThings);
+
+                // Display all that is eaten.
+                Reply(eventAndGoalExtraText[128] + " " + eatenThings[0] + ".");
+            }
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -2955,6 +2992,35 @@ namespace Forest
 
             newSentence = newSentence + sentence.Split('@')[split];
             Reply(newSentence);
+        }
+
+        /// <summary>
+        /// Takes a list and gives back a string with all the items from the list, formatted with "," and "and".
+        /// </summary>
+        /// <param name="things"></param>
+        /// <returns></returns>
+        static string FormatListIntoString(List<string> things)
+        {
+            // If there is more then one thing in the players inventory, format all the things into one string.
+            if (things.Count > 1)
+            {
+                // Add a new string that combines the last two things and adds "and" inbetween them.
+                things.Add(things[things.Count - 2] + eventAndGoalExtraText[50] + things[things.Count - 1]);
+                // Remove the two seperated words.
+                things.RemoveRange(things.Count - 3, 2);
+
+                // If there is more things then 2, add "," between all of them but the last two which are already combined with "and".
+                if (things.Count > 1)
+                {
+                    // Join all words together in a string.
+                    string joinList = String.Join(", ", things);
+                    // Remove all things in the list.
+                    things.Clear();
+                    // Add the formatted string with all the things to the list.
+                    things.Add(joinList);
+                }
+            }
+            return things[0].ToLower();
         }
         #endregion
 
