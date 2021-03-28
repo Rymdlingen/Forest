@@ -86,6 +86,7 @@ namespace Forest
         DenCleaned,
         DenMadeCozy,
         EnoughFoodConsumed,
+        HaveRelaxed,
 
         StungByBee,
         NecklaceWorn,
@@ -146,6 +147,7 @@ namespace Forest
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
                                                                                    { Goal.EnoughFoodConsumed, false },
+                                                                                   { Goal.HaveRelaxed, false },
 
                                                                                    { Goal.DreamtAboutShiftingShape, false },
                                                                                    { Goal.GoOnAdventure, false },
@@ -239,11 +241,20 @@ namespace Forest
                                                                                                 { "fishing rod", ThingId.FishingRodOld },
                                                                                                 { "rod", ThingId.FishingRodOld },
                                                                                                 { "necklace", ThingId.Necklace },
+                                                                                                { "dazzle", ThingId.Necklace },
+                                                                                                { "glow", ThingId.Necklace },
+                                                                                                { "something", ThingId.Necklace },
+                                                                                                { "thing", ThingId.Necklace },
+                                                                                                { "bush", ThingId.Necklace },
+                                                                                                { "bushes", ThingId.Necklace },
+                                                                                                { "reflection", ThingId.Necklace },
+                                                                                                { "light", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt } };
 
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey };
+        // TODO i think some food should be added to the list of things you can get
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace };
         static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { { ThingId.Flower, LocationId.BeeForest } };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
         // For puzzle: make den cozy.
@@ -669,7 +680,7 @@ namespace Forest
                     // TODO do I need this? probably yes, for making a fishing rod
                     break;
                 case "sleep":
-                    // TODO needed for the end of chapter 1 and the for the rest of the game
+                    HandleSleep();
                     break;
                 case "read":
                     // TODO not needed yet
@@ -818,6 +829,27 @@ namespace Forest
                 foreach (string thing in thingKeysFromCommand)
                 {
                     ThingId thingId = ThingIdsByName[thing];
+
+                    // Special case for necklace.
+                    if (thingId == ThingId.Necklace && ThingIsHere(ThingId.Necklace))
+                    {
+                        // If the thing is the necklace and the necklace is here.
+                        FindNecklace();
+
+                        return;
+                    }
+                    else if (thingId == ThingId.Necklace && thingIdsFromCommand.Count == 1)
+                    {
+                        // If the thing is the necklace and the necklace is not here, but there was mor things found in the command, then check the next thing.
+                        continue;
+                    }
+                    else if (thingId == ThingId.Necklace)
+                    {
+                        // If the thing is the necklace but the necklace is not here.
+                        // Says "There is no such thing that you can pick up here." (if not changed).
+                        Reply(eventAndGoalExtraText[5]);
+                        return;
+                    }
 
                     // Thing is not in this location.
                     if (!ThingIsHere(thingId))
@@ -1019,8 +1051,22 @@ namespace Forest
                 {
                     ThingId thingId = ThingIdsByName[thing];
 
+                    // Special case for finding necklace.
+                    if (thingId == ThingId.Necklace && ThingIsHere(ThingId.Necklace))
+                    {
+                        // If the thing is the necklace and the necklace is here.
+                        FindNecklace();
+
+                        return;
+                    }
+                    // Special case for using a word that refers to the necklace when it is not around but there is more things found in the command.
+                    else if (thingId == ThingId.Necklace && !HaveThing(ThingId.Necklace) && thingIdsFromCommand.Count == 1)
+                    {
+                        // If the thing is the necklace and the necklace is not here, but there was more things found in the command, then check the next thing instead.
+                        continue;
+                    }
                     // Special case for pile of leaves.
-                    if (thingId == ThingId.PileOfLeaves)
+                    else if (thingId == ThingId.PileOfLeaves)
                     {
                         // Thing is at players location or in inventory.
                         if (ThingIsAvailable(thingId))
@@ -1311,9 +1357,61 @@ namespace Forest
             }
         }
 
+        static void HandleSleep()
+        {
+            if (CurrentLocationId == LocationId.Den && HaveThing(ThingId.Necklace) && !GoalCompleted[Goal.DreamtAboutShiftingShape])
+            {
+                // Bear sleeps in den, dreams about shape shifting and waking up as animal.
+                SleepAndDream();
+            }
+            else if (HaveThing(ThingId.Necklace))
+            {
+                // Says "You should sleep in the den, you worked so hard to make it cozy." (if not changed).
+                Reply(eventAndGoalExtraText[154]);
+            }
+            else if (CurrentLocationId == LocationId.Den && HaveTriedToSwimOverRiver)
+            {
+                // Says "You should go wind down for a bit before going to sleep." (if not changed).
+                Reply(eventAndGoalExtraText[155]);
+            }
+            else if (CurrentLocationId == LocationId.Den)
+            {
+                // Says "No more sleep before night, there's lots to get done!" (if not changed).
+                Reply(eventAndGoalExtraText[156]);
+            }
+            else
+            {
+                // Says "There's no time fo sleeping, lots to get done today!" (if not changed).
+                Reply(eventAndGoalExtraText[157]);
+            }
+        }
+
         // TODO MOVE LATER vvvvv
 
+        static void SleepAndDream()
+        {
+            // Bear goes to bed and immediately falls alseep.
+            Reply(eventAndGoalExtraText[158]);
+            PressAnyKeyToContinueAndClear();
 
+            // Dream
+            Reply(eventAndGoalExtraText[159]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[160]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[161]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[162]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[163]);
+            PressAnyKeyToContinue();
+
+            // Wake up as an animal
+            Reply(eventAndGoalExtraText[200]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[200]);
+            PressAnyKeyToContinue();
+        }
 
         // TODO MOVE LATER ^^^^
 
@@ -1614,7 +1712,8 @@ namespace Forest
                 MoveThing(ThingId.Honey, LocationId.Nowhere, LocationId.Den);
             }
 
-            if (GoalCompleted[Goal.EnoughFoodConsumed] && CurrentLocationId == LocationId.SouthEastForest)
+            // TODO change these conditions to depend on clearing all the previous puzzles but not the eating one (making it okey to eat the next day instead)
+            if (GoalCompleted[Goal.EnoughFoodConsumed] && CurrentLocationId == LocationId.SouthEastForest && !GoalCompleted[Goal.HaveRelaxed])
             {
                 // Start event about necklace.
                 Relax();
@@ -2663,28 +2762,6 @@ namespace Forest
             DisplayNewLocation();
         }
 
-        // Events about necklace.
-        static void Relax()
-        {
-            // TODO
-
-            // Text aboy relaxing and thinking about the old stories, the beeing interupted by seeing something glimmer in the sun
-
-            // Add the necklace to this location.
-            MoveThing(ThingId.Necklace, ThingsCurrentLocations[ThingId.Necklace][0], CurrentLocationId);
-        }
-
-        // Put this in pick up, for necklace and other words (what words will refer to this object from te context of the text about seeing it?)
-        static void FindNecklace()
-        {
-            // TODO
-
-            // Text about the necklace, putting it on, trying to shift shape.
-
-            // Pick up the necklace.
-            GetThing(ThingId.Necklace);
-        }
-
         static void EatTheThing(ThingId thingId)
         {
             // Check if the thing was already eaten or not.
@@ -2721,6 +2798,75 @@ namespace Forest
             }
         }
 
+        // Events about necklace.
+        static void Relax()
+        {
+            GoalCompleted[Goal.HaveRelaxed] = true;
+
+            // You are at the old tree, time to relax!
+            Reply(eventAndGoalExtraText[136]);
+            PressAnyKeyToContinueAndClear();
+
+            // Text about relaxing and thinking about the old stories, the beeing interupted by seeing something glimmer in the sun
+            Reply(eventAndGoalExtraText[137]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[138]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[139]);
+            PressAnyKeyToContinue();
+            // TODO The old story.
+            Reply(eventAndGoalExtraText[140]);
+            PressAnyKeyToContinue();
+            // Something disturbs you.
+            Reply(eventAndGoalExtraText[141]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[142]);
+            PressAnyKeyToContinue();
+
+            // Add the necklace to this location (old tree).
+            MoveThing(ThingId.Necklace, ThingsCurrentLocations[ThingId.Necklace][0], CurrentLocationId);
+
+            // Display the location again (now with extra description about necklace).
+            DisplayNewLocation();
+        }
+
+        static void FindNecklace()
+        {
+            // You take a closer look in the bush and find a necklace.
+            Reply(eventAndGoalExtraText[144]);
+            PressAnyKeyToContinueAndClear();
+
+            // Text about the necklace, putting it on, trying to shift shape.
+            Reply(eventAndGoalExtraText[145]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[146]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[147]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[148]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[149]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[150]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[151]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[150]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[150]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[152]);
+            PressAnyKeyToContinue();
+            // That didnt end very relaxing, but now the sun is almost completely down, time to sleep.
+            Reply(eventAndGoalExtraText[153]);
+            PressAnyKeyToContinue();
+
+            // Pick up the necklace.
+            MoveThing(ThingId.Necklace, CurrentLocationId, LocationId.Inventory);
+
+            DisplayNewLocation();
+        }
+
         // Other events.
         static void MovePlayerToNewLocation(LocationId newLocationId)
         {
@@ -2740,11 +2886,6 @@ namespace Forest
             // Put the player at the dam.
             MovePlayerToNewLocation(LocationId.EastRiver);
         }
-
-        // TODO add event about floting on the river
-        // TODO add event for trying to cross the river and getting quest
-        // TODO add event about bees and flowers
-        // TODO add event for fishing
         #endregion
 
         #region Display helpers
@@ -2972,6 +3113,15 @@ namespace Forest
 
                 // Nuts.
                 Reply(eventAndGoalExtraText[126]);
+            }
+
+            if (ThingIsHere(ThingId.Necklace))
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // Extra discription about necklace in the busches.
+                Reply(eventAndGoalExtraText[143]);
             }
         }
 
