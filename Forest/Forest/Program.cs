@@ -1405,9 +1405,21 @@ namespace Forest
             PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[163]);
             PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[164]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[165]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[166]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[167]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[168]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[169]);
+            PressAnyKeyToContinueAndClear();
 
             // Wake up as an animal
-            Reply(eventAndGoalExtraText[200]);
+            Reply(eventAndGoalExtraText[170]);
             PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[200]);
             PressAnyKeyToContinue();
