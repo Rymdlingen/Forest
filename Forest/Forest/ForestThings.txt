@@ -375,14 +375,14 @@ Starting location: Nowhere
 
 ID: Necklace
 Name: Necklace
-Description: (NOT DONE) It's an old necklace.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+Description: It's an old necklace with a small round pendant made out of a tiny yellow gemstone that gives of a slight glow.
+Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
-	Drop not possible: <Thing can't be dropped here>
+	Drop not possible: There is no reason to get rid of the necklace, it's beautiful and it fits you perfectly.
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
@@ -402,6 +402,14 @@ ID: Placeholder
 Name: Placeholder
 Description: A placeholder.
 Starting location: Nowhere
+
+ID: ShapeBear
+Name: a bear
+Description: You are currently the big and strong bear that is your ordinary self.
+
+ID: ShapeSquirrel
+Name: a squirrel
+Description: You have shifted your shape and taken the form of a small and quick squirrel.
 
 Notes:
 Template

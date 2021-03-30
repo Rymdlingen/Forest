@@ -129,9 +129,10 @@ Directions:
 
 ID: 20Cliffs
 Name: Cliffs
-Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to the view point, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains. The only way down is a narrow and steep path. "If only I was a tiny animal, like a little mouse, or maybe a bird.. then I could easily make my way down the cliff. I wonder what it's like down there.." bear thinks. It's not a path fit for a bear. The only way from here that works for a bear is swimming back north over the river, back to the old forest.
+Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to at the view point, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains.
 Directions:
     North: 16WestRiver
+    South: TheEnd
 
 ID: Inventory
 Name: Inventory

@@ -64,7 +64,9 @@ namespace Forest
         Owl,
         Frog,
         Dirt,
-        Placeholder
+        Placeholder,
+        ShapeBear,
+        ShapeSquirrel
     }
 
     enum Direction
@@ -87,6 +89,8 @@ namespace Forest
         DenMadeCozy,
         EnoughFoodConsumed,
         HaveRelaxed,
+        CaughtFish,
+        BeenGiftedHoney,
 
         StungByBee,
         NecklaceWorn,
@@ -143,13 +147,16 @@ namespace Forest
         // Current state.
         static LocationId CurrentLocationId = LocationId.Den;
         static LocationId PreviousLocation = CurrentLocationId;
+        static ThingId CurrentShape = ThingId.ShapeBear;
         static Dictionary<ThingId, List<LocationId>> ThingsCurrentLocations = new Dictionary<ThingId, List<LocationId>>();
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
                                                                                    { Goal.EnoughFoodConsumed, false },
                                                                                    { Goal.HaveRelaxed, false },
-
                                                                                    { Goal.DreamtAboutShiftingShape, false },
+                                                                                   { Goal.CaughtFish, false },
+                                                                                   { Goal.BeenGiftedHoney, false },
+
                                                                                    { Goal.GoOnAdventure, false },
                                                                                    { Goal.NecklaceWorn, false },
                                                                                    { Goal.StungByBee, false } };
@@ -157,12 +164,17 @@ namespace Forest
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
 
+        // Command helpers.
+        static List<string> CommandsWithMoreThenOneWord = new List<string>() { "shift shape", "change shape", "shape shift" };
+        static Dictionary<string, ThingId> ShapesByName = new Dictionary<string, ThingId> { { "bear", ThingId.ShapeBear},
+                                                                                            { "squirrel", ThingId.ShapeSquirrel} };
+
         // Direction helpers.
         static Dictionary<string, Direction> DirectionIdsByName = new Dictionary<string, Direction>() { { "n", Direction.North },
                                                                                                     { "north", Direction.North },
                                                                                                     { "ne", Direction.Northeast },
                                                                                                     { "northeast", Direction.Northeast },
-                                                                                                    { "north east", Direction.Northeast }, // TODO Make it work with space
+                                                                                                    { "north east", Direction.Northeast },
                                                                                                     { "e", Direction.East },
                                                                                                     { "east", Direction.East },
                                                                                                     { "se", Direction.Southeast },
@@ -432,19 +444,22 @@ namespace Forest
                     threeWords = twoWords + " " + words[word + 2];
                 }
 
+
                 // Looking for words that belong together.
-                if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords) || DirectionIdsByName.ContainsKey(twoWords))
-                {
-                    // Replace the first word with the combined word (the second word is cleared).
-                    words[word] = twoWords;
-                    words[word + 1] = "";
-                }
-                else if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords))
+                // Three words.
+                if (ThingsToSearch.Contains(threeWords) || ThingIdsByName.ContainsKey(threeWords) || CommandsWithMoreThenOneWord.Contains(threeWords))
                 {
                     // Replace the first word with the combined word (the second and third words is cleared).
                     words[word] = threeWords;
                     words[word + 1] = "";
                     words[word + 2] = "";
+                }
+                // Two words.
+                else if (ThingsToSearch.Contains(twoWords) || ThingIdsByName.ContainsKey(twoWords) || DirectionIdsByName.ContainsKey(twoWords) || CommandsWithMoreThenOneWord.Contains(twoWords))
+                {
+                    // Replace the first word with the combined word (the second word is cleared).
+                    words[word] = twoWords;
+                    words[word + 1] = "";
                 }
             }
 
@@ -596,7 +611,6 @@ namespace Forest
                 verb = words[0].Trim();
             }
 
-            // TODO add something for if the player writes "go", "walk" or something like that, change the verb to the second word? witch should be a direction?
             // TODO add list of combined commands, and add it to the ask for input method.
 
             // Call the right handler for the given verb.
@@ -673,45 +687,44 @@ namespace Forest
                     HandleSwim(words);
                     break;
 
-                case "give":
-                    // TODO needed later for giving things to NPCs
-                    break;
-                case "combine":
-                    // TODO do I need this? probably yes, for making a fishing rod
-                    break;
                 case "sleep":
                     HandleSleep();
                     break;
+
                 case "read":
                     // TODO not needed yet
                     break;
 
-                // TODO interacting verbs, probably need more of them
+                // Interacting verbs
                 case "eat":
-                    // TODO for eating fish and other things.
                     HandleEat(words);
                     break;
 
-                // For fishing puzzle.
                 case "search":
                     HandleSearch(words);
                     break;
 
                 case "use":
-                    // TODO for using fishing rod adn binoculars.
                     HandleUse(words);
                     break;
 
                 // Inventory.
                 case "inventory":
                 case "i":
-                    // TODO show list if whats in the inventory
                     HandleInventory();
                     break;
 
                 // Shapeshifting.
                 case "shift":
+                case "change":
+                case "shift shape":
+                case "change shape":
+                case "shiftshape":
+                case "changeshape":
+                case "shape shift":
+                case "shapeshift":
                     // TODO need to figure out what command I want to use for this
+                    ShiftShape(words);
                     break;
 
                 // Quit.
@@ -749,8 +762,28 @@ namespace Forest
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
             // Checking if the direction is availible for the current location.
+            // For trying to go down the path down the cliffs.
+            if (CurrentLocationId == LocationId.Cliffs && direction == Direction.South)
+            {
+                if (CurrentShape == ThingId.ShapeSquirrel)
+                {
+                    // Trigger the end.
+                    EndGame();
+                }
+                else
+                {
+                    // Message about bears being to big for the path.
+                    Reply(eventAndGoalExtraText[182]);
+                }
+            }
+            // For trying to swim back over the river from the cliff while being a squirrel.
+            else if (CurrentLocationId == LocationId.Cliffs && direction == Direction.North && CurrentShape == ThingId.ShapeSquirrel)
+            {
+                // Squirrel can't swim over the river.
+                Reply(eventAndGoalExtraText[192]);
+            }
             // For trying to go south over river to cliffs.
-            if (direction == Direction.South && CurrentLocationId == LocationId.WestRiver)
+            else if (direction == Direction.South && CurrentLocationId == LocationId.WestRiver)
             {
                 // Checks if player can swim over river or not, moves player if nessesary and displayes the right text.
                 SwimOverRiver();
@@ -1036,6 +1069,51 @@ namespace Forest
             }
         }
 
+        static void ShiftShape(string[] words)
+        {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            foreach (string word in words)
+            {
+                // Check if the word is a shape.
+                if (ShapesByName.ContainsKey(word))
+                {
+                    // If player is trying to change into what they already are.
+                    if (CurrentShape == ShapesByName[word])
+                    {
+                        // Message about that you already are that shape.
+                        Reply(eventAndGoalExtraText[179]);
+                    }
+                    // Player changes into something else.
+                    else
+                    {
+                        CurrentShape = ShapesByName[word];
+                        // Message about flash of light and new shape.
+                        Print(eventAndGoalExtraText[178]);
+                        Reply(ThingsData[ShapesByName[word]].Description);
+                    }
+
+                    return;
+                }
+                // Check if there even is any more words.
+                else if (words.Length < 2)
+                {
+                    // Ask for a new input.
+                    // Says "What do you want to change into?" (if not changed).
+                    string[] newWords = AskForInput(eventAndGoalExtraText[180]);
+                    ShiftShape(newWords);
+                    return;
+                }
+            }
+
+            // Says "You don't know how to change into that" (if not changed).
+            Reply(eventAndGoalExtraText[181]);
+        }
+
         static void HandleLook(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
@@ -1303,57 +1381,65 @@ namespace Forest
 
         static void HandleSwim(string[] words)
         {
-            foreach (string word in words)
+            if (CurrentShape == ThingId.ShapeBear)
             {
-                // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
-                if (DirectionIdsByName.ContainsKey(word))
+                foreach (string word in words)
                 {
-                    if (DirectionIdsByName[word] == Direction.South && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.LeafyForestSouth))
+                    // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
+                    if (DirectionIdsByName.ContainsKey(word))
                     {
-                        HandleGo(words);
-                        return;
+                        if (DirectionIdsByName[word] == Direction.South && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.LeafyForestSouth))
+                        {
+                            HandleGo(words);
+                            return;
+                        }
                     }
                 }
-            }
 
-            bool containsDirection = false;
+                bool containsDirection = false;
 
-            foreach (string word in words)
-            {
-                // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
-                if (DirectionIdsByName.ContainsKey(word))
+                foreach (string word in words)
                 {
-                    containsDirection = true;
-                    break;
+                    // If the player is trying to swim south in the south leafy forest (down the bigger water stream) or the west river (to cross the river).
+                    if (DirectionIdsByName.ContainsKey(word))
+                    {
+                        containsDirection = true;
+                        break;
+                    }
+                }
+
+                // If the player tries to swim at a location with water (and not go in a direction).
+                if (!containsDirection && (CurrentLocationId == LocationId.SparseForest || CurrentLocationId == LocationId.LeafyForestNorth || CurrentLocationId == LocationId.LeafyForestMiddle || CurrentLocationId == LocationId.LeafyForestSouth))
+                {
+                    // Taking a small bath in a stream.
+                    Reply(eventAndGoalExtraText[131]);
+                }
+                else if (!containsDirection && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.Waterfall))
+                {
+                    // No swim, dangerous water to swim around in.
+                    Reply(eventAndGoalExtraText[132]);
+                }
+                else if (CurrentLocationId == LocationId.EastRiver && !containsDirection)
+                {
+                    // Takes a swim in the dam.
+                    Reply(eventAndGoalExtraText[133]);
+                }
+                else if (!containsDirection)
+                {
+                    // No swiming here.
+                    Reply(eventAndGoalExtraText[134]);
+                }
+                // If the player tries to swim in a direction.
+                else
+                {
+                    // No swiming in that direction.
+                    Reply(eventAndGoalExtraText[135]);
                 }
             }
-
-            // If the player tries to swim at a location with water (and not go in a direction).
-            if (!containsDirection && (CurrentLocationId == LocationId.SparseForest || CurrentLocationId == LocationId.LeafyForestNorth || CurrentLocationId == LocationId.LeafyForestMiddle || CurrentLocationId == LocationId.LeafyForestSouth))
+            else if (CurrentShape == ThingId.ShapeSquirrel)
             {
-                // Taking a small bath in a stream.
-                Reply(eventAndGoalExtraText[131]);
-            }
-            else if (!containsDirection && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.Waterfall))
-            {
-                // No swim, dangerous water to swim around in.
-                Reply(eventAndGoalExtraText[132]);
-            }
-            else if (CurrentLocationId == LocationId.EastRiver && !containsDirection)
-            {
-                // Takes a swim in the dam.
-                Reply(eventAndGoalExtraText[133]);
-            }
-            else if (!containsDirection)
-            {
-                // No swiming here.
-                Reply(eventAndGoalExtraText[134]);
-            }
-            // If the player tries to swim in a direction.
-            else
-            {
-                // No swiming in that direction.
-                Reply(eventAndGoalExtraText[135]);
+                // The squirrel don't want to swim.
+                Reply(eventAndGoalExtraText[195]);
             }
         }
 
@@ -1364,7 +1450,7 @@ namespace Forest
                 // Bear sleeps in den, dreams about shape shifting and waking up as animal.
                 SleepAndDream();
             }
-            else if (HaveThing(ThingId.Necklace))
+            else if (HaveThing(ThingId.Necklace) && !GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
                 // Says "You should sleep in the den, you worked so hard to make it cozy." (if not changed).
                 Reply(eventAndGoalExtraText[154]);
@@ -1385,47 +1471,6 @@ namespace Forest
                 Reply(eventAndGoalExtraText[157]);
             }
         }
-
-        // TODO MOVE LATER vvvvv
-
-        static void SleepAndDream()
-        {
-            // Bear goes to bed and immediately falls alseep.
-            Reply(eventAndGoalExtraText[158]);
-            PressAnyKeyToContinueAndClear();
-
-            // Dream
-            Reply(eventAndGoalExtraText[159]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[160]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[161]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[162]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[163]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[164]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[165]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[166]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[167]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[168]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[169]);
-            PressAnyKeyToContinueAndClear();
-
-            // Wake up as an animal
-            Reply(eventAndGoalExtraText[170]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[200]);
-            PressAnyKeyToContinue();
-        }
-
-        // TODO MOVE LATER ^^^^
 
         static void HandleEat(string[] words)
         {
@@ -1722,10 +1767,11 @@ namespace Forest
             if (HaveTriedToEatFlower && ThingAt(ThingId.Honey, LocationId.Nowhere))
             {
                 MoveThing(ThingId.Honey, LocationId.Nowhere, LocationId.Den);
+                GoalCompleted[Goal.BeenGiftedHoney] = true;
             }
 
-            // TODO change these conditions to depend on clearing all the previous puzzles but not the eating one (making it okey to eat the next day instead)
-            if (GoalCompleted[Goal.EnoughFoodConsumed] && CurrentLocationId == LocationId.SouthEastForest && !GoalCompleted[Goal.HaveRelaxed])
+            // Player have to have finished the puzzles about fishing, honey and making the den cozy before relaxing.
+            if (HaveTriedToSwimOverRiver && GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.BeenGiftedHoney] && GoalCompleted[Goal.CaughtFish] && CurrentLocationId == LocationId.SouthEastForest && !GoalCompleted[Goal.HaveRelaxed])
             {
                 // Start event about necklace.
                 Relax();
@@ -1768,9 +1814,28 @@ namespace Forest
         #region Events
         static void EndGame()
         {
-            Print("THE END! (That was all the puzzles that are finished right now)");
+            // Story about going down the path and thinking about the adventure ahead.
+            Reply(eventAndGoalExtraText[183]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[184]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[185]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[186]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[187]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[188]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[189]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[190]);
+            PressAnyKeyToContinueAndClear();
+            // End of chapter 1.
+            Reply(eventAndGoalExtraText[191]);
+            PressAnyKeyToContinueAndClear();
+
             quitGame = true;
-            // TODO change text, and probably other things as well
         }
 
         // Events connected to cozy den goal.
@@ -2111,6 +2176,7 @@ namespace Forest
                 Reply(eventAndGoalExtraText[93]);
                 PressAnyKeyToContinue();
                 GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
+                GoalCompleted[Goal.CaughtFish] = true;
 
                 DisplayNewLocation();
             }
@@ -2712,39 +2778,61 @@ namespace Forest
             MovePlayerToNewLocation(LocationId.Glade);
         }
 
-        //Events for swiming over river
+        // Events for swiming over river.
         static void SwimOverRiver()
         {
+            // Checks if the puzzle about eating is started.
             if (HaveTriedToSwimOverRiver)
             {
-                // Add if list of things eaten is long enough, can swim, else no swim
-                // TODO decide on this number v
-                if (ListOfEatenThings.Count > 4 /* have eaten enough*/)
+                // If the player is a bear.
+                if (CurrentShape == ThingId.ShapeBear)
                 {
-                    GoalCompleted[Goal.EnoughFoodConsumed] = true;
-
-                    // If the player have slept, they can swim over to the other side of the river.
-                    if (DidSleep)
+                    // If player have eaten enough different things.
+                    if (ListOfEatenThings.Count >= 4)
                     {
-                        Console.Clear();
+                        GoalCompleted[Goal.EnoughFoodConsumed] = true;
 
-                        // Text about being ready to swim.
-                        Reply(eventAndGoalExtraText[119]);
-                        PressAnyKeyToContinue();
+                        // If the player have slept, they can swim over to the other side of the river.
+                        if (GoalCompleted[Goal.DreamtAboutShiftingShape])
+                        {
+                            Console.Clear();
 
-                        // Move player to the new location and displays description.
-                        MovePlayerToNewLocation(LocationId.Cliffs);
+                            // Text about being ready to swim.
+                            Reply(eventAndGoalExtraText[119]);
+                            PressAnyKeyToContinue();
+
+                            // Move player to the new location and displays description.
+                            MovePlayerToNewLocation(LocationId.Cliffs);
+                        }
                     }
+                    // Need to eat more.
                     else
                     {
-                        // It's getting late, should go relax a bit and then sleep.
-                        Reply(eventAndGoalExtraText[120]);
+                        // Bear needs to eat before going for a swim.
+                        Reply(eventAndGoalExtraText[121]);
+                    }
+
+                    // If the player has finished all other puzzles they should go relax.
+                    if (GoalCompleted[Goal.CaughtFish] && GoalCompleted[Goal.BeenGiftedHoney] && GoalCompleted[Goal.DenMadeCozy])
+                    {
+                        if (!GoalCompleted[Goal.HaveRelaxed])
+                        {
+                            // It's getting late, should go relax a bit and then sleep.
+                            Reply(eventAndGoalExtraText[120]);
+                        }
+                        // If the player have relaxed they should go sleep.
+                        else if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
+                        {
+                            // Player should sleep.
+                            Reply(eventAndGoalExtraText[196]);
+                        }
                     }
                 }
-                else
+                // If the player is a squirrel.
+                else if (CurrentShape == ThingId.ShapeSquirrel)
                 {
-                    // Bear needs to eat before going for a swim.
-                    Reply(eventAndGoalExtraText[121]);
+                    // Message about squirrels being to small to swim in the rough water.
+                    Reply(eventAndGoalExtraText[192]);
                 }
             }
             else if (!HaveTriedToSwimOverRiver)
@@ -2875,6 +2963,59 @@ namespace Forest
 
             // Pick up the necklace.
             MoveThing(ThingId.Necklace, CurrentLocationId, LocationId.Inventory);
+
+            DisplayNewLocation();
+        }
+
+        // Dream.
+        static void SleepAndDream()
+        {
+            GoalCompleted[Goal.DreamtAboutShiftingShape] = true;
+
+            // Bear goes to bed and immediately falls alseep.
+            Reply(eventAndGoalExtraText[158]);
+            PressAnyKeyToContinueAndClear();
+
+            // Dream
+            Reply(eventAndGoalExtraText[159]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[160]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[161]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[162]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[163]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[164]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[165]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[166]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[167]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[168]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[169]);
+            PressAnyKeyToContinueAndClear();
+
+            // Wake up as an squirrel.
+            Reply(eventAndGoalExtraText[170]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[171]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[173]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[174]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[175]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[176]);
+            PressAnyKeyToContinue();
+            // Change back to a bear.
+            Reply(eventAndGoalExtraText[177]);
+            PressAnyKeyToContinue();
 
             DisplayNewLocation();
         }
@@ -3132,8 +3273,34 @@ namespace Forest
                 // TODO color
                 Console.WriteLine();
 
-                // Extra discription about necklace in the busches.
+                // Extra discription about necklace in the bushes.
                 Reply(eventAndGoalExtraText[143]);
+            }
+
+            if (CurrentLocationId == LocationId.Cliffs)
+            {
+                // TODO color
+                Console.WriteLine();
+
+                if (CurrentShape == ThingId.ShapeBear)
+                {
+                    // Bear can swim north but not climb down south.
+                    Reply(eventAndGoalExtraText[193]);
+                }
+                else if (CurrentShape == ThingId.ShapeSquirrel)
+                {
+                    // Squirrel can climb down south but not swim back north.
+                    Reply(eventAndGoalExtraText[194]);
+                }
+            }
+
+            if (GoalCompleted[Goal.DreamtAboutShiftingShape])
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // Extra description about what animal the player is.
+                Reply(ThingsData[CurrentShape].Description);
             }
         }
 
@@ -3734,9 +3901,5 @@ namespace Forest
 
         }*/
         #endregion
-
-        // TODO finding necklace
-        // TODO text about trying necklace and dream
-        // TODO end of part 1
     }
 }

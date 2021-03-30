@@ -244,7 +244,7 @@
 
 122You are looking south over to the other side of the river, the river is roaring! It's forceful and it will not be easy to swim across.
 
-123You have hardly had anything to eat since winter sleep started, to be able to make it across the river you will need to eat something first.
+123You have hardly had anything to eat since winter sleep started, to be able to make it across the river you will need to eat something first. 
 
 124There is a lot of berries growing on the ground, both blue and red ones.
 
@@ -345,3 +345,49 @@
 172...
 
 173"Everything seems so big..."
+
+174"Something is different, but what?"
+
+175"Hmmm.."
+
+176"Did I shift shape??"
+
+177As squirrel said those words there was a sudden and blinding yellow flash of light, as the light faded everything was back to normal again.
+
+178The pendant on the necklace you are wearing starts to glow and then there is a flash of yellow light.
+
+179You can't change into what you already are.
+
+180What do you want to change into?
+
+181You don't know how to change into that.
+
+182You are a big bear, the path is too narrow, it only works for small animals.
+
+183Since you are a small squirrel the narrow path is no problem for you!
+
+184You run quickly on the steep path and easily jump over the bigger rocks.
+
+185As you run and run down the path on the high cliff you think about the adventure that lies ahead of you..
+
+186Will you be able to learn to become other animals too? 
+
+187Will you figure out who you want to be? 
+
+188Will you be able to find the source of this magic and make the change permanent?
+
+189As you reach the end of the path you arrive in the big forest that you longingly have been looking down at for years and years. The trees are so much bigger then they looked from up there, most of them are as big as the old tree, or even bigger!
+
+190This is only the start of the adventure of finding yourself.
+
+191~ End of chapter 1 ~
+
+192Squirrels are too small to swim through the strong currents of the river. Better stay out of the water, it's too dangerous.
+
+193The only way down from the cliffs is to the south, it is a narrow and steep path. "If only I was a tiny animal, like a little mouse, or maybe a bird.. then I could easily make my way down the cliff. I wonder what it's like down there.." Bear thinks. It's not at all a path fit for a someone big. The only way from here that works for a bear is swimming back north over the river, back to the old forest.
+
+194The only way down from the cliffs is to the south, it is a narrow and steep path. It's not a path fit for a someone small, perfect for a squirrel. The way back north is over the river but the river is too dangerous for a squirrel to swim over.
+
+195Squirrel prefers to stay dry on land over getting al wet and cold in the water.
+
+196It's getting late and you are really tired after a long day of hard work. You should go sleep and swim over the river tomorrow instead.
