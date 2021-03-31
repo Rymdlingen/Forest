@@ -577,23 +577,29 @@ namespace Forest
         }
 
         /// <summary>
-        /// Clears the consol, displayes indicator for not accepting commands(... instead of >), needs a keypress and then disapers.
+        /// Displayes indicator for not accepting commands(... instead of >), player needs to press enter to continue and that clears the screen.
         /// </summary>
-        static void PressAnyKeyToContinueAndClear()
+        static void PressEnterToContinueAndClear()
         {
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Console.Clear();
         }
 
         /// <summary>
-        /// Clears the consol, displayes indicator for not accepting commands(... instead of >), needs a keypress and then disapers.
+        /// Displayes indicator for not accepting commands(... instead of >), player needs to press enter to continue.
         /// </summary>
-        static void PressAnyKeyToContinue()
+        static void PressEnterToContinue()
         {
             // TODO not sure about color
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
             Console.ReadKey();
+            ConsoleKey key;
+            do
+            {
+                key = Console.ReadKey().Key;
+            }
+            while (key != ConsoleKey.Enter);
             Console.CursorLeft = 0;
         }
         #endregion
@@ -1057,7 +1063,7 @@ namespace Forest
                 // If the player looks in the inventory, have the puzzle about fishing started and have all the things to make a fishing rod, the things combine to a fishing rod.
                 if (FishingPuzzleStarted && HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
                 {
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     CombineToFishingRod();
                 }
             }
@@ -1816,24 +1822,24 @@ namespace Forest
         {
             // Story about going down the path and thinking about the adventure ahead.
             Reply(eventAndGoalExtraText[183]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[184]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[185]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[186]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[187]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[188]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[189]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[190]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
             // End of chapter 1.
             Reply(eventAndGoalExtraText[191]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             quitGame = true;
         }
@@ -1910,15 +1916,15 @@ namespace Forest
             // Print text that tells the player the puzzle is done.
             Console.Clear();
             Reply(eventAndGoalExtraText[17]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[18]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[19]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[20]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[21]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             DisplayNewLocation();
         }
@@ -2015,7 +2021,7 @@ namespace Forest
             // Display an extra message if player was holding the pile of leaves when sliding down the river.
             if (HaveThing(ThingId.PileOfLeaves))
             {
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
                 // Text about losing the leaves.
                 Print(eventAndGoalExtraText[27]);
                 LoseLeafPile();
@@ -2030,7 +2036,7 @@ namespace Forest
             Console.Clear();
             Reply(eventAndGoalExtraText[35]);
 
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             if (ThingsInPileOfLeaves.Count() == 3)
             {
@@ -2085,7 +2091,7 @@ namespace Forest
                 LoseLeafPile();
             }
 
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             MovePlayerToNewLocation(LocationId.Den);
         }
@@ -2098,9 +2104,9 @@ namespace Forest
                 // Start instructions for fishing puzzle.
                 FishingPuzzleStarted = true;
                 Reply(eventAndGoalExtraText[97]);
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
                 Reply(eventAndGoalExtraText[98]);
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
             }
             else
             {
@@ -2131,50 +2137,50 @@ namespace Forest
 
                 // Text about starting to fish, sit down with you rod made out of choosen stick.
                 InsertKeyWordAndDisplay(eventAndGoalExtraText[81], stickName);
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
                 Reply(eventAndGoalExtraText[82]);
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
 
                 if (fishingRod == ThingId.FishingRodLong)
                 {
                     // You wait and wait and wait, nothing happens.
                     Reply(eventAndGoalExtraText[83]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[84]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[85]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[83]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[86]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                 }
                 else if (fishingRod == ThingId.FishingRodOld)
                 {
                     // Gets a fish on the hook but the rod breakes.
                     Reply(eventAndGoalExtraText[87]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[88]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[89]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[90]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[91]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                     Reply(eventAndGoalExtraText[92]);
-                    PressAnyKeyToContinue();
+                    PressEnterToContinue();
                 }
 
                 // Text about catching fish and throwing rod away.
                 Reply(eventAndGoalExtraText[93]);
-                PressAnyKeyToContinue();
+                PressEnterToContinue();
                 GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
                 GoalCompleted[Goal.CaughtFish] = true;
 
@@ -2473,7 +2479,7 @@ namespace Forest
 
                             // Clear the previous entered arrows.
                             EnteredArrows.Clear();
-                            PressAnyKeyToContinue();
+                            PressEnterToContinue();
 
                             // Clear and display location description ("exit" binoculars).
                             DisplayNewLocation();
@@ -2535,7 +2541,7 @@ namespace Forest
             }
 
             // "Exit" binoculars. Clear and show description about location.
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             DisplayNewLocation();
         }
 
@@ -2581,15 +2587,15 @@ namespace Forest
             // Text about almost stepping on a rusty nail.
             Console.Clear();
             Reply(eventAndGoalExtraText[71]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[72]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[73]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[74]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[75]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             MovePlayerToNewLocation(LocationId.SouthEastForest);
         }
@@ -2598,7 +2604,7 @@ namespace Forest
         {
             // Text about having an idea!
             Reply(eventAndGoalExtraText[78]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             // Text about combinin nail and rope.
             Reply(eventAndGoalExtraText[79]);
@@ -2660,7 +2666,7 @@ namespace Forest
                 ThingIdsByName["fishing rod"] = ThingId.FishingRodLong;
             }
 
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             DisplayNewLocation();
         }
 
@@ -2766,11 +2772,11 @@ namespace Forest
 
             // Text about having an idea to eat flowers to help make honey.
             Reply(eventAndGoalExtraText[110]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[111]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[112]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             HoneyPuzzleStarted = true;
 
@@ -2799,7 +2805,7 @@ namespace Forest
 
                             // Text about being ready to swim.
                             Reply(eventAndGoalExtraText[119]);
-                            PressAnyKeyToContinue();
+                            PressEnterToContinue();
 
                             // Move player to the new location and displays description.
                             MovePlayerToNewLocation(LocationId.Cliffs);
@@ -2848,9 +2854,9 @@ namespace Forest
 
             // Text about wanting to swim over river but needing to eat first.
             Reply(eventAndGoalExtraText[122]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[123]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             // Make things to eat appear and change puzzle to started.
             MoveThing(ThingId.Berries, LocationId.Nowhere, LocationId.LeafyForestSouth);
@@ -2905,31 +2911,31 @@ namespace Forest
 
             // You are at the old tree, time to relax!
             Reply(eventAndGoalExtraText[136]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             // Text about relaxing and thinking about the old stories, the beeing interupted by seeing something glimmer in the sun
             Reply(eventAndGoalExtraText[137]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[138]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[139]);
-            PressAnyKeyToContinue();
-            // TODO The old story.
-            Reply(gameStory[1]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[140]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
+            // The old story.
             Reply(gameStory[2]);
-            PressAnyKeyToContinue();
-            Reply(eventAndGoalExtraText[197]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
+            Reply(eventAndGoalExtraText[140]);
+            PressEnterToContinue();
             Reply(gameStory[3]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
+            Reply(eventAndGoalExtraText[197]);
+            PressEnterToContinue();
+            Reply(gameStory[4]);
+            PressEnterToContinue();
             // Something disturbs you.
             Reply(eventAndGoalExtraText[141]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[142]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             // Add the necklace to this location (old tree).
             MoveThing(ThingId.Necklace, ThingsCurrentLocations[ThingId.Necklace][0], CurrentLocationId);
@@ -2942,32 +2948,32 @@ namespace Forest
         {
             // You take a closer look in the bush and find a necklace.
             Reply(eventAndGoalExtraText[144]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             // Text about the necklace, putting it on, trying to shift shape.
             Reply(eventAndGoalExtraText[145]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[146]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[147]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[148]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[149]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[151]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[152]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             // That didnt end very relaxing, but now the sun is almost completely down, time to sleep.
             Reply(eventAndGoalExtraText[153]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             // Pick up the necklace.
             MoveThing(ThingId.Necklace, CurrentLocationId, LocationId.Inventory);
@@ -2982,48 +2988,48 @@ namespace Forest
 
             // Bear goes to bed and immediately falls alseep.
             Reply(eventAndGoalExtraText[158]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             // Dream
             Reply(eventAndGoalExtraText[159]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[160]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[161]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[162]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[163]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[164]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[165]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[166]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[167]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[168]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[169]);
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
 
             // Wake up as an squirrel.
             Reply(eventAndGoalExtraText[170]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[171]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[173]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[174]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[175]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             Reply(eventAndGoalExtraText[176]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
             // Change back to a bear.
             Reply(eventAndGoalExtraText[177]);
-            PressAnyKeyToContinue();
+            PressEnterToContinue();
 
             DisplayNewLocation();
         }
@@ -3043,7 +3049,7 @@ namespace Forest
             Reply(eventAndGoalExtraText[0]);
             // Display an extra message if player was holding the pile of leaves when sliding down the river.
             LoseLeavesWhenGoingDownWaterSlide();
-            PressAnyKeyToContinueAndClear();
+            PressEnterToContinueAndClear();
             // Put the player at the dam.
             MovePlayerToNewLocation(LocationId.EastRiver);
         }
