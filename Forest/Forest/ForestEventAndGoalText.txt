@@ -278,7 +278,7 @@
 
 139It reminds you of the old stories, particularly the ones about shape shifters.
 
-140"OLD STORY"
+140Bear's favorite story had always been the one about the shape shifters.
 
 141Your thoughts are interrupted by a dazzling glow!
 
@@ -391,3 +391,5 @@
 195Squirrel prefers to stay dry on land over getting al wet and cold in the water.
 
 196It's getting late and you are really tired after a long day of hard work. You should go sleep and swim over the river tomorrow instead.
+
+197There is some sudden flares of yellow light playing among the leaves on the trees and the bushes, they disappear as quick as they appeared and Bear goes back to thinking about the old stories.

@@ -94,7 +94,7 @@ Directions:
 
 ID: 15SouthEastForest
 Name: Forest
-Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you were told as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
 Directions:
     Northwest: 1Den
 

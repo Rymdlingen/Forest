@@ -2915,7 +2915,15 @@ namespace Forest
             Reply(eventAndGoalExtraText[139]);
             PressAnyKeyToContinue();
             // TODO The old story.
+            Reply(gameStory[1]);
+            PressAnyKeyToContinue();
             Reply(eventAndGoalExtraText[140]);
+            PressAnyKeyToContinue();
+            Reply(gameStory[2]);
+            PressAnyKeyToContinue();
+            Reply(eventAndGoalExtraText[197]);
+            PressAnyKeyToContinue();
+            Reply(gameStory[3]);
             PressAnyKeyToContinue();
             // Something disturbs you.
             Reply(eventAndGoalExtraText[141]);
