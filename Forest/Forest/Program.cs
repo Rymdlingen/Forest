@@ -593,7 +593,6 @@ namespace Forest
             // TODO not sure about color
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
-            Console.ReadKey();
             ConsoleKey key;
             do
             {
@@ -3808,7 +3807,7 @@ namespace Forest
             string[] titleAsciiArt = File.ReadAllLines("ForestTitleArt.txt");
 
             // Reading all the text for the games story.
-            gameStory = File.ReadAllLines("ForestGameStory.txt");
+            gameStory = RemoveEmptyLines(File.ReadAllLines("ForestGameStory.txt"));
 
             // Reading all extra event and gaol text.
             eventAndGoalExtraText = RemoveEmptyLinesAndDigits(File.ReadAllLines("ForestEventAndGoalText.txt"));
@@ -3830,6 +3829,10 @@ namespace Forest
 
             // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
 
+            // Display short instructions about how to play and credits (TODO add credits).
+            Reply(gameStory[5]);
+            PressEnterToContinueAndClear();
+
             // Displaying title art.
             foreach (string line in titleAsciiArt)
             {
@@ -3840,10 +3843,11 @@ namespace Forest
 
             // Displaying the introduction/first part of the games story.
             Console.ForegroundColor = NarrativeColor;
-            Print($"{gameStory[0]}");
-            Console.ReadKey();
-
-            // TODO Display short instructions about how to play??
+            Reply(gameStory[0]);
+            PressEnterToContinue();
+            Console.ForegroundColor = NarrativeColor;
+            Reply(gameStory[1]);
+            PressEnterToContinue();
 
             // Displaying the first location.
             DisplayNewLocation();

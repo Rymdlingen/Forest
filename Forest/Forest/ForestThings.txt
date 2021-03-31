@@ -406,10 +406,12 @@ Starting location: Nowhere
 ID: ShapeBear
 Name: a bear
 Description: You are currently the big and strong bear that is your ordinary self.
+Starting location: Nowhere
 
 ID: ShapeSquirrel
 Name: a squirrel
 Description: You have shifted your shape and taken the form of a small and quick squirrel.
+Starting location: Nowhere
 
 Notes:
 Template
