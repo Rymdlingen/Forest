@@ -105,10 +105,10 @@ Starting location: Nowhere
 
 ID: Berries
 Name: Berries
-Description: (NOT DONE) needed for eating.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+Description: The ground is covered in small bushes with delicious, juicy berries, blue ones and red ones. There is plenty!
+Answers: <starts in LeafyForestSouth>
 	Pick up: <Message about picking this up>
-	Thing can not be picked up: <Not possible to pick up, message about why>
+	Thing can not be picked up: There is no need to first pick the berries, you can eat them straight from the bushes.
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
@@ -120,9 +120,9 @@ Starting location: Nowhere
 
 ID: Nuts
 Name: Nuts
-Description: (NOT DONE) needed for eating.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
-	Pick up: <Message about picking this up>
+Description: Almost covered by some leaves there is some nuts. It looks like a squirrel tried to burry them, but they probably forgot where they put them. "That would for sure never happen to me if I was a squirrel, I would hide them in my belly!" Bear thinks.
+Answers: <starts in Glade>
+	Pick up: You picked up the nuts.
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
@@ -135,8 +135,8 @@ Starting location: Nowhere
 
 ID: Mushrooms
 Name: Mushrooms
-Description: (NOT DONE) needed for eating.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+Description: Through the moss you can see a bunch of yellow mushrooms, it's chanterelles. Tasty!
+Answers: <starts in MossyForestSouth>
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
@@ -195,7 +195,7 @@ Starting location: 3MossyForestEntrance
 
 ID: Bees
 Name: Bees
-Description: There is a lot of bees flying around, they are flying back and forth between the flowers in the glade and their hives. They are working hard to make some honey!
+Description: There is a lot of bees flying around, they are flying back and forth between the flowers in the glade and their hives in the forest. They are working hard to make some honey!
 Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: You don't want to catch the bees.
@@ -234,13 +234,13 @@ Answers:
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: You don't want to let that fish go!
 	Can drop but lose thing: You set the fish free! Hope it finds its way back to the water.
-	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	You do not have that: You need to have a fish to be able to do that.
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: 17EastRiver
 
 ID: OldStick
 Name: Old stick
-Description: A branch that fell from one of the spruces a long time ago.
+Description: An old branch that fell from one of the spruces a long time ago.
 Answers:
 	Pick up: You picked up an old stick.
 	Thing can not be picked up: <Not possible to pick up, message about why>
@@ -375,14 +375,14 @@ Starting location: Nowhere
 
 ID: Necklace
 Name: Necklace
-Description: (NOT DONE) It's an old necklace.
-Answers: <Just guides the code to start making an array for the upcoming 8 lines>
+Description: It's an old necklace with a small round pendant made out of a tiny yellow gemstone that gives of a slight glow.
+Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
-	Drop not possible: <Thing can't be dropped here>
+	Drop not possible: There is no reason to get rid of the necklace, it's beautiful and it fits you perfectly.
 	Can drop but lose thing: <Thing is dropped but lost, can't be picked up again>
 	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
@@ -401,6 +401,16 @@ Starting location: Nowhere
 ID: Placeholder
 Name: Placeholder
 Description: A placeholder.
+Starting location: Nowhere
+
+ID: ShapeBear
+Name: a bear
+Description: You are currently the big and strong bear that is your ordinary self.
+Starting location: Nowhere
+
+ID: ShapeSquirrel
+Name: a squirrel
+Description: You have shifted your shape and taken the form of a small and quick squirrel.
 Starting location: Nowhere
 
 Notes:

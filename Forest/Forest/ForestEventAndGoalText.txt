@@ -170,9 +170,9 @@
 
 85..wait..
 
-86Bear sighs and think "This is ridiculous! I bet it would be quicker to lay in the water with your mouth wide open and wait for the fish to swim in there".
+86Bear sighs and think "This is ridiculous! I bet it would be quicker to lay in the water with my mouth wide open and wait for the fish to swim in there".
 
-87You can see that there are some fish starting to gather around your hook, exciting!
+87You can see that there are some fish starting to gather around the hook, exciting!
 
 88One of the fishes gives the hook a small nibble, it looks like a big one!
 
@@ -184,7 +184,7 @@
 
 92The fishing rod breaks in two and the fish quickly swims away.. seems like the old stick couldn't handle the pressure.
 
-93Trying to catch fish like the humans do it didn't work out, at all. Why do it like a human when it's so easy to just catch it with your paw? Bear walks over to the view point and throws the fishing rod in a trash can. Then Bear goes back to the dam, gets into the water and effortlessly catches a fish.\n"Thats how it's done!"
+93Trying to catch fish like the humans do it did not work out, not at all. Why do it like a human when it's so easy to just catch it with your paw? Bear walks over to the view point and throws the fishing rod in a trash can. Then Bear goes back to the dam, gets into the water and effortlessly catches a fish.\n"Thats how it's done!"
 
 94You are carrying the stick.
 
@@ -238,18 +238,168 @@
 
 119It sure is a tough task to swim across the river, but after a night full of adventurous dreams and with a stomach still full of fish and honey you are ready to swim across the river!
 
-120It's starting to get pretty late, the sun is quickly setting. You decide to wait with swimming over the river until tomorrow. It has been a day of hard work making your den cozy and gathering food. But before going to sleep for the night it would be nice to go relax for a bit.
+120It's starting to get pretty late, the sun is quickly setting. It has been a day of hard work making your den cozy and gathering food. But before going to sleep for the night it would be nice to go relax for a bit.
 
 121You need to eat more to feel strong enough to swim over the river.
 
 122You are looking south over to the other side of the river, the river is roaring! It's forceful and it will not be easy to swim across.
 
-123You have hardly have anything to eat in a really long time, to be able to make it across the river you will need to first eat something.
+123You have hardly had anything to eat since winter sleep started, to be able to make it across the river you will need to eat something first. 
 
 124There is a lot of berries growing on the ground, both blue and red ones.
 
 125Under the moss there is plenty of chanterelles and other mushrooms, delicious!
 
-126Hidden away under some leaves you stumble upon some nuts, they where probably hidden and forgotten by a squirrel. "If I was a squirrel, I would make sure to never forget where I hide my food!" Bear thinks.
+126Hidden away under some leaves you stumble upon some nuts, they where probably hidden and forgotten by a squirrel.
 
 127You have to choose, try again!
+
+128You have eaten
+
+129You ate some @.
+
+130You ate some more @.
+
+131You take a quick refreshing bath in the water.
+
+132This is not a great place for just swimming around, better not go in the water without a good reason.
+
+133The dam is a great place for a nice swim! You swim around among the fishes for quite a while, it was a nice break, but better get on with something productive.
+
+134You can't swim here.
+
+135You can't swim in that direction.
+
+136Aaaah... you immediately feel relaxed being in this part of the old forest, you find a nice spot to rest next to the old tree.
+
+137You start dozing of listening to the birds singing and to the wind in the trees, thinking through the day..
+
+138You had such a productive day, you made the den cozy and you tried out being both a human and a bee, it didn't go great but you feel so happy about working towards fulfilling you dream about being someone else!
+
+139Bear starts to doze off, thinking about the old stories..
+
+140Bear's favorite story had always been the one about the shape shifters.
+
+141Your thoughts are interrupted by a dazzling glow!
+
+142The low evening sun is reflecting off of something in the bushes, that's very peculiar.
+
+143Some of the rays from the low evening sun that make it through the dense canopy is reflecting off of something in the bushes. It's making the bushes glow with a warm yellow light.
+
+144You take a closer look in the bushes and you find a necklace!
+
+145You pick the necklace up and take a close look at it, it has a small round pendant made out of a tiny yellow gemstone that gives of a slight glow. 
+
+146It sort of reminds you of the jewelry described in the old stories.. but it's tiny!
+
+147"Is it just a coincidence? Or could this actually be a real shape shifter necklace?" Bear thinks for a bit and decides that the only way to find out is to try it out.
+
+148Bear puts the necklace on and concentrates really hard!
+
+149"I want to be a squirrel!"
+
+150...
+
+151"Shift shape, shift shape, shift shape" Bear mumbles.
+
+152Nothing happened.
+
+153A bit disappointed and not as relaxed as expected Bear notices that the sun is now almost completely down, at least Bear has the cozy den to look forward to. Time to go sleep!
+
+154You should sleep in the den, you worked so hard to make it cozy.
+
+155You should go wind down for a bit before going to sleep.
+
+156No more sleep before night, there's lots to get done!
+
+157There's no time fo sleeping, lots to get done today!
+
+158After a long and eventful day Bear lays down on all the soft moss, leaves and grass and immediately falls asleep.
+
+159Bear starts dreaming~~~
+
+160~There is a yellow flash of light, the blinding light fades and you are soaring through the sky, looking down on the old forest. You flap your wings and fly in circles over the forest, all these well-known places that is your home look so different from up here.
+
+161~Different and beautiful!
+
+162~A gust of wind breaks you concentration, suddenly flying seems impossible and you start to fall.
+
+163~You are quickly falling down towards the dam.
+
+164~Just before you hit the water there is another flash of yellow light.
+
+165~You dive into the water and start swimming by flipping your tail fin back and forth.
+
+166~You quickly pick up some speed and make some daring jumps, so much fun!
+
+167~But soon you miscalculate a jump and you are not going to land in the water this time.
+
+168~Another flash of yellow light!
+
+169~You are running on four small paws on the shore of the dam, you are running towards your den.
+
+170You suddenly wake up in your den.
+
+171"Wow, that was both a strange and amazing dream!" Squirrel thinks and steps out of the den.
+
+172...
+
+173"Everything seems so big..."
+
+174"Something is different, but what?"
+
+175"Hmmm.."
+
+176"Did I shift shape??"
+
+177As squirrel said those words there was a sudden and blinding yellow flash of light, as the light faded everything was back to normal again.
+
+178The pendant on the necklace you are wearing starts to glow and then there is a flash of yellow light.
+
+179You can't change into what you already are.
+
+180What do you want to change into?
+
+181You don't know how to change into that.
+
+182You are a big bear, the path is too narrow, it only works for small animals.
+
+183Since you are a small squirrel the narrow path is no problem for you!
+
+184You run quickly on the steep path and easily jump over the bigger rocks.
+
+185As you run and run down the path on the high cliff you think about the adventure that lies ahead of you..
+
+186Will you be able to learn to become other animals too? 
+
+187Will you figure out who you want to be? 
+
+188Will you be able to find the source of this magic and make the change permanent?
+
+189As you reach the end of the path you arrive in the big forest that you longingly have been looking down at for years and years. The trees are so much bigger then they looked from up there, most of them are as big as the old tree, or even bigger!
+
+190This is only the start of the adventure of finding yourself.
+
+191~ End of chapter 1 ~
+
+192Squirrels are too small to swim through the strong currents of the river. Better stay out of the water, it's too dangerous.
+
+193The only way down from the cliffs is to the south, it is a narrow and steep path. "If only I was a tiny animal, like a little mouse, or maybe a bird.. then I could easily make my way down the cliff. I wonder what it's like down there.." Bear thinks. It's not at all a path fit for someone big. The only way from here that works for a bear is swimming back north over the river, back to the old forest.
+
+194The only way down from the cliffs is to the south, it is a narrow and steep path. It is a path fit for someone small, perfect for a squirrel. The way back north is over the river but the river is too dangerous for a squirrel to swim over.
+
+195Squirrel prefers to stay dry on land over getting all wet and cold in the water.
+
+196It's getting late and you are really tired after a long day of hard work. You should go sleep.
+
+197There is some sudden flares of yellow light playing among the leaves on the trees and the bushes, they disappear as quick as they appeared and Bear goes back to thinking about the old stories.
+
+198That's a great idea! This forest and the nature around here is usually quite clean already, Bear is taking good care of it. The most mess is left by the humans around the view point, but Bear is trying to take care of that too, as much as possible. (You can help by picking up trash that you see in nature, in real life of course, this is just a game.)
+
+199It sure is a tough task to swim across the river, but with a stomach full of fish and honey you are ready to swim across the river!
+
+200You can't stop thinking about the thing that is glowing in the bushes close to the old tree, you should try to find out what it is!
+
+201You are too curious about the thing that is glowing in the bushes close to the old tree, its no idea to try too sleep before finding out what it is!
+
+202~~~

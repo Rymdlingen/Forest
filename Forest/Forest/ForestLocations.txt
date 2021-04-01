@@ -39,7 +39,7 @@ Directions:
 
 ID: 7SparseForest
 Name: Sparse forest
-Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river. In the north, as the forest gets closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
+Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river. In the north, closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
 Directions:
     North: 8Glade
     Southeast: 1Den
@@ -87,14 +87,14 @@ Directions:
 
 ID: 14SouthForest
 Name: Forest
-Description: You are at the south edge of the old forest, the tree trunk are full of notes in the bark, this is the bulletin board of the old forest. You are in the middle between the den in the north and the river to the south.
+Description: You are at the south edge of the old forest, the tree trunks are full of notes in the bark, this is the bulletin board of the old forest. You are in the middle between the den in the north and the river to the south.
 Directions:
     North: 1Den
     South: 17EastRiver
 
 ID: 15SouthEastForest
 Name: Forest
-Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you heard as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you were told as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
 Directions:
     Northwest: 1Den
 
@@ -108,7 +108,7 @@ Directions:
 
 ID: 17EastRiver
 Name: River
-Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way through and around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
+Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
 Directions:
     North: 14SouthForest
     West: 16WestRiver
@@ -129,9 +129,10 @@ Directions:
 
 ID: 20Cliffs
 Name: Cliffs
-Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to the view point, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains. The only way down is a narrow and steep path. "If only I was a tiny animal, like a little mouse, or maybe a bird.. then I could easily make my way down the cliff. I wonder what it's like down there.." bear thinks. It's not a path fit for a bear. The only way from here that works for a bear is swimming back north over the river, back to the old forest.
+Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to at the view point, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains.
 Directions:
     North: 16WestRiver
+    South: TheEnd
 
 ID: Inventory
 Name: Inventory
