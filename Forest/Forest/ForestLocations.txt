@@ -39,7 +39,7 @@ Directions:
 
 ID: 7SparseForest
 Name: Sparse forest
-Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river. In the north, as the forest gets closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
+Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river. In the north, closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
 Directions:
     North: 8Glade
     Southeast: 1Den
@@ -108,7 +108,7 @@ Directions:
 
 ID: 17EastRiver
 Name: River
-Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way through and around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
+Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
 Directions:
     North: 14SouthForest
     West: 16WestRiver

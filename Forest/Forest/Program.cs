@@ -88,14 +88,11 @@ namespace Forest
         DenCleaned,
         DenMadeCozy,
         EnoughFoodConsumed,
+        TimeToRelax,
         HaveRelaxed,
         CaughtFish,
         BeenGiftedHoney,
-
-        StungByBee,
-        NecklaceWorn,
         DreamtAboutShiftingShape,
-        GoOnAdventure
     }
 
     class LocationData
@@ -152,14 +149,11 @@ namespace Forest
         static Dictionary<Goal, bool> GoalCompleted = new Dictionary<Goal, bool> { { Goal.DenCleaned, false },
                                                                                    { Goal.DenMadeCozy, false },
                                                                                    { Goal.EnoughFoodConsumed, false },
+                                                                                   { Goal.TimeToRelax, false },
                                                                                    { Goal.HaveRelaxed, false },
                                                                                    { Goal.DreamtAboutShiftingShape, false },
                                                                                    { Goal.CaughtFish, false },
-                                                                                   { Goal.BeenGiftedHoney, false },
-
-                                                                                   { Goal.GoOnAdventure, false },
-                                                                                   { Goal.NecklaceWorn, false },
-                                                                                   { Goal.StungByBee, false } };
+                                                                                   { Goal.BeenGiftedHoney, false } };
 
         // Variable used to end the game loop and quit the game.
         static bool quitGame = false;
@@ -190,7 +184,6 @@ namespace Forest
                                                                                                     { "nw", Direction.Northwest },
                                                                                                     { "northwest", Direction.Northwest },
                                                                                                     { "north west", Direction.Northwest } };
-
 
         // Thing helpers.
         // (Just a reminder of all the things) Moss, Grass, OldLeaves, OkLeaves, SoftLeaves, PileOfLeaves Berries, Beehive, Fish, OldStick, LongStick, Rope, Nail, FishingRod, Necklace, Owl, Frog.    
@@ -263,16 +256,18 @@ namespace Forest
                                                                                                 { "light", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
-                                                                                                { "den", ThingId.Dirt } };
+                                                                                                { "den", ThingId.Dirt },
+                                                                                                { "dirty den", ThingId.Dirt } };
 
         // TODO i think some food should be added to the list of things you can get
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace };
-        static Dictionary<ThingId, LocationId> ThingsYouCanDropAtLocations = new Dictionary<ThingId, LocationId>() { { ThingId.Flower, LocationId.BeeForest } };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace, ThingId.Nuts };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
+
         // For puzzle: make den cozy.
         static List<ThingId> ThingsInPileOfLeaves = new List<ThingId>();
         static List<ThingId> ThingsInDen = new List<ThingId>();
         static List<ThingId> PreviousThingsInDen = new List<ThingId>();
+
         // For puzzle: fishing.
         static bool FishingPuzzleStarted = false;
         static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill" };
@@ -282,15 +277,17 @@ namespace Forest
         static List<string> EnteredArrows = new List<string>();
         static bool HiddenPathFound = false;
         static bool NailFound = false;
+
         // For puzzle: lost bee and honey.
         static bool BeeHasBeenInBeeForest = false;
         static bool BeeIsHome = false;
         static bool HoneyPuzzleStarted = false;
         static bool HaveTriedToEatFlower = false;
+
         // For puzzle: necklace.
         static bool HaveTriedToSwimOverRiver = false;
         static List<ThingId> ListOfEatenThings = new List<ThingId>();
-        static bool DidSleep = false;
+        static bool FirstTimeSwimingOverRiver = true;
         #endregion
 
         #region Output helpers
@@ -596,7 +593,7 @@ namespace Forest
             ConsoleKey key;
             do
             {
-                key = Console.ReadKey().Key;
+                key = Console.ReadKey(true).Key;
             }
             while (key != ConsoleKey.Enter);
             Console.CursorLeft = 0;
@@ -723,12 +720,11 @@ namespace Forest
                 case "shift":
                 case "change":
                 case "shift shape":
-                case "change shape":
                 case "shiftshape":
+                case "change shape":
                 case "changeshape":
                 case "shape shift":
                 case "shapeshift":
-                    // TODO need to figure out what command I want to use for this
                     ShiftShape(words);
                     break;
 
@@ -1097,9 +1093,13 @@ namespace Forest
                     else
                     {
                         CurrentShape = ShapesByName[word];
-                        // Message about flash of light and new shape.
+                        // Clear the screen, show message about flash of light and new shape, clear the screen and show the location description (because it might be different with w different shape).
+                        Console.Clear();
                         Print(eventAndGoalExtraText[178]);
                         Reply(ThingsData[ShapesByName[word]].Description);
+                        PressEnterToContinue();
+
+                        DisplayNewLocation();
                     }
 
                     return;
@@ -1254,7 +1254,9 @@ namespace Forest
             // If the player only writes look, display information about the location.
             else if (words.Count() == 1)
             {
-                LookAtLocation();
+                DisplayNewLocation();
+                // Changed it, so now it clears and redisplays the same location.
+                // LookAtLocation();
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
@@ -1334,7 +1336,7 @@ namespace Forest
                     ThingId thingId = ThingIdsByName[thing];
 
                     // The entered thing matches the dirty den.
-                    if (thingId == ThingId.Dirt)
+                    if (thingId == ThingId.Dirt && !GoalCompleted[Goal.DenCleaned])
                     {
                         GoalCompleted[Goal.DenCleaned] = true;
                         // Changes the dens description to match it beeing clean, says "Your den is clean but it needs something to make it cozy." (if not changed)
@@ -1351,12 +1353,17 @@ namespace Forest
                 }
             }
             // If the player only writes clean, ask what to clean.
-            else if (words.Count() == 1)
+            else if (words.Count() == 1 && words[0] == "clean")
             {
                 Console.WriteLine();
                 // Asking "What needs cleaning?" and handles the command.
                 string[] newCommand = AskForInput(eventAndGoalExtraText[45]);
                 HandleClean(newCommand);
+            }
+            else if (words.Contains("forest") || words.Contains("nature"))
+            {
+                // Special text about how cleaning the forest is important.
+                Reply(eventAndGoalExtraText[198]);
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
@@ -1455,17 +1462,22 @@ namespace Forest
                 // Bear sleeps in den, dreams about shape shifting and waking up as animal.
                 SleepAndDream();
             }
+            else if (CurrentLocationId == LocationId.Den && !HaveThing(ThingId.Necklace) && GoalCompleted[Goal.HaveRelaxed])
+            {
+                // Bear is to curious about the glow in the bushes too sleep.
+                Reply(eventAndGoalExtraText[201]);
+            }
             else if (HaveThing(ThingId.Necklace) && !GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
                 // Says "You should sleep in the den, you worked so hard to make it cozy." (if not changed).
                 Reply(eventAndGoalExtraText[154]);
             }
-            else if (CurrentLocationId == LocationId.Den && HaveTriedToSwimOverRiver)
+            else if (CurrentLocationId == LocationId.Den && HaveTriedToSwimOverRiver && GoalCompleted[Goal.TimeToRelax])
             {
                 // Says "You should go wind down for a bit before going to sleep." (if not changed).
                 Reply(eventAndGoalExtraText[155]);
             }
-            else if (CurrentLocationId == LocationId.Den)
+            else if (CurrentLocationId == LocationId.Den && GoalCompleted[Goal.DenMadeCozy])
             {
                 // Says "No more sleep before night, there's lots to get done!" (if not changed).
                 Reply(eventAndGoalExtraText[156]);
@@ -1775,43 +1787,17 @@ namespace Forest
                 GoalCompleted[Goal.BeenGiftedHoney] = true;
             }
 
-            // Player have to have finished the puzzles about fishing, honey and making the den cozy before relaxing.
-            if (HaveTriedToSwimOverRiver && GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.BeenGiftedHoney] && GoalCompleted[Goal.CaughtFish] && CurrentLocationId == LocationId.SouthEastForest && !GoalCompleted[Goal.HaveRelaxed])
+            // Player have to have finished the puzzles about fishing, honey and making the den cozy before it is time to relax, they also have to have tried to swim over the river.
+            if (!GoalCompleted[Goal.TimeToRelax] && HaveTriedToSwimOverRiver && GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.BeenGiftedHoney] && GoalCompleted[Goal.CaughtFish])
             {
-                // Start event about necklace.
+                GoalCompleted[Goal.TimeToRelax] = true;
+            }
+
+            // When it is time to relax and player goes to the big tree, the relax event is triggered.
+            if (!GoalCompleted[Goal.HaveRelaxed] && GoalCompleted[Goal.TimeToRelax] && CurrentLocationId == LocationId.SouthEastForest)
+            {
+                // Start event about relaxing, old stories and finding necklace.
                 Relax();
-            }
-
-
-            /*
-            if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
-            {
-                // TODO
-            }
-
-            if (!GoalCompleted[Goal.EnoughFoodConsumed])
-            {
-                // TODO
-            }
-
-            if (!GoalCompleted[Goal.GoOnAdventure])
-            {
-                // TODO
-            }
-
-            if (!GoalCompleted[Goal.NecklaceWorn])
-            {
-                // TODO
-            }
-
-            if (!GoalCompleted[Goal.StungByBee])
-            {
-                // TODO
-            }*/
-
-            if (AllGoalsCompleted() || (GoalCompleted[Goal.DenMadeCozy] && GoalCompleted[Goal.DenCleaned] && HaveThing(ThingId.Fish) && HaveThing(ThingId.Honey)))
-            {
-                EndGame();
             }
         }
         #endregion
@@ -1819,6 +1805,8 @@ namespace Forest
         #region Events
         static void EndGame()
         {
+            Console.Clear();
+
             // Story about going down the path and thinking about the adventure ahead.
             Reply(eventAndGoalExtraText[183]);
             PressEnterToContinue();
@@ -2044,6 +2032,10 @@ namespace Forest
                 {
                     // Text about the leaves the player successfully brought back.
                     Reply(eventAndGoalExtraText[14]);
+
+                    // Remove the leaves that flew away.
+                    ThingsInPileOfLeaves.Remove(ThingId.OldLeaves);
+                    ThingsInPileOfLeaves.Remove(ThingId.OkLeaves);
                 }
                 // Wrong order of leaves in the pile.
                 else
@@ -2090,7 +2082,7 @@ namespace Forest
                 LoseLeafPile();
             }
 
-            PressEnterToContinueAndClear();
+            PressEnterToContinue();
 
             MovePlayerToNewLocation(LocationId.Den);
         }
@@ -2793,19 +2785,34 @@ namespace Forest
                 if (CurrentShape == ThingId.ShapeBear)
                 {
                     // If player have eaten enough different things.
-                    if (ListOfEatenThings.Count >= 4)
+                    if (GoalCompleted[Goal.EnoughFoodConsumed])
                     {
-                        GoalCompleted[Goal.EnoughFoodConsumed] = true;
-
                         // If the player have slept, they can swim over to the other side of the river.
-                        if (GoalCompleted[Goal.DreamtAboutShiftingShape])
+                        if (GoalCompleted[Goal.DreamtAboutShiftingShape] && FirstTimeSwimingOverRiver)
                         {
-                            Console.Clear();
+                            FirstTimeSwimingOverRiver = false;
 
                             // Text about being ready to swim.
                             Reply(eventAndGoalExtraText[119]);
                             PressEnterToContinue();
 
+                            // Move player to the new location and displays description.
+                            MovePlayerToNewLocation(LocationId.Cliffs);
+                        }
+                        else if (FirstTimeSwimingOverRiver)
+                        {
+                            FirstTimeSwimingOverRiver = false;
+
+                            // Text about being ready to swim.
+                            Reply(eventAndGoalExtraText[199]);
+                            PressEnterToContinue();
+
+                            // Move player to the new location and displays description.
+                            MovePlayerToNewLocation(LocationId.Cliffs);
+                        }
+                        // Normal swim.
+                        else
+                        {
                             // Move player to the new location and displays description.
                             MovePlayerToNewLocation(LocationId.Cliffs);
                         }
@@ -2815,22 +2822,6 @@ namespace Forest
                     {
                         // Bear needs to eat before going for a swim.
                         Reply(eventAndGoalExtraText[121]);
-                    }
-
-                    // If the player has finished all other puzzles they should go relax.
-                    if (GoalCompleted[Goal.CaughtFish] && GoalCompleted[Goal.BeenGiftedHoney] && GoalCompleted[Goal.DenMadeCozy])
-                    {
-                        if (!GoalCompleted[Goal.HaveRelaxed])
-                        {
-                            // It's getting late, should go relax a bit and then sleep.
-                            Reply(eventAndGoalExtraText[120]);
-                        }
-                        // If the player have relaxed they should go sleep.
-                        else if (!GoalCompleted[Goal.DreamtAboutShiftingShape])
-                        {
-                            // Player should sleep.
-                            Reply(eventAndGoalExtraText[196]);
-                        }
                     }
                 }
                 // If the player is a squirrel.
@@ -2860,7 +2851,7 @@ namespace Forest
             // Make things to eat appear and change puzzle to started.
             MoveThing(ThingId.Berries, LocationId.Nowhere, LocationId.LeafyForestSouth);
             MoveThing(ThingId.Mushrooms, LocationId.Nowhere, LocationId.MossyForestSouth);
-            MoveThing(ThingId.Nuts, LocationId.Nowhere, LocationId.Glade);
+            MoveThing(ThingId.Nuts, LocationId.Nowhere, LocationId.SparseForest);
             HaveTriedToSwimOverRiver = true;
 
             // Display the river location to player again.
@@ -2872,16 +2863,25 @@ namespace Forest
             // Check if the thing was already eaten or not.
             if (ListOfEatenThings.Contains(thingId))
             {
-                // Text about player have already eaten that.
+                // Text about player eating some more of that that.
                 string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
                 InsertKeyWordAndDisplay(eventAndGoalExtraText[130], thing);
             }
             else
             {
-                // Add the thing to eaten things and display a message.
-                ListOfEatenThings.Add(thingId);
-                string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
+                if ((thingId == ThingId.Fish && HaveThing(ThingId.Fish)) || thingId != ThingId.Fish)
+                {
+                    // Add the thing to eaten things and display a message.
+                    ListOfEatenThings.Add(thingId);
+                    string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
+                    InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
+                }
+                else
+                {
+                    // Need to catch fish before eating it.
+                    Reply(ThingsData[ThingId.Fish].Answers[7]);
+                }
+
             }
 
             // If the player has eaten more then one thing, tell the player all the things they already ate.
@@ -2899,7 +2899,14 @@ namespace Forest
                 eatenThings[0] = FormatListIntoString(eatenThings);
 
                 // Display all that is eaten.
+                Console.CursorTop--;
                 Reply(eventAndGoalExtraText[128] + " " + eatenThings[0] + ".");
+            }
+
+            // If the player has eaten 4 things, the goal of eating enough is fullfilled.
+            if (!GoalCompleted[Goal.EnoughFoodConsumed] && ListOfEatenThings.Count >= 4)
+            {
+                GoalCompleted[Goal.EnoughFoodConsumed] = true;
             }
         }
 
@@ -3011,6 +3018,8 @@ namespace Forest
             Reply(eventAndGoalExtraText[168]);
             PressEnterToContinue();
             Reply(eventAndGoalExtraText[169]);
+            PressEnterToContinue();
+            Reply(eventAndGoalExtraText[202]);
             PressEnterToContinueAndClear();
 
             // Wake up as an squirrel.
@@ -3066,7 +3075,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-            /*
+
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -3098,7 +3107,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
-            */
+
         }
 
         /// <summary>
@@ -3196,7 +3205,7 @@ namespace Forest
                     if (HaveThing(ThingId.Flower))
                     {
                         // Text about bee making it back home.
-                        Reply(eventAndGoalExtraText[106]);
+                        Print(eventAndGoalExtraText[106]);
                     }
                 }
                 else
@@ -3208,7 +3217,7 @@ namespace Forest
                         if (BeeHasBeenInBeeForest)
                         {
                             // Bee didn't stay home, seems to like your flower too much.
-                            Reply(eventAndGoalExtraText[107]);
+                            Print(eventAndGoalExtraText[107]);
                         }
                         // Text about bee following.
                         else
@@ -3242,7 +3251,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Text about bees liking the flower on the ground.
-                Reply(eventAndGoalExtraText[109]);
+                Print(eventAndGoalExtraText[109]);
             }
 
             // Description about idea about making honey.
@@ -3252,7 +3261,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Text about going to try to eat a flower.
-                Reply(eventAndGoalExtraText[113]);
+                Print(eventAndGoalExtraText[113]);
             }
 
             // If the current location have any of these things.
@@ -3262,7 +3271,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Berries.
-                Reply(eventAndGoalExtraText[124]);
+                Print(eventAndGoalExtraText[124]);
             }
             else if (ThingIsHere(ThingId.Mushrooms))
             {
@@ -3270,7 +3279,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Mushrooms.
-                Reply(eventAndGoalExtraText[125]);
+                Print(eventAndGoalExtraText[125]);
             }
             else if (ThingIsHere(ThingId.Nuts))
             {
@@ -3278,7 +3287,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Nuts.
-                Reply(eventAndGoalExtraText[126]);
+                Print(eventAndGoalExtraText[126]);
             }
 
             if (ThingIsHere(ThingId.Necklace))
@@ -3287,7 +3296,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Extra discription about necklace in the bushes.
-                Reply(eventAndGoalExtraText[143]);
+                Print(eventAndGoalExtraText[143]);
             }
 
             if (CurrentLocationId == LocationId.Cliffs)
@@ -3298,12 +3307,37 @@ namespace Forest
                 if (CurrentShape == ThingId.ShapeBear)
                 {
                     // Bear can swim north but not climb down south.
-                    Reply(eventAndGoalExtraText[193]);
+                    Print(eventAndGoalExtraText[193]);
                 }
                 else if (CurrentShape == ThingId.ShapeSquirrel)
                 {
                     // Squirrel can climb down south but not swim back north.
-                    Reply(eventAndGoalExtraText[194]);
+                    Print(eventAndGoalExtraText[194]);
+                }
+            }
+
+            // If the player has finished all other puzzles and they should go relax, displays a message about that.
+            if (GoalCompleted[Goal.TimeToRelax] && !GoalCompleted[Goal.DreamtAboutShiftingShape])
+            {
+                // TODO color
+                Console.WriteLine();
+
+                // Message about relaxing added to all locations except the big tree.
+                if (!GoalCompleted[Goal.HaveRelaxed] && CurrentLocationId != LocationId.SouthEastForest)
+                {
+                    // It's getting late, should go relax a bit and then sleep.
+                    Print(eventAndGoalExtraText[120]);
+                }
+                else if (GoalCompleted[Goal.HaveRelaxed] && !HaveThing(ThingId.Necklace) && CurrentLocationId != LocationId.SouthEastForest)
+                {
+                    // Text about being curious abot the glow.
+                    Print(eventAndGoalExtraText[200]);
+                }
+                // If the player have relaxed they should go sleep.
+                else if (!GoalCompleted[Goal.DreamtAboutShiftingShape] && HaveThing(ThingId.Necklace))
+                {
+                    // Player should sleep.
+                    Print(eventAndGoalExtraText[196]);
                 }
             }
 
@@ -3313,7 +3347,7 @@ namespace Forest
                 Console.WriteLine();
 
                 // Extra description about what animal the player is.
-                Reply(ThingsData[CurrentShape].Description);
+                Print(ThingsData[CurrentShape].Description);
             }
         }
 

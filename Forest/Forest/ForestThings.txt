@@ -195,7 +195,7 @@ Starting location: 3MossyForestEntrance
 
 ID: Bees
 Name: Bees
-Description: There is a lot of bees flying around, they are flying back and forth between the flowers in the glade and their hives. They are working hard to make some honey!
+Description: There is a lot of bees flying around, they are flying back and forth between the flowers in the glade and their hives in the forest. They are working hard to make some honey!
 Answers:
 	Pick up: <Message about picking this up>
 	Thing can not be picked up: You don't want to catch the bees.
@@ -234,13 +234,13 @@ Answers:
 	Drop possible: <Message about the drop, what happen because of it?>
 	Drop not possible: You don't want to let that fish go!
 	Can drop but lose thing: You set the fish free! Hope it finds its way back to the water.
-	You do not have that: <It is a thing in the game, but player doesn't have it in their inventory>
+	You do not have that: You need to have a fish to be able to do that.
 	Get this and lose another thing: <You pick this up, but you swap out another thing in your inventory>	
 Starting location: 17EastRiver
 
 ID: OldStick
 Name: Old stick
-Description: A branch that fell from one of the spruces a long time ago.
+Description: An old branch that fell from one of the spruces a long time ago.
 Answers:
 	Pick up: You picked up an old stick.
 	Thing can not be picked up: <Not possible to pick up, message about why>
