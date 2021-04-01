@@ -3075,7 +3075,7 @@ namespace Forest
             AddExtraDescription();
             Console.WriteLine();
 
-
+            /*
             // TODO For testing purposes vvvvvvvv
 
             // Array with strings of directions.
@@ -3107,7 +3107,7 @@ namespace Forest
             }
 
             // TODO For testing purposes ^^^^^^^^
-
+            */
         }
 
         /// <summary>
