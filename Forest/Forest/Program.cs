@@ -2485,10 +2485,14 @@ namespace Forest
                     // If backspace is pressed, remove tha last input.
                     else if (key == ConsoleKey.Backspace)
                     {
-                        newWords = newWords.Remove(newWords.Length - 1);
-                        Console.CursorLeft--;
-                        Console.Write(" ");
-                        Console.CursorLeft--;
+                        // If there is any letters, remove one.
+                        if (newWords.Length > 0)
+                        {
+                            newWords = newWords.Remove(newWords.Length - 1);
+                            Console.CursorLeft--;
+                            Console.Write(" ");
+                            Console.CursorLeft--;
+                        }
                     }
                     // Add input to words.
                     else
