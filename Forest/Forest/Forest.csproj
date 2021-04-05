@@ -10,7 +10,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{632710A3-F6EF-4922-8281-789B4795A3AF}</ProjectGuid>
+    <ProjectGuid>{372E7AD8-5577-4DF2-BCCD-C23094FB674C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Forest</RootNamespace>
@@ -47,7 +47,8 @@
     <Reference Include="Bridge, Version=17.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bridge.Core.17.10.1\lib\net40\Bridge.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetConsoleJS">
+    <Reference Include="DotNetConsoleJS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\DotNetConsoleJS.dll</HintPath>
     </Reference>
   </ItemGroup>

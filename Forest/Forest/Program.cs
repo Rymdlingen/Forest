@@ -4,6 +4,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
+using DotNetConsoleJS;
+using Console = DotNetConsoleJS.Console;
 
 namespace Forest
 {
@@ -290,6 +294,11 @@ namespace Forest
         static bool FirstTimeSwimingOverRiver = true;
         #endregion
 
+        static T EnumParse<T>(string s)
+        {
+            return (T)Enum.Parse(typeof(T), s);
+        }
+
         #region Output helpers
         /// <summary>
         /// Checks how wide the console is and writes text one line at a time making sure no words are cut off.
@@ -308,7 +317,7 @@ namespace Forest
                 // If there is \n in the line, add an empty line at that place.
                 if (line.Groups[0].Value.Contains(@"\n"))
                 {
-                    Console.WriteLine(line.Groups[0].Value.Split(@"\n")[0]);
+                    Console.WriteLine(line.Groups[0].Value.Split(new[] { @"\n" }, StringSplitOptions.None)[0]);
                     Thread.Sleep(PrintPauseMilliseconds);
                     Console.WriteLine();
                 }
@@ -350,7 +359,7 @@ namespace Forest
         /// </summary>
         /// <param name="narrative"></param>
         /// <returns>An string array with all words that the pleyer entered.</returns>
-        static string[] AskForInput(string narrative)
+        static async Task<string[]> AskForInput(string narrative)
         {
             // Display the narrative.
             Console.ForegroundColor = NarrativeColor;
@@ -361,7 +370,7 @@ namespace Forest
             Console.Write("> ");
 
             // Asks for a command and splits it into seperate words, but also checks for matching double words and combines them.
-            string[] words = SplitCommand(Console.ReadLine().ToLowerInvariant());
+            string[] words = SplitCommand((await Console.ReadLine()).ToLower());
 
             return words;
         }
@@ -369,7 +378,7 @@ namespace Forest
         /// <summary>
         /// Special method for choosing between old and long stick (dosn't make a difference between having a thing
         /// </summary>
-        static ThingId AskWitchStick()
+        static async Task<ThingId> AskWitchStick()
         {
             ThingId choosenStick = ThingId.Placeholder;
 
@@ -377,7 +386,7 @@ namespace Forest
 
             // Ask witch one they mean.
             Console.WriteLine();
-            string[] words = AskForInput(eventAndGoalExtraText[76]);
+            string[] words = await AskForInput(eventAndGoalExtraText[76]);
 
             for (int word = 0; word < words.Length; word++)
             {
@@ -576,16 +585,16 @@ namespace Forest
         /// <summary>
         /// Displayes indicator for not accepting commands(... instead of >), player needs to press enter to continue and that clears the screen.
         /// </summary>
-        static void PressEnterToContinueAndClear()
+        static async Task PressEnterToContinueAndClear()
         {
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Console.Clear();
         }
 
         /// <summary>
         /// Displayes indicator for not accepting commands(... instead of >), player needs to press enter to continue.
         /// </summary>
-        static void PressEnterToContinue()
+        static async Task PressEnterToContinue()
         {
             // TODO not sure about color
             Console.ForegroundColor = PromptColor;
@@ -593,7 +602,7 @@ namespace Forest
             ConsoleKey key;
             do
             {
-                key = Console.ReadKey(true).Key;
+                key = (await Console.ReadKey(true)).Key;
             }
             while (key != ConsoleKey.Enter);
             Console.CursorLeft = 0;
@@ -601,10 +610,10 @@ namespace Forest
         #endregion
 
         #region Interaction
-        static void HandlePlayerAction()
+        static async Task HandlePlayerAction()
         {
             // Ask player what they want to do.
-            string[] words = AskForInput(eventAndGoalExtraText[38]);
+            string[] words = await AskForInput(eventAndGoalExtraText[38]);
 
             // Assuming the first word in the command is a verb. If there is no entered words the verb string stays empty.
             string verb = "";
@@ -621,46 +630,46 @@ namespace Forest
                 // Directions.
                 case "north":
                 case "n":
-                    HandleMovement(Direction.North);
+                    await HandleMovement(Direction.North);
                     break;
                 case "northwest":
                 case "north west":
                 case "nw":
-                    HandleMovement(Direction.Northwest);
+                    await HandleMovement(Direction.Northwest);
                     break;
                 case "west":
                 case "w":
-                    HandleMovement(Direction.West);
+                    await HandleMovement(Direction.West);
                     break;
                 case "southwest":
                 case "south west":
                 case "sw":
-                    HandleMovement(Direction.Southwest);
+                    await HandleMovement(Direction.Southwest);
                     break;
                 case "south":
                 case "s":
-                    HandleMovement(Direction.South);
+                    await HandleMovement(Direction.South);
                     break;
                 case "southeast":
                 case "south east":
                 case "se":
-                    HandleMovement(Direction.Southeast);
+                    await HandleMovement(Direction.Southeast);
                     break;
                 case "east":
                 case "e":
-                    HandleMovement(Direction.East);
+                    await HandleMovement(Direction.East);
                     break;
                 case "northeast":
                 case "north east":
                 case "ne":
-                    HandleMovement(Direction.Northeast);
+                    await HandleMovement(Direction.Northeast);
                     break;
 
                 // Verbs.
                 case "take":
                 case "pick":
                 case "get":
-                    HandleGet(words);
+                    await HandleGet(words);
                     break;
 
                 case "place":
@@ -669,7 +678,7 @@ namespace Forest
                     break;
 
                 case "look":
-                    HandleLook(words);
+                    await HandleLook(words);
                     break;
 
                 case "talk":
@@ -677,20 +686,20 @@ namespace Forest
                     break;
 
                 case "clean":
-                    HandleClean(words);
+                    await HandleClean(words);
                     break;
 
                 case "go":
                     // TODO go to "name of location" (or direction)
-                    HandleGo(words);
+                    await HandleGo(words);
                     break;
 
                 case "swim":
-                    HandleSwim(words);
+                    await HandleSwim(words);
                     break;
 
                 case "sleep":
-                    HandleSleep();
+                    await HandleSleep();
                     break;
 
                 case "read":
@@ -703,17 +712,17 @@ namespace Forest
                     break;
 
                 case "search":
-                    HandleSearch(words);
+                    await HandleSearch(words);
                     break;
 
                 case "use":
-                    HandleUse(words);
+                    await HandleUse(words);
                     break;
 
                 // Inventory.
                 case "inventory":
                 case "i":
-                    HandleInventory();
+                    await HandleInventory();
                     break;
 
                 // Shapeshifting.
@@ -725,7 +734,7 @@ namespace Forest
                 case "changeshape":
                 case "shape shift":
                 case "shapeshift":
-                    ShiftShape(words);
+                    await ShiftShape(words);
                     break;
 
                 // Quit.
@@ -758,7 +767,7 @@ namespace Forest
             }
         }
 
-        static void HandleMovement(Direction direction)
+        static async Task HandleMovement(Direction direction)
         {
             LocationData currentLocation = LocationsData[CurrentLocationId];
 
@@ -769,7 +778,7 @@ namespace Forest
                 if (CurrentShape == ThingId.ShapeSquirrel)
                 {
                     // Trigger the end.
-                    EndGame();
+                    await EndGame();
                 }
                 else
                 {
@@ -787,13 +796,13 @@ namespace Forest
             else if (direction == Direction.South && CurrentLocationId == LocationId.WestRiver)
             {
                 // Checks if player can swim over river or not, moves player if nessesary and displayes the right text.
-                SwimOverRiver();
+                await SwimOverRiver();
             }
             // For giving instructions about eating a flower.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.BeeForest && currentLocation.Directions[direction] == LocationId.Glade && BeeIsHome && !HoneyPuzzleStarted)
             {
                 // Will trigger the start of eating flowers once.
-                GetIdeaAboutHoney();
+                await GetIdeaAboutHoney();
             }
             // If the player is going from the leafy forest to the den and have the pile of leaves, start event about leaves blowing in the wind.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestMiddle && currentLocation.Directions[direction] == LocationId.LeafyForestEntrance && HaveThing(ThingId.PileOfLeaves))
@@ -802,7 +811,7 @@ namespace Forest
                 MoveBee(LocationId.Den);
 
                 // Tries to bring the leaves to the den.
-                BringLeavesToDen();
+                await BringLeavesToDen();
             }
             // If the player is trying to go from the south leafy forest to the west river, they go on the waterslide and a special text is displayed as they are taken to the east part of the river because of currents in the west river.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.LeafyForestSouth && currentLocation.Directions[direction] == LocationId.WestRiver)
@@ -811,7 +820,7 @@ namespace Forest
                 MoveBee(LocationId.EastRiver);
 
                 // Event for going down waterslide.
-                GoDownWaterSlide();
+                await GoDownWaterSlide();
             }
             // Can't go up water stream.
             else if (currentLocation.Directions.ContainsKey(direction) && currentLocation.Id == LocationId.WestRiver && currentLocation.Directions[direction] == LocationId.LeafyForestSouth)
@@ -826,7 +835,7 @@ namespace Forest
                 MoveBee(LocationId.SouthEastForest);
 
                 // Text about finding nail.
-                FindNail();
+                await FindNail();
             }
             // Normal move.
             else if (currentLocation.Directions.ContainsKey(direction))
@@ -847,7 +856,7 @@ namespace Forest
             }
         }
 
-        static void HandleGet(string[] words)
+        static async Task HandleGet(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -868,7 +877,7 @@ namespace Forest
                     if (thingId == ThingId.Necklace && ThingIsHere(ThingId.Necklace))
                     {
                         // If the thing is the necklace and the necklace is here.
-                        FindNecklace();
+                        await FindNecklace();
 
                         return;
                     }
@@ -930,7 +939,7 @@ namespace Forest
                             return;
 
                         case ThingId.Fish:
-                            StartFishingPuzzle();
+                            await StartFishingPuzzle();
                             return;
 
                         case ThingId.Honey:
@@ -1031,7 +1040,7 @@ namespace Forest
             }
         }
 
-        static void HandleInventory()
+        static async Task HandleInventory()
         {
             string[] thingIds = Enum.GetNames(typeof(ThingId));
             var thingsInInventoryList = new List<string>();
@@ -1039,7 +1048,7 @@ namespace Forest
             // Go through all the things and find the ones that have inventory as location.
             foreach (string thing in thingIds)
             {
-                ThingId thingId = Enum.Parse<ThingId>(thing);
+                ThingId thingId = EnumParse<ThingId>(thing);
                 if (HaveThing(thingId))
                 {
                     // Add all things that has inventory as location to a list.
@@ -1058,8 +1067,8 @@ namespace Forest
                 // If the player looks in the inventory, have the puzzle about fishing started and have all the things to make a fishing rod, the things combine to a fishing rod.
                 if (FishingPuzzleStarted && HaveThing(ThingId.Rope) && HaveThing(ThingId.Nail) && (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick)))
                 {
-                    PressEnterToContinue();
-                    CombineToFishingRod();
+                    await PressEnterToContinue();
+                    await CombineToFishingRod();
                 }
             }
             // If there is no things in the inventory, tell the player that.
@@ -1070,7 +1079,7 @@ namespace Forest
             }
         }
 
-        static void ShiftShape(string[] words)
+        static async Task ShiftShape(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1097,7 +1106,7 @@ namespace Forest
                         Console.Clear();
                         Print(eventAndGoalExtraText[178]);
                         Reply(ThingsData[ShapesByName[word]].Description);
-                        PressEnterToContinue();
+                        await PressEnterToContinue();
 
                         DisplayNewLocation();
                     }
@@ -1109,8 +1118,8 @@ namespace Forest
                 {
                     // Ask for a new input.
                     // Says "What do you want to change into?" (if not changed).
-                    string[] newWords = AskForInput(eventAndGoalExtraText[180]);
-                    ShiftShape(newWords);
+                    string[] newWords = await AskForInput(eventAndGoalExtraText[180]);
+                    await ShiftShape(newWords);
                     return;
                 }
             }
@@ -1119,7 +1128,7 @@ namespace Forest
             Reply(eventAndGoalExtraText[181]);
         }
 
-        static void HandleLook(string[] words)
+        static async Task HandleLook(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1138,7 +1147,7 @@ namespace Forest
                     if (thingId == ThingId.Necklace && ThingIsHere(ThingId.Necklace))
                     {
                         // If the thing is the necklace and the necklace is here.
-                        FindNecklace();
+                        await FindNecklace();
 
                         return;
                     }
@@ -1208,7 +1217,7 @@ namespace Forest
                     // Special case for looking at stick.
                     else if (thingId == ThingId.LongStick || thingId == ThingId.OldStick)
                     {
-                        LookAtStick(words);
+                        await LookAtStick(words);
 
                         // Only lock at the first thing.
                         return;
@@ -1223,7 +1232,7 @@ namespace Forest
                         else if (!FishingPuzzleStarted)
                         {
                             // Trigger the event for starting the fishing puzzle.
-                            StartFishingPuzzle();
+                            await StartFishingPuzzle();
                         }
                         else if (FishingPuzzleStarted)
                         {
@@ -1318,7 +1327,7 @@ namespace Forest
             }
         }
 
-        static void HandleClean(string[] words)
+        static async Task HandleClean(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1357,8 +1366,8 @@ namespace Forest
             {
                 Console.WriteLine();
                 // Asking "What needs cleaning?" and handles the command.
-                string[] newCommand = AskForInput(eventAndGoalExtraText[45]);
-                HandleClean(newCommand);
+                string[] newCommand = await AskForInput(eventAndGoalExtraText[45]);
+                await HandleClean(newCommand);
             }
             else if (words.Contains("forest") || words.Contains("nature"))
             {
@@ -1373,7 +1382,7 @@ namespace Forest
             }
         }
 
-        static void HandleGo(string[] words)
+        static async Task HandleGo(string[] words)
         {
             // Getting a directiond from words found in the command.
             Direction directionFromCommand = GetDirectionFromWords(words);
@@ -1381,7 +1390,7 @@ namespace Forest
             // If there is a direction.
             if (directionFromCommand != Direction.NoDirection)
             {
-                HandleMovement(directionFromCommand);
+                await HandleMovement(directionFromCommand);
             }
             // If there was no direction.
             else
@@ -1391,7 +1400,7 @@ namespace Forest
             }
         }
 
-        static void HandleSwim(string[] words)
+        static async Task HandleSwim(string[] words)
         {
             if (CurrentShape == ThingId.ShapeBear)
             {
@@ -1402,7 +1411,7 @@ namespace Forest
                     {
                         if (DirectionIdsByName[word] == Direction.South && (CurrentLocationId == LocationId.WestRiver || CurrentLocationId == LocationId.LeafyForestSouth))
                         {
-                            HandleGo(words);
+                            await HandleGo(words);
                             return;
                         }
                     }
@@ -1455,12 +1464,12 @@ namespace Forest
             }
         }
 
-        static void HandleSleep()
+        static async Task HandleSleep()
         {
             if (CurrentLocationId == LocationId.Den && HaveThing(ThingId.Necklace) && !GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
                 // Bear sleeps in den, dreams about shape shifting and waking up as animal.
-                SleepAndDream();
+                await SleepAndDream();
             }
             else if (CurrentLocationId == LocationId.Den && !HaveThing(ThingId.Necklace) && GoalCompleted[Goal.HaveRelaxed])
             {
@@ -1572,12 +1581,12 @@ namespace Forest
             }
         }
 
-        static void HandleSearch(string[] words)
+        static async Task HandleSearch(string[] words)
         {
             // Searching through things at the view point.
             if (CurrentLocationId == LocationId.ViewPoint)
             {
-                SearchAtViewPoint(words);
+                await SearchAtViewPoint(words);
             }
             // If the player trys to search somewhere else.
             else
@@ -1586,7 +1595,7 @@ namespace Forest
             }
         }
 
-        static void HandleUse(string[] words)
+        static async Task HandleUse(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1616,12 +1625,12 @@ namespace Forest
                     switch (thingId)
                     {
                         case ThingId.Binoculars:
-                            UseBinoculars();
+                            await UseBinoculars();
                             return;
 
                         case ThingId.FishingRodLong:
                         case ThingId.FishingRodOld:
-                            UseFishingRod();
+                            await UseFishingRod();
                             return;
                     }
 
@@ -1650,7 +1659,7 @@ namespace Forest
         #endregion
 
         #region Game Rules
-        static void ApplyGameRules()
+        static async Task ApplyGameRules()
         {
             // Things that need to change because of a new location.
             if (PreviousLocation != CurrentLocationId)
@@ -1753,7 +1762,7 @@ namespace Forest
                     // All things added.
                     else if (ThingsInDen.Count == 3)
                     {
-                        DenGoalCompleted();
+                        await DenGoalCompleted();
                     }
 
                     // Remove things already droped of from the list of things the player can pick up.
@@ -1797,36 +1806,36 @@ namespace Forest
             if (!GoalCompleted[Goal.HaveRelaxed] && GoalCompleted[Goal.TimeToRelax] && CurrentLocationId == LocationId.SouthEastForest)
             {
                 // Start event about relaxing, old stories and finding necklace.
-                Relax();
+                await Relax();
             }
         }
         #endregion
 
         #region Events
-        static void EndGame()
+        static async Task EndGame()
         {
             Console.Clear();
 
             // Story about going down the path and thinking about the adventure ahead.
             Reply(eventAndGoalExtraText[183]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[184]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[185]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[186]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[187]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[188]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[189]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[190]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
             // End of chapter 1.
             Reply(eventAndGoalExtraText[191]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             quitGame = true;
         }
@@ -1896,22 +1905,22 @@ namespace Forest
         /// <summary>
         /// Text about completeing the cozy den goal.
         /// </summary>
-        static void DenGoalCompleted()
+        static async Task DenGoalCompleted()
         {
             GoalCompleted[Goal.DenMadeCozy] = true;
 
             // Print text that tells the player the puzzle is done.
             Console.Clear();
             Reply(eventAndGoalExtraText[17]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[18]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[19]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[20]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[21]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             DisplayNewLocation();
         }
@@ -2003,12 +2012,12 @@ namespace Forest
         /// <summary>
         /// Event text for losing leaves when going down the waterslide.
         /// </summary>
-        static void LoseLeavesWhenGoingDownWaterSlide()
+        static async Task LoseLeavesWhenGoingDownWaterSlide()
         {
             // Display an extra message if player was holding the pile of leaves when sliding down the river.
             if (HaveThing(ThingId.PileOfLeaves))
             {
-                PressEnterToContinue();
+                await PressEnterToContinue();
                 // Text about losing the leaves.
                 Print(eventAndGoalExtraText[27]);
                 LoseLeafPile();
@@ -2018,12 +2027,11 @@ namespace Forest
         /// <summary>
         /// Walking on the oath from leafy forest to den, if the leaves are in the correct order in the pile, player successfully brings the leaves with them.
         /// </summary>
-        static void BringLeavesToDen()
+        static async Task BringLeavesToDen()
         {
             Console.Clear();
             Reply(eventAndGoalExtraText[35]);
-
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             if (ThingsInPileOfLeaves.Count() == 3)
             {
@@ -2081,23 +2089,22 @@ namespace Forest
                 // Remove the leaf pile from inventory and clear the list of leaves in leaf pile.
                 LoseLeafPile();
             }
-
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             MovePlayerToNewLocation(LocationId.Den);
         }
 
         // Events about the fishing puzzle.
-        static void StartFishingPuzzle()
+        static async Task StartFishingPuzzle()
         {
             if (!FishingPuzzleStarted)
             {
                 // Start instructions for fishing puzzle.
                 FishingPuzzleStarted = true;
                 Reply(eventAndGoalExtraText[97]);
-                PressEnterToContinue();
+                await PressEnterToContinue();
                 Reply(eventAndGoalExtraText[98]);
-                PressEnterToContinue();
+                await PressEnterToContinue();
             }
             else
             {
@@ -2106,7 +2113,7 @@ namespace Forest
             }
         }
 
-        static void UseFishingRod()
+        static async Task UseFishingRod()
         {
             if (CurrentLocationId == LocationId.EastRiver)
             {
@@ -2128,50 +2135,50 @@ namespace Forest
 
                 // Text about starting to fish, sit down with you rod made out of choosen stick.
                 InsertKeyWordAndDisplay(eventAndGoalExtraText[81], stickName);
-                PressEnterToContinue();
+                await PressEnterToContinue();
                 Reply(eventAndGoalExtraText[82]);
-                PressEnterToContinue();
+                await PressEnterToContinue();
 
                 if (fishingRod == ThingId.FishingRodLong)
                 {
                     // You wait and wait and wait, nothing happens.
                     Reply(eventAndGoalExtraText[83]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[84]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[85]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[83]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[101]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[86]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                 }
                 else if (fishingRod == ThingId.FishingRodOld)
                 {
                     // Gets a fish on the hook but the rod breakes.
                     Reply(eventAndGoalExtraText[87]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[88]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[89]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[90]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[91]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                     Reply(eventAndGoalExtraText[92]);
-                    PressEnterToContinue();
+                    await PressEnterToContinue();
                 }
 
                 // Text about catching fish and throwing rod away.
                 Reply(eventAndGoalExtraText[93]);
-                PressEnterToContinue();
+                await PressEnterToContinue();
                 GetOneAndLoseOneThing(ThingId.Fish, fishingRod);
                 GoalCompleted[Goal.CaughtFish] = true;
 
@@ -2321,7 +2328,7 @@ namespace Forest
             }
         }
 
-        static void SearchAtViewPoint(string[] words)
+        static async Task SearchAtViewPoint(string[] words)
         {
             // Go through all words to see if there is something searchable.
             foreach (string word in words)
@@ -2348,9 +2355,9 @@ namespace Forest
             else
             {
                 // Ask for new input. Says "What do you want to search through?" (if not changed).
-                string[] newWords = AskForInput(eventAndGoalExtraText[37]);
+                string[] newWords = await AskForInput(eventAndGoalExtraText[37]);
                 // Search again.
-                SearchAtViewPoint(newWords);
+                await SearchAtViewPoint(newWords);
             }
         }
 
@@ -2391,7 +2398,7 @@ namespace Forest
         }
 
         // Binoculars and nail.
-        static void UseBinoculars()
+        static async Task UseBinoculars()
         {
             string newWords = "";
             bool newInput = true;
@@ -2420,7 +2427,7 @@ namespace Forest
                 }
 
                 // Get the next key that is pressed.
-                var key = Console.ReadKey().Key;
+                var key = (await Console.ReadKey()).Key;
 
                 // If player press an arrow key.
                 if (key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow || key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow)
@@ -2470,7 +2477,7 @@ namespace Forest
 
                             // Clear the previous entered arrows.
                             EnteredArrows.Clear();
-                            PressEnterToContinue();
+                            await PressEnterToContinue();
 
                             // Clear and display location description ("exit" binoculars).
                             DisplayNewLocation();
@@ -2536,7 +2543,7 @@ namespace Forest
             }
 
             // "Exit" binoculars. Clear and show description about location.
-            PressEnterToContinue();
+            await PressEnterToContinue();
             DisplayNewLocation();
         }
 
@@ -2571,7 +2578,7 @@ namespace Forest
             }
         }
 
-        static void FindNail()
+        static async Task FindNail()
         {
             // Add the connection fron old tree to waterfall.
             LocationsData[LocationId.SouthEastForest].Directions[Direction.South] = LocationId.Waterfall;
@@ -2582,24 +2589,24 @@ namespace Forest
             // Text about almost stepping on a rusty nail.
             Console.Clear();
             Reply(eventAndGoalExtraText[71]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[72]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[73]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[74]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[75]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             MovePlayerToNewLocation(LocationId.SouthEastForest);
         }
 
-        static void CombineToFishingRod()
+        static async Task CombineToFishingRod()
         {
             // Text about having an idea!
             Reply(eventAndGoalExtraText[78]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Text about combinin nail and rope.
             Reply(eventAndGoalExtraText[79]);
@@ -2615,7 +2622,7 @@ namespace Forest
                 while (choosenStick == ThingId.Placeholder)
                 {
                     // Have booth so ask witch one to use.
-                    choosenStick = AskWitchStick();
+                    choosenStick = await AskWitchStick();
 
                     // Extra text for choosing again.
                     if (choosenStick == ThingId.Placeholder)
@@ -2660,12 +2667,11 @@ namespace Forest
                 ThingIdsByName["rod"] = ThingId.FishingRodLong;
                 ThingIdsByName["fishing rod"] = ThingId.FishingRodLong;
             }
-
-            PressEnterToContinue();
+            await PressEnterToContinue();
             DisplayNewLocation();
         }
 
-        static void LookAtStick(string[] words)
+        static async Task LookAtStick(string[] words)
         {
             // If player already specified witch stick to look at and that stick is here.
             if ((words.Contains("old stick") && ThingIsAvailable(ThingId.OldStick)) || (words.Contains("long stick") && ThingIsAvailable(ThingId.LongStick)))
@@ -2684,7 +2690,7 @@ namespace Forest
             // If both sticks are around, ask witch one they mean.
             else if (ThingIsAvailable(ThingId.OldStick) && ThingIsAvailable(ThingId.LongStick))
             {
-                ThingId choosenStick = AskWitchStick();
+                ThingId choosenStick = await AskWitchStick();
 
                 if (choosenStick == ThingId.Placeholder)
                 {
@@ -2761,17 +2767,17 @@ namespace Forest
             }
         }
 
-        static void GetIdeaAboutHoney()
+        static async Task GetIdeaAboutHoney()
         {
             Console.Clear();
 
             // Text about having an idea to eat flowers to help make honey.
             Reply(eventAndGoalExtraText[110]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[111]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[112]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             HoneyPuzzleStarted = true;
 
@@ -2780,7 +2786,7 @@ namespace Forest
         }
 
         // Events for swiming over river.
-        static void SwimOverRiver()
+        static async Task SwimOverRiver()
         {
             // Checks if the puzzle about eating is started.
             if (HaveTriedToSwimOverRiver)
@@ -2798,7 +2804,7 @@ namespace Forest
 
                             // Text about being ready to swim.
                             Reply(eventAndGoalExtraText[119]);
-                            PressEnterToContinue();
+                            await PressEnterToContinue();
 
                             // Move player to the new location and displays description.
                             MovePlayerToNewLocation(LocationId.Cliffs);
@@ -2809,7 +2815,7 @@ namespace Forest
 
                             // Text about being ready to swim.
                             Reply(eventAndGoalExtraText[199]);
-                            PressEnterToContinue();
+                            await PressEnterToContinue();
 
                             // Move player to the new location and displays description.
                             MovePlayerToNewLocation(LocationId.Cliffs);
@@ -2838,19 +2844,19 @@ namespace Forest
             else if (!HaveTriedToSwimOverRiver)
             {
                 // Calls the start of the swim puzzle, is only called once.
-                StartSwimPuzzle();
+                await StartSwimPuzzle();
             }
         }
 
-        static void StartSwimPuzzle()
+        static async Task StartSwimPuzzle()
         {
             Console.Clear();
 
             // Text about wanting to swim over river but needing to eat first.
             Reply(eventAndGoalExtraText[122]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[123]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             // Make things to eat appear and change puzzle to started.
             MoveThing(ThingId.Berries, LocationId.Nowhere, LocationId.LeafyForestSouth);
@@ -2915,37 +2921,37 @@ namespace Forest
         }
 
         // Events about necklace.
-        static void Relax()
+        static async Task Relax()
         {
             GoalCompleted[Goal.HaveRelaxed] = true;
 
             // You are at the old tree, time to relax!
             Reply(eventAndGoalExtraText[136]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Text about relaxing and thinking about the old stories, the beeing interupted by seeing something glimmer in the sun
             Reply(eventAndGoalExtraText[137]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[138]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[139]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             // The old story.
             Reply(gameStory[2]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[140]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(gameStory[3]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[197]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(gameStory[4]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             // Something disturbs you.
             Reply(eventAndGoalExtraText[141]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[142]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             // Add the necklace to this location (old tree).
             MoveThing(ThingId.Necklace, ThingsCurrentLocations[ThingId.Necklace][0], CurrentLocationId);
@@ -2954,36 +2960,36 @@ namespace Forest
             DisplayNewLocation();
         }
 
-        static void FindNecklace()
+        static async Task FindNecklace()
         {
             // You take a closer look in the bush and find a necklace.
             Reply(eventAndGoalExtraText[144]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Text about the necklace, putting it on, trying to shift shape.
             Reply(eventAndGoalExtraText[145]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[146]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[147]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[148]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[149]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[151]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[150]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[152]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             // That didnt end very relaxing, but now the sun is almost completely down, time to sleep.
             Reply(eventAndGoalExtraText[153]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             // Pick up the necklace.
             MoveThing(ThingId.Necklace, CurrentLocationId, LocationId.Inventory);
@@ -2992,56 +2998,56 @@ namespace Forest
         }
 
         // Dream.
-        static void SleepAndDream()
+        static async Task SleepAndDream()
         {
             GoalCompleted[Goal.DreamtAboutShiftingShape] = true;
 
             // Bear goes to bed and immediately falls alseep.
             Reply(eventAndGoalExtraText[158]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Dream
             Reply(eventAndGoalExtraText[159]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[160]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[161]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[162]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[163]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[164]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[165]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[166]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[167]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[168]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[169]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[202]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Wake up as an squirrel.
             Reply(eventAndGoalExtraText[170]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[171]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[173]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[174]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[175]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Reply(eventAndGoalExtraText[176]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             // Change back to a bear.
             Reply(eventAndGoalExtraText[177]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             DisplayNewLocation();
         }
@@ -3054,14 +3060,14 @@ namespace Forest
             DisplayNewLocation();
         }
 
-        static void GoDownWaterSlide()
+        static async Task GoDownWaterSlide()
         {
             Console.Clear();
             // Text about sliding down the river ending up in the dam.
             Reply(eventAndGoalExtraText[0]);
             // Display an extra message if player was holding the pile of leaves when sliding down the river.
-            LoseLeavesWhenGoingDownWaterSlide();
-            PressEnterToContinueAndClear();
+            await LoseLeavesWhenGoingDownWaterSlide();
+            await PressEnterToContinueAndClear();
             // Put the player at the dam.
             MovePlayerToNewLocation(LocationId.EastRiver);
         }
@@ -3088,7 +3094,7 @@ namespace Forest
             // Going through all the directions to se if the current locations contains a location in that direction, and displaying existing directions.
             for (int direction = 0; direction < allDirections.Length; direction++)
             {
-                Direction currentDirection = Enum.Parse<Direction>(allDirections[direction]);
+                Direction currentDirection = EnumParse<Direction>(allDirections[direction]);
                 if (currentLocationData.Directions.ContainsKey(currentDirection))
                 {
                     Print($"{allDirections[direction]}: {GetLocationName(currentLocationData.Directions[currentDirection])}");
@@ -3624,8 +3630,8 @@ namespace Forest
                             }
 
                             // Parsing the direction and destination and storing them in a dictionary.
-                            Direction direction = Enum.Parse<Direction>(directionAndDestination.Groups[1].Value);
-                            LocationId destination = Enum.Parse<LocationId>(directionAndDestination.Groups[2].Value);
+                            Direction direction = EnumParse<Direction>(directionAndDestination.Groups[1].Value);
+                            LocationId destination = EnumParse<LocationId>(directionAndDestination.Groups[2].Value);
                             parsedDataEntry.Directions[direction] = destination;
 
                             // Increasing the line to see if the next line is also a direction.
@@ -3693,7 +3699,7 @@ namespace Forest
                         {
                             // Creating a new LocationData object from the parsed data.
                             // Moving data from parsedDataEntry to locationEntry.
-                            LocationId locationId = Enum.Parse<LocationId>(parsedDataEntry.Id);
+                            LocationId locationId = EnumParse<LocationId>(parsedDataEntry.Id);
                             var locationEntry = new LocationData
                             {
                                 Id = locationId,
@@ -3708,18 +3714,18 @@ namespace Forest
                         if (thingNames.Contains(parsedDataEntry.Id))
                         {
                             // Creating a new ThingData object from the parsed data.
-                            ThingId thingId = Enum.Parse<ThingId>(parsedDataEntry.Id);
+                            ThingId thingId = EnumParse<ThingId>(parsedDataEntry.Id);
                             var startingLocationsStrings = new List<string>(parsedDataEntry.StartingLocationId.Split(','));
                             var startingLocationsIds = new List<LocationId>();
                             for (int location = 0; location < startingLocationsStrings.Count; location++)
                             {
                                 if (location == 0)
                                 {
-                                    startingLocationsIds.Add(Enum.Parse<LocationId>(startingLocationsStrings[location].Trim()));
+                                    startingLocationsIds.Add(EnumParse<LocationId>(startingLocationsStrings[location].Trim()));
                                 }
                                 else
                                 {
-                                    startingLocationsIds.Add(Enum.Parse<LocationId>(RemoveDigits(startingLocationsStrings[location].Trim())));
+                                    startingLocationsIds.Add(EnumParse<LocationId>(RemoveDigits(startingLocationsStrings[location].Trim())));
                                 }
                             }
                             LocationId[] thingStartingLocationId = startingLocationsIds.ToArray<LocationId>();
@@ -3837,7 +3843,7 @@ namespace Forest
             }
         }
 
-        static void Main(string[] args)
+        static async void Main(string[] args)
         {
             // Initialization.
 
@@ -3869,23 +3875,23 @@ namespace Forest
 
             // Display short instructions about how to play and credits (TODO add credits).
             Reply(gameStory[5]);
-            PressEnterToContinueAndClear();
+            await PressEnterToContinueAndClear();
 
             // Displaying title art.
             foreach (string line in titleAsciiArt)
             {
                 Console.WriteLine(line);
             }
-            Console.ReadKey();
+            await Console.ReadKey();
             Console.Clear();
 
             // Displaying the introduction/first part of the games story.
             Console.ForegroundColor = NarrativeColor;
             Reply(gameStory[0]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
             Console.ForegroundColor = NarrativeColor;
             Reply(gameStory[1]);
-            PressEnterToContinue();
+            await PressEnterToContinue();
 
             // Displaying the first location.
             DisplayNewLocation();
@@ -3894,8 +3900,8 @@ namespace Forest
             while (!quitGame)
             {
                 // Ask player what they want to do.
-                HandlePlayerAction();
-                ApplyGameRules();
+                await HandlePlayerAction();
+                await ApplyGameRules();
             }
         }
         #endregion
