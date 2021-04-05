@@ -1,0 +1,3 @@
+export DIRNAME=`dirname "$0"`
+cd "$DIRNAME"
+zip -r Forest_web.zip ./Forest_web/
