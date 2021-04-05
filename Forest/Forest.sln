@@ -1,7 +1,9 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forest", "Forest\Forest.csproj", "{8973DD0A-ECAB-4280-B923-214A91AD2AA6}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forest", "Forest\Forest.csproj", "{632710A3-F6EF-4922-8281-789B4795A3AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,9 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8973DD0A-ECAB-4280-B923-214A91AD2AA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8973DD0A-ECAB-4280-B923-214A91AD2AA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8973DD0A-ECAB-4280-B923-214A91AD2AA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8973DD0A-ECAB-4280-B923-214A91AD2AA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{632710A3-F6EF-4922-8281-789B4795A3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{632710A3-F6EF-4922-8281-789B4795A3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{632710A3-F6EF-4922-8281-789B4795A3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{632710A3-F6EF-4922-8281-789B4795A3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {559ADC50-BF2F-4464-8BB8-D9255C6C9390}
 	EndGlobalSection
 EndGlobal
