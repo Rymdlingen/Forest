@@ -272,7 +272,7 @@ ID: Rope
 Name: Rope
 Description: A chunky rope.
 Answers:
-	Pick up: You found a rope!
+	Pick up: You found a rope! That could come in handy.
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
@@ -287,7 +287,7 @@ ID: Trash
 Name: Trash
 Description: Some trash.
 Answers:
-	Pick up: You found some trash.
+	Pick up: You found some trash, it's @, you have no use for that.
 	Thing can not be picked up:
 	Thing is not here: There is no trash around here, that's good!
 	Already in inventory:

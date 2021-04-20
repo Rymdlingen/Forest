@@ -116,14 +116,14 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. As a part of the view point to the northeast there is a fence to keep visitors safe. At this part of the view point there is some old, once considered high tech binoculars that can give a closer look at the view.
+Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. There is a view point to the northeast, it's fence extends all the way here to prevent that visitors fall in the water.\nClose to the edge of the cliff there is some old, once considered high tech binoculars that can give a closer look at the view.
 Directions:
     West: 17EastRiver
     Northeast: 19ViewPoint
 
 ID: 19ViewPoint
 Name: View point
-Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view and search through the left behind picnics, the trash cans and around the tables to see if there is something useful just lying around. The view point is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
+Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view.\nAnother fun activity is to search through the left behind blankets, the trash cans, around the tables and all the other things the humans leave behind after having a picnic. You can often find something useful!\nThe view point is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
 Directions:
     Southwest: 18Waterfall
 

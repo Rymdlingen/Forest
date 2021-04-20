@@ -128,6 +128,7 @@ namespace Forest
         #region Fields
         const ConsoleColor NarrativeColor = ConsoleColor.DarkGreen;
         const ConsoleColor PromptColor = ConsoleColor.DarkGray;
+        const ConsoleColor IntroColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
 
         // static List<string> load;
@@ -159,7 +160,7 @@ namespace Forest
         static bool quitGame = false;
 
         // Command helpers.
-        static List<string> CommandsWithMoreThenOneWord = new List<string>() { "shift shape", "change shape", "shape shift" };
+        static List<string> CommandsWithMoreThenOneWord = new List<string>() { "shift shape", "change shape", "shape shift", "look at" };
         static Dictionary<string, ThingId> ShapesByName = new Dictionary<string, ThingId> { { "bear", ThingId.ShapeBear},
                                                                                             { "squirrel", ThingId.ShapeSquirrel} };
 
@@ -270,7 +271,8 @@ namespace Forest
 
         // For puzzle: fishing.
         static bool FishingPuzzleStarted = false;
-        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill" };
+        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill", "bbq", "picnics", "trashcans", "cans" };
+        static List<string> TypesOfTrash = new List<string> { "a napkin", "a spoon", "a fork", "a jar", "a straw", "a juice box", "a paper cup", "a frisbee", "a toothpick", "a plastic bag", "a bottle" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
         static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
@@ -613,8 +615,6 @@ namespace Forest
                 verb = words[0].Trim();
             }
 
-            // TODO add list of combined commands, and add it to the ask for input method.
-
             // Call the right handler for the given verb.
             switch (verb)
             {
@@ -660,6 +660,7 @@ namespace Forest
                 case "take":
                 case "pick":
                 case "get":
+                case "grab":
                     HandleGet(words);
                     break;
 
@@ -669,6 +670,7 @@ namespace Forest
                     break;
 
                 case "look":
+                case "look at":
                     HandleLook(words);
                     break;
 
@@ -693,9 +695,8 @@ namespace Forest
                     HandleSleep();
                     break;
 
-                case "read":
-                    // TODO not needed yet
-                    break;
+                /*case "read":
+                    break;*/
 
                 // Interacting verbs
                 case "eat":
@@ -740,15 +741,13 @@ namespace Forest
                     }
                     break;
 
-                // Save and load.
+                /*// Save and load.
                 case "save":
-                    // TODO
                     // SaveCurrentGameState();
                     break;
                 case "load":
-                    // TODO
                     // LoadSavedGameState();
-                    break;
+                    break;*/
 
                 // Unvalid verb.
                 default:
@@ -2273,16 +2272,21 @@ namespace Forest
             if (!HaveThing(ThingId.Trash))
             {
                 GetThing(ThingId.Trash);
-                Reply(ThingsData[ThingId.Trash].Answers[0]);
+                var random = new Random();
+                int randomTrash = random.Next(0, TypesOfTrash.Count());
+                string[] typeOfTrash = { TypesOfTrash[randomTrash] };
+                InsertKeyWordAndDisplay(ThingsData[ThingId.Trash].Answers[0], typeOfTrash);
             }
             // If the player already had trash, display the message about picking up more trash.
             else
             {
-                // Amount of trash.
-                string[] number = new string[] { PileOfTrash.Count().ToString() };
+                // Type and amount of trash.
+                var random = new Random();
+                int randomTrash = random.Next(0, TypesOfTrash.Count());
+                string[] typeAndAmountOfTrash = new string[] { TypesOfTrash[randomTrash], PileOfTrash.Count().ToString() };
 
                 // Text about how much trash the player have.
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], typeAndAmountOfTrash);
             }
 
             // If the player is picking up trash from any other location the view point, remove the trash from that location.
@@ -2367,7 +2371,7 @@ namespace Forest
             {
                 // Chance of getting rope.
                 var random = new Random();
-                int chanceForRope = random.Next(0, 10 - Math.Min(PileOfTrash.Count(), 9));
+                int chanceForRope = random.Next(0, 8 - Math.Min(PileOfTrash.Count(), 7));
 
                 if (chanceForRope == 0)
                 {
@@ -3868,10 +3872,21 @@ namespace Forest
             // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
 
             // Display short instructions about how to play and credits (TODO add credits).
+            Console.ForegroundColor = IntroColor;
             Reply(gameStory[5]);
+            PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[6]);
+            PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[7]);
+            PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[8]);
             PressEnterToContinueAndClear();
 
             // Displaying title art.
+            Console.ForegroundColor = IntroColor;
             foreach (string line in titleAsciiArt)
             {
                 Console.WriteLine(line);

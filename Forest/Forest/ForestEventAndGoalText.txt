@@ -80,7 +80,7 @@
 
 40You didn't find anything.
 
-41You found more trash, you have @ pieces of trash now.
+41You found @, that's just more trash, you have @ pieces of trash now.
 
 42You got rid of all the trash you had.
 
