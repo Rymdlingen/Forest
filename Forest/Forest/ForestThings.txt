@@ -122,8 +122,8 @@ ID: Nuts
 Name: Nuts
 Description: Almost covered by some leaves there is some nuts. It looks like a squirrel tried to burry them, but they probably forgot where they put them. "That would for sure never happen to me if I was a squirrel, I would hide them in my belly!" Bear thinks.
 Answers: <starts in Glade>
-	Pick up: You picked up the nuts.
-	Thing can not be picked up: <Not possible to pick up, message about why>
+	Pick up:
+	Thing can not be picked up: No need to carry these around, you could just eat them instead.
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>
 	Drop possible: <Message about the drop, what happen because of it?>
@@ -137,7 +137,7 @@ ID: Mushrooms
 Name: Mushrooms
 Description: Through the moss you can see a bunch of yellow mushrooms, it's chanterelles. Tasty!
 Answers: <starts in MossyForestSouth>
-	Pick up: <Message about picking this up>
+	Pick up: You picked up some chanterelles, could be a good snack for later!
 	Thing can not be picked up: <Not possible to pick up, message about why>
 	Thing is not here: <You can't see such a thing>
 	Already in inventory: <You can't have the same thing twice>

@@ -246,22 +246,12 @@ namespace Forest
                                                                                                 { "nail", ThingId.Nail },
                                                                                                 { "fishing rod", ThingId.FishingRodOld },
                                                                                                 { "rod", ThingId.FishingRodOld },
-                                                                                                { "necklace", ThingId.Necklace },
-                                                                                                { "dazzle", ThingId.Necklace },
-                                                                                                { "glow", ThingId.Necklace },
-                                                                                                { "something", ThingId.Necklace },
-                                                                                                { "thing", ThingId.Necklace },
-                                                                                                { "bush", ThingId.Necklace },
-                                                                                                { "bushes", ThingId.Necklace },
-                                                                                                { "reflection", ThingId.Necklace },
-                                                                                                { "light", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt },
                                                                                                 { "dirty den", ThingId.Dirt } };
 
-        // TODO i think some food should be added to the list of things you can get
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace, ThingId.Nuts };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace, ThingId.Mushrooms };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
 
         // For puzzle: make den cozy.
@@ -351,7 +341,7 @@ namespace Forest
         /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
         /// </summary>
         /// <param name="narrative"></param>
-        /// <returns>An string array with all words that the pleyer entered.</returns>
+        /// <returns>An string array with all words that the pleyer entered, formatted to lower case.</returns>
         static string[] AskForInput(string narrative)
         {
             // Display the narrative.
@@ -589,7 +579,6 @@ namespace Forest
         /// </summary>
         static void PressEnterToContinue()
         {
-            // TODO not sure about color
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
             ConsoleKey key;
@@ -683,7 +672,6 @@ namespace Forest
                     break;
 
                 case "go":
-                    // TODO go to "name of location" (or direction)
                     HandleGo(words);
                     break;
 
@@ -731,14 +719,9 @@ namespace Forest
 
                 // Quit.
                 case "quit":
-                case "q":
                 case "end":
                 case "exit":
-                    // TODO ask if the player really wants to quit and if they want to save "do you really want to quit all your progress will be lost" 
-                    {
-                        Reply("Thanks for playing!");
-                        quitGame = true;
-                    }
+                    AskIfPlayerWantToQuit();
                     break;
 
                 /*// Save and load.
@@ -1515,6 +1498,7 @@ namespace Forest
                     // Thing is available.
                     switch (thingId)
                     {
+                        // TODO remove eaten thing??
                         case ThingId.Fish:
                         case ThingId.Honey:
                         case ThingId.Berries:
@@ -1645,6 +1629,25 @@ namespace Forest
         static void TalkToFrog()
         {
             // TODO
+        }
+
+        static void AskIfPlayerWantToQuit()
+        {
+            // Ask if the player really wants to quit. Says "Do you want to quit the game? Your progress will not be saved." (if not changed)
+            Console.WriteLine();
+            string[] askIfPlayerWantsToQuit = AskForInput(eventAndGoalExtraText[203]);
+
+            if (askIfPlayerWantsToQuit.Contains("yes"))
+            {
+                // Quit game.
+                Reply(eventAndGoalExtraText[204]);
+                quitGame = true;
+            }
+            else
+            {
+                // Continue playing.
+                Reply(eventAndGoalExtraText[205]);
+            }
         }
         #endregion
 
@@ -2921,6 +2924,17 @@ namespace Forest
         // Events about necklace.
         static void Relax()
         {
+            ThingIdsByName.Add("necklace", ThingId.Necklace);
+            ThingIdsByName.Add("dazzle", ThingId.Necklace);
+            ThingIdsByName.Add("glow", ThingId.Necklace);
+            ThingIdsByName.Add("something", ThingId.Necklace);
+            ThingIdsByName.Add("thing", ThingId.Necklace);
+            ThingIdsByName.Add("bush", ThingId.Necklace);
+            ThingIdsByName.Add("bushes", ThingId.Necklace);
+            ThingIdsByName.Add("reflection", ThingId.Necklace);
+            ThingIdsByName.Add("light", ThingId.Necklace);
+            ThingIdsByName.Add("jewelry", ThingId.Necklace);
+
             GoalCompleted[Goal.HaveRelaxed] = true;
 
             // You are at the old tree, time to relax!

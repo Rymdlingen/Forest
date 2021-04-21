@@ -403,3 +403,9 @@
 201You are too curious about the thing that is glowing in the bushes close to the old tree, its no idea to try too sleep before finding out what it is!
 
 202~~~
+
+203Do you want to quit the game? Your progress will not be saved.
+
+204Thanks for playing!
+
+205Okay, let's continue!
