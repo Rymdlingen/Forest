@@ -80,7 +80,7 @@
 
 40You didn't find anything.
 
-41You found @, that's just more trash, you have @ pieces of trash now.
+41You found @, that's just more trash, you have @ pieces of trash now. This place is looking cleaner and cleaner!
 
 42You got rid of all the trash you had.
 
@@ -90,7 +90,7 @@
 
 45What needs cleaning?
 
-46There is no such thing to look at.
+46There is nothing to be said about the looks of that.
 
 47You do not see @ here.
 
@@ -218,7 +218,7 @@
 
 109The flower that you put on the ground before is still there, the bees seem to really like to have it around.
 
-110As you walk back to the glade you think "Imagine being a bee, flying around all day and having all the honey you could possibly need".
+110As Bear walk back to the glade Bear thinks "Imagine being a bee, flying around all day and having all the honey you could possibly need".
 
 111An idea starts to form, maybe you can make honey just like the bees!
 
@@ -232,11 +232,11 @@
 
 116No, flowers are not tasty!
 
-117Maybe you should find something to eat.
+117That's a good idea! You should find something to eat.
 
 118A jar of honey has appeared just outside the den, there is a flower on top of it, it looks like a gift.
 
-119It sure is a tough task to swim across the river, but after a night full of adventurous dreams and with a stomach still full of fish and honey you are ready to swim across the river!
+119It sure is a tough task to swim across the river, but after a night full of adventurous dreams and with a stomach still full of yummy food you are ready to swim across the river!
 
 120It's starting to get pretty late, the sun is quickly setting. It has been a day of hard work making your den cozy and gathering food. But before going to sleep for the night it would be nice to go relax for a bit.
 
@@ -396,7 +396,7 @@
 
 198That's a great idea! This forest and the nature around here is usually quite clean already, Bear is taking good care of it. The most mess is left by the humans around the view point, but Bear is trying to take care of that too, as much as possible. (You can help by picking up trash that you see in nature, in real life of course, this is just a game.)
 
-199It sure is a tough task to swim across the river, but with a stomach full of fish and honey you are ready to swim across the river!
+199It sure is a tough task to swim across the river, but with a stomach full of yummy food you are ready to swim across the river!
 
 200You can't stop thinking about the thing that is glowing in the bushes close to the old tree, you should try to find out what it is!
 
@@ -409,3 +409,19 @@
 204Thanks for playing!
 
 205Okay, let's continue!
+
+206I don't understand what you want to do.
+
+207I don't understand where you want to go.
+
+208I don't understand.
+
+209It's a long stick.
+
+210There is a lot of big fishes swimming in the dam, they thrive there in the calm and warm water.
+
+211You don't have any @ to eat.
+
+212You don't need more fish.
+
+213You can't read that.
