@@ -138,7 +138,7 @@
 
 69To the north there is a hidden path that you can only find if you know where it is, you know where it is, it's to the north.
 
-70There is a small, almost hidden, path to the south, if you follow it you will end up by the waterfall, close to the view point.
+70There is a small, almost hidden, path to the south, if you follow it you will end up by the waterfall, close to the viewpoint.
 
 71You have found a hidden path!
 
@@ -184,7 +184,7 @@
 
 92The fishing rod breaks in two and the fish quickly swims away.. seems like the old stick couldn't handle the pressure.
 
-93Trying to catch fish like the humans do it did not work out, not at all. Why do it like a human when it's so easy to just catch it with your paw? Bear walks over to the view point and throws the fishing rod in a trash can. Then Bear goes back to the dam, gets into the water and effortlessly catches a fish.\n"Thats how it's done!"
+93Trying to catch fish like the humans do it did not work out, not at all. Why do it like a human when it's so easy to just catch it with your paw? Bear walks over to the viewpoint and throws the fishing rod in a trash can. Then Bear goes back to the dam, gets into the water and effortlessly catches a fish.\n"Thats how it's done!"
 
 94You are carrying the stick.
 
@@ -394,7 +394,7 @@
 
 197There is some sudden flares of yellow light playing among the leaves on the trees and the bushes, they disappear as quick as they appeared and Bear goes back to thinking about the old stories.
 
-198That's a great idea! This forest and the nature around here is usually quite clean already, Bear is taking good care of it. The most mess is left by the humans around the view point, but Bear is trying to take care of that too, as much as possible. (You can help by picking up trash that you see in nature, in real life of course, this is just a game.)
+198That's a great idea! This forest and the nature around here is usually quite clean already, Bear is taking good care of it. The most mess is left by the humans around the viewpoint, but Bear is trying to take care of that too, as much as possible. (You can help by picking up trash that you see in nature, in real life of course, this is just a game.)
 
 199It sure is a tough task to swim across the river, but with a stomach full of yummy food you are ready to swim across the river!
 
@@ -425,3 +425,9 @@
 212You don't need more fish.
 
 213You can't read that.
+
+214The view is absolutely breathtaking! The trees and the far away mountains look so small from up here, it all fills you with wonder.
+
+215There is no view to look at from this part of the forest.
+
+216If you search thoroughly you might find something useful.

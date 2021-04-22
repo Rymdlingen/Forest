@@ -1,6 +1,6 @@
 ID: 1Den
 Name: Bears Den
-Description: You are in the small opening in the forest where your den is. \nIt is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree.
+Description: You are in the small opening in the forest where your den is.\nIt is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree.
 Directions:
     North: 2NorthForest
     Northwest: 7SparseForest
@@ -17,7 +17,7 @@ Directions:
 
 ID: 3MossyForestEntrance
 Name: Forest
-Description: The forest is getting denser, darker and there is some small patches of dark green moss on the ground. To the east and south east are narrow paths leading deeper into the dark forest, going to the west would eventually lead you back to the den.
+Description: The forest is getting denser, darker and there is some small patches of dark green moss on the ground.\nTo the east and southeast are narrow paths leading deeper into the dark forest, going to the west would eventually lead you back to the den.
 Directions:
     West: 2NorthForest
     Southeast: 5MossyForestSouth
@@ -25,54 +25,54 @@ Directions:
 
 ID: 4MossyForestNorth
 Name: Forest
-Description: This part of the forest is dense, dark and mostly consists of old, tall spruce trees. On the ground there is some dark green moss but mostly the ground is covered by big old logs and sticks fallen from the old trees. Almost all around you the trees grow so closely together that you never go there, but to the south there is a small path between two tall spruces and the path back towards the den is to the west.
+Description: This part of the forest is dense, dark and mostly consists of old, tall spruce trees. On the ground there is some dark green moss but mostly the ground is covered by big old logs and sticks that fell from the old trees.\nAlmost all around you the trees grow so closely together that you never go there, but to the south there is a small path between two tall spruces and the path back towards the den is to the west.
 Directions:
     West: 3MossyForestEntrance
     South: 5MossyForestSouth
 
 ID: 5MossyForestSouth
 Name: Forest
-Description: There is a small clearing between some smaller spruces, the sun almost makes it all the way to the ground that is covered with soft, dark green moss, this is one of the best spots for a nap in the whole forest. To the north is a small path between some of the tallest trees and to the northwest is a path back to your den (which also is a great place for a nap), but in all other directions the forest is so dense that it's simply to much of an effort to try to squeeze through between the tree trunks.
+Description: There is a small clearing between some smaller spruces, the sun almost makes it all the way to the ground that is covered with soft, dark green moss, this is one of the best spots for a nap in the whole forest.\nTo the north is a small path between some of the tallest trees and to the northwest is a path back to your den (which also is a great place for a nap), but in all other directions the forest is so dense that it's simply to much of an effort to try to squeeze through between the tree trunks.
 Directions:
     North: 4MossyForestNorth
     Northwest: 3MossyForestEntrance
 
 ID: 7SparseForest
 Name: Sparse forest
-Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river. In the north, closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
+Description: The trees here are sparser and through the trees there are small streams of water coming from the mountains flowing down towards the river.\nIn the north, closer to the mountains, the forest opens up in a glade around a big meadow. To the southeast is the way back to the den.
 Directions:
     North: 8Glade
     Southeast: 1Den
 
 ID: 8Glade
 Name: Glade
-Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass, but the hardworking bees flying back and forth between the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep. Your den is to the south of here.
+Description: You are standing in the middle of a glade, a green grassy meadow with flowers and honey bees everywhere. Being here with the spring sun warming your fur makes you feel like taking a break in the long soft grass.\nThe hardworking bees flying back and forth between their beehives in the forest to the east and the flowers on the meadow reminds you of the hard work you have in front of you to prepare for next winter sleep. Your den is to the south of here.
 Directions:
     South: 7SparseForest
     East: 9BeeForest
 
 ID: 9BeeForest
 Name: Bee forest
-Description: This is the only part of the forest where bees still live, they are buzzing around the beehives in the trees. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up! They tirelessly fly back and forth from the glade in the west and their beehives.
+Description: This is the only part of the forest where bees still live, they are buzzing around the beehives in the trees. Many times have you heard the old stories about how bees used to live all over the forest, making the forest full of flowers and fruits almost all year long, all because of their hard work with pollinating. The few bees that are left are still working hard, they are not giving up!\nThe bees tirelessly fly back and forth between their beehives and the glade in the west.
 Directions:
     West: 8Glade
 
 ID: 10LeafyForestEntrance
 Name: Forest
-Description: You are on the long path between the old forest that is your home in the east and the younger forest where the trees are smaller and have small, light green leaves in the west. You walk and walk along the windy path, eventually you will get there!
+Description: You are on the long path between the old forest that is your home in the east and the younger forest where the trees are smaller and have small, light green leaves in the west.\nYou walk and walk along the windy path, eventually you will get there!
 Directions:
     West: 12LeafyForestMiddle
     East: 1Den
 
 ID: 11LeafyForestNorth
 Name: Leafy forest
-Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small, the lowest branches are just out of your reach. Between the trees small streams of water is rippling down towards the river and most of the ground is covered in long sticks and the leaves that fell from the trees last year. For as long as you can see this kind of forest continues around you. "Probably nothing more to see" you think, the way back is to the south.
+Description: You are surrounded by birch trees, they are a bit bigger in this area. Their leaves are green and small, the lowest branches are just out of your reach. Between the trees small streams of water is rippling down towards the river and most of the ground is covered in long sticks and the leaves that fell from the trees last year.\nFor as long as you can see this kind of forest continues around you. "Probably nothing more to see" you think, the way back is to the south.
 Directions:
     South: 12LeafyForestMiddle
 
 ID: 12LeafyForestMiddle
 Name: Leafy forest
-Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are pretty big but they still look soft and pretty cozy. Between the trees water is rippling down from the forest in the north towards the river further through the forest to the south. The path to the east leads back towards your den.
+Description: You are in the light green and bright birch forest, the trees here are young and pretty small compared to the trees in the old forest. The light green leaves on the birches are pretty big but they still look soft and pretty cozy.\nBetween the trees water is rippling down from the forest in the north towards the river further through the forest to the south. The path to the east leads back towards your den.
 Directions:
     North: 11LeafyForestNorth
     South: 13LeafyForestSouth
@@ -80,27 +80,27 @@ Directions:
 
 ID: 13LeafyForestSouth
 Name: Leafy forest
-Description: It seems like the small leaves of the young birches are especially soft in this part of the forest, the sun is shining through the small leaves in the light green canopy and the sound from the rippling water makes this a perfect spot for midday naps. The streams of water that are coming from the mountains through the forest in the north are gathering to a bigger stream, they create a waterslide down to the river in the south. 
+Description: It seems like the small leaves of the young birches are especially soft in this part of the forest, the sun is shining through the small leaves in the light green canopy and the sound from the rippling water makes this a perfect spot for midday naps.\nThe streams of water that are coming from the mountains through the forest in the north are gathering to a bigger stream, they create a waterslide down to the river in the south. 
 Directions:
     North: 12LeafyForestMiddle
     South: 16WestRiver
 
 ID: 14SouthForest
 Name: Forest
-Description: You are at the south edge of the old forest, the tree trunks are full of notes in the bark, this is the bulletin board of the old forest. You are in the middle between the den in the north and the river to the south.
+Description: You are at the south edge of the old forest. Here the tree trunks are full of notes in the bark, this is the bulletin board of the old forest and even though there is not that many animals living around here there is always a lot of messages and notes to look at.\nYou are in the middle between the den in the north and the river to the south.
 Directions:
     North: 1Den
     South: 17EastRiver
 
 ID: 15SouthEastForest
 Name: Forest
-Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories you were told as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself. \nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
+Description: Here the forest is lush and warm, the birds are singing and some warm rays of sunlight makes it through the dense canopy. This is where the oldest tree in the whole forest is, in all the old stories that you were told as a small cub this tree was already old, it seems like it has been here through all time. "If only the tree could tell the stories" you think for yourself.\nYour den is not far to the northwest of the old tree, you made sure to live nearby so you can go here to wind down and think about the curious old stories whenever you want.
 Directions:
     Northwest: 1Den
 
 ID: 16WestRiver
 Name: River
-Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it eventually calms down in a natural dam before continuing down the cliffs. On the other side of the river, is a path leading up from the rocky south edge of the river.
+Description: This is where the river connect with the water that is streaming down from the mountains, the water here has strong currents and the river forcefully flows to the east where it eventually calms down in a natural dam before continuing down the cliffs. On the south side of the river there is a small path leading down the rocky cliffs.
 Directions:
     North: 13LeafyForestSouth
     South: 20Cliffs
@@ -108,7 +108,7 @@ Directions:
 
 ID: 17EastRiver
 Name: River
-Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim. On most sides around the dam there is big rocks containing the water, only in the east the water finds its way around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
+Description: The long river flows in from the west and takes a break in a small natural dam, the old stories say that the dam was created by a huge landslide long before the forest grew old, even in those stories the old tree was old and stod tall through the landslide. There is lots of fish in the water and this is a perfect place for a swim.\nOn most sides around the dam there is big rocks containing the water, the water flows in from the west and in the east the water finds its way around the rocks to continue down the cliffs. On the north side of the dam is the old forest and a path that leads back to your den.
 Directions:
     North: 14SouthForest
     West: 16WestRiver
@@ -116,20 +116,20 @@ Directions:
 
 ID: 18Waterfall
 Name: Waterfall
-Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. There is a view point to the northeast, it's fence extends all the way here to prevent that visitors fall in the water.\nClose to the edge of the cliff there is some old, once considered high tech binoculars that can give a closer look at the view.
+Description: The water coming from the natural dam in the west creates a waterfall that forcefully flows down the cliffs, it's beautiful and dangerous. Close to the edge of the cliff there is some old, once considered high tech binoculars that can give a closer look at the view.\nThere is a viewpoint that is great for having picnics to the northeast, it's fence extends all the way here to prevent that visitors fall in the water.
 Directions:
     West: 17EastRiver
     Northeast: 19ViewPoint
 
 ID: 19ViewPoint
-Name: View point
-Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view.\nAnother fun activity is to search through the left behind blankets, the trash cans, around the tables and all the other things the humans leave behind after having a picnic. You can often find something useful!\nThe view point is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
+Name: Viewpoint
+Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view.\nAnother fun activity is to search through the left behind blankets, the trash cans, around the tables and all the other things the humans leave behind after having a picnic. You can often find something useful!\nThe viewpoint is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
 Directions:
     Southwest: 18Waterfall
 
 ID: 20Cliffs
 Name: Cliffs
-Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to at the view point, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains.
+Description: You swam across the river and you are standing on the top of high, steep cliffs. The cliffs stretch to the sides for as long as you can see. The view is even better here compared to at the viewpoint, at the foot of the cliffs the forest continues, far in the southwest you can see snow and in the far southeast there is big mountains.
 Directions:
     North: 16WestRiver
     South: TheEnd

@@ -1310,6 +1310,8 @@ namespace Forest
                             // Description about how player is trying to catch the fish.
                             Reply(eventAndGoalExtraText[99]);
                         }
+
+                        return;
                     }
                     else
                     {
@@ -1337,9 +1339,38 @@ namespace Forest
                 // Clears and redisplays the same location.
                 DisplayNewLocation();
             }
+            // The player can look at the view at the cliffs, the view point and the waterfall.
+            else if (words.Contains("view"))
+            {
+                if (CurrentLocationId == LocationId.Cliffs || CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
+                {
+                    // Says "The view is absolutely breathtaking! The trees and the far away mountains look so small from up here, it all fills you with wonder." (if not changed)
+                    Reply(eventAndGoalExtraText[214]);
+                }
+                else
+                {
+                    // Says "There is no view to look at from this part of the forest." (if not changed)
+                    Reply(eventAndGoalExtraText[215]);
+                }
+            }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
+                // If the player wants to look at one of the searchable things at the viewpoint.
+                if (CurrentLocationId == LocationId.ViewPoint)
+                {
+                    foreach (string word in words)
+                    {
+                        if (ThingsToSearch.Contains(word))
+                        {
+                            // Says "If you search thoroughly you might find something useful." (if not changed)
+                            Reply(eventAndGoalExtraText[216]);
+
+                            return;
+                        }
+                    }
+                }
+
                 // Says "There is nothing to be said about that." (if not changed).
                 Reply(eventAndGoalExtraText[46]);
             }
