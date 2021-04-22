@@ -713,7 +713,7 @@ namespace Forest
                 case "drop":
                 case "throw":
                 case "throw away":
-                    HandleDrop(words);
+                    await HandleDrop(words);
                     break;
 
                 case "look":
@@ -744,7 +744,7 @@ namespace Forest
                     break;
 
                 case "read":
-                    HandleRead(words);
+                    await HandleRead(words);
                     break;
 
                 // Interacting verbs.
@@ -782,12 +782,12 @@ namespace Forest
                 case "quit":
                 case "end":
                 case "exit":
-                    AskIfPlayerWantToQuit();
+                    await AskIfPlayerWantToQuit();
                     break;
 
                 // Help.
                 case "help":
-                    DisplayInstructions();
+                    await DisplayInstructions();
                     break;
 
                 /*// Save and load.
@@ -1003,7 +1003,7 @@ namespace Forest
             }
         }
 
-        static void HandleDrop(string[] words)
+        static async Task HandleDrop(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1065,7 +1065,7 @@ namespace Forest
 
                         case ThingId.LongStick:
                         case ThingId.OldStick:
-                            DropStick(words);
+                            await DropStick(words);
                             break;
 
                         // Player is trying to drop something that they can't drop here.
@@ -1606,7 +1606,7 @@ namespace Forest
             }
         }
 
-        static async void HandleRead(string[] words)
+        static async Task HandleRead(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1796,7 +1796,7 @@ namespace Forest
         }
         */
 
-        static async void AskIfPlayerWantToQuit()
+        static async Task AskIfPlayerWantToQuit()
         {
             // Ask if the player really wants to quit. Says "Do you want to quit the game? Your progress will not be saved." (if not changed)
             Console.WriteLine();
@@ -1818,7 +1818,7 @@ namespace Forest
         /// <summary>
         /// Clears the console and displays instructions about how to play. Then clears the console and displays the current location again.
         /// </summary>
-        static async void DisplayInstructions()
+        static async Task DisplayInstructions()
         {
             Console.Clear();
             Console.ForegroundColor = IntroColor;
@@ -2940,7 +2940,7 @@ namespace Forest
             }
         }
 
-        static async void DropStick(string[] words)
+        static async Task DropStick(string[] words)
         {
             // If player already specified witch stick to drop and that stick is here.
             if ((words.Contains("old stick") && HaveThing(ThingId.OldStick)) || (words.Contains("long stick") && HaveThing(ThingId.LongStick)))
