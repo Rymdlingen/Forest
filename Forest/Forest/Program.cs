@@ -132,6 +132,7 @@ namespace Forest
         #region Fields
         const ConsoleColor NarrativeColor = ConsoleColor.DarkGreen;
         const ConsoleColor PromptColor = ConsoleColor.DarkGray;
+        const ConsoleColor IntroColor = ConsoleColor.White;
         const int PrintPauseMilliseconds = 150;
 
         // static List<string> load;
@@ -163,7 +164,7 @@ namespace Forest
         static bool quitGame = false;
 
         // Command helpers.
-        static List<string> CommandsWithMoreThenOneWord = new List<string>() { "shift shape", "change shape", "shape shift" };
+        static List<string> CommandsWithMoreThenOneWord = new List<string>() { "shift shape", "change shape", "shape shift", "look at", "throw away" };
         static Dictionary<string, ThingId> ShapesByName = new Dictionary<string, ThingId> { { "bear", ThingId.ShapeBear},
                                                                                             { "squirrel", ThingId.ShapeSquirrel} };
 
@@ -244,27 +245,25 @@ namespace Forest
                                                                                                 { "garbage", ThingId.Trash },
                                                                                                 { "note", ThingId.Notes },
                                                                                                 { "notes", ThingId.Notes },
+                                                                                                { "bulletin board", ThingId.Notes },
+                                                                                                { "bulletinboard", ThingId.Notes },
+                                                                                                { "board", ThingId.Notes },
+                                                                                                { "bulletin", ThingId.Notes },
+                                                                                                { "trunk", ThingId.Notes },
+                                                                                                { "trunks", ThingId.Notes },
+                                                                                                { "scribble", ThingId.Notes },
+                                                                                                { "scribbles", ThingId.Notes },
                                                                                                 { "binoculars", ThingId.Binoculars },
                                                                                                 { "telescope", ThingId.Binoculars },
                                                                                                 { "nail", ThingId.Nail },
                                                                                                 { "fishing rod", ThingId.FishingRodOld },
                                                                                                 { "rod", ThingId.FishingRodOld },
-                                                                                                { "necklace", ThingId.Necklace },
-                                                                                                { "dazzle", ThingId.Necklace },
-                                                                                                { "glow", ThingId.Necklace },
-                                                                                                { "something", ThingId.Necklace },
-                                                                                                { "thing", ThingId.Necklace },
-                                                                                                { "bush", ThingId.Necklace },
-                                                                                                { "bushes", ThingId.Necklace },
-                                                                                                { "reflection", ThingId.Necklace },
-                                                                                                { "light", ThingId.Necklace },
                                                                                                 { "owl", ThingId.Owl },
                                                                                                 { "frog", ThingId.Frog },
                                                                                                 { "den", ThingId.Dirt },
                                                                                                 { "dirty den", ThingId.Dirt } };
 
-        // TODO i think some food should be added to the list of things you can get
-        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace, ThingId.Nuts };
+        static List<ThingId> ThingsYouCanGet = new List<ThingId> { ThingId.Moss, ThingId.OldLeaves, ThingId.OkLeaves, ThingId.SoftLeaves, ThingId.Grass, ThingId.LongStick, ThingId.OldStick, ThingId.Trash, ThingId.Fish, ThingId.Flower, ThingId.Honey, ThingId.Necklace, ThingId.Mushrooms };
         static ThingId[] ThingsThatAreNpcs = { ThingId.Owl, ThingId.Frog };
 
         // For puzzle: make den cozy.
@@ -274,7 +273,8 @@ namespace Forest
 
         // For puzzle: fishing.
         static bool FishingPuzzleStarted = false;
-        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill" };
+        static List<string> ThingsToSearch = new List<string> { "bench", "benches", "table", "tables", "blanket", "blankets", "trash", "can", "trashcan", "picnic", "mess", "fence", "ground", "grill", "bbq", "picnics", "trashcans", "cans", "basket", "baskets" };
+        static List<string> TypesOfTrash = new List<string> { "a napkin", "a spoon", "a fork", "a jar", "a straw", "a juice box", "a paper cup", "a frisbee", "a toothpick", "a plastic bag", "a bottle" };
         static List<ThingId> PileOfTrash = new List<ThingId> { };
         static int PiecesOfTrashCollected = 0;
         static List<string> CorrectArrows = new List<string> { "left", "right", "down", "left", "left", "up" };
@@ -358,7 +358,7 @@ namespace Forest
         /// Displayes the text from the narrative parameter and then prompts the player to write soemthing.
         /// </summary>
         /// <param name="narrative"></param>
-        /// <returns>An string array with all words that the pleyer entered.</returns>
+        /// <returns>An string array with all words that the pleyer entered, formatted to lower case.</returns>
         static async Task<string[]> AskForInput(string narrative)
         {
             // Display the narrative.
@@ -422,11 +422,47 @@ namespace Forest
             if (ThingIsAvailable(ThingId.LongStick) && ThingIsAvailable(ThingId.OldStick))
             {
                 // Text about not understanding.
-                Console.WriteLine();
                 Reply(eventAndGoalExtraText[77]);
             }
 
             return choosenStick;
+        }
+
+        static async Task<ThingId> AskWitchShape()
+        {
+            ThingId choosenShape = ThingId.Placeholder;
+
+            // The player has to choose what shape to change to.
+
+            // Ask witch one they mean.
+            // Says "What do you want to change into?" (if not changed).
+            Console.WriteLine();
+            string[] words = await AskForInput(eventAndGoalExtraText[180]);
+
+            var thingIds = new List<ThingId> { };
+
+            foreach (string word in words)
+            {
+                if (ShapesByName.ContainsKey(word))
+                {
+                    thingIds.Add(ShapesByName[word]);
+                }
+            }
+
+            // Choose a shape based on the input.
+            foreach (ThingId thingId in thingIds)
+            {
+                if (thingId == ThingId.ShapeBear)
+                {
+                    return choosenShape = ThingId.ShapeBear;
+                }
+                else if (thingId == ThingId.ShapeSquirrel)
+                {
+                    return choosenShape = ThingId.ShapeSquirrel;
+                }
+            }
+
+            return choosenShape;
         }
 
         /// <summary>
@@ -436,7 +472,7 @@ namespace Forest
         /// <returns>An array of single words and/or combined words.</returns>
         static string[] SplitCommand(string command)
         {
-            // Split the string for everything that isnt a letter.
+            // Split the string for everything that isn't a letter.
             string[] words = Regex.Split(command, @"[^a-zA-Z]+");
 
             for (int word = 0; word < words.Length - 1; word++)
@@ -468,6 +504,8 @@ namespace Forest
                     words[word + 1] = "";
                 }
             }
+
+            // TODO Remove empty lines
 
             return words;
         }
@@ -596,7 +634,6 @@ namespace Forest
         /// </summary>
         static async Task PressEnterToContinue()
         {
-            // TODO not sure about color
             Console.ForegroundColor = PromptColor;
             Console.Write("...");
             ConsoleKey key;
@@ -621,8 +658,6 @@ namespace Forest
             {
                 verb = words[0].Trim();
             }
-
-            // TODO add list of combined commands, and add it to the ask for input method.
 
             // Call the right handler for the given verb.
             switch (verb)
@@ -669,28 +704,34 @@ namespace Forest
                 case "take":
                 case "pick":
                 case "get":
+                case "grab":
+                case "catch":
                     await HandleGet(words);
                     break;
 
                 case "place":
                 case "drop":
+                case "throw":
+                case "throw away":
                     HandleDrop(words);
                     break;
 
                 case "look":
+                case "look at":
                     await HandleLook(words);
                     break;
 
+                /*
                 case "talk":
                     HandleTalk(words);
                     break;
+                */
 
                 case "clean":
                     await HandleClean(words);
                     break;
 
                 case "go":
-                    // TODO go to "name of location" (or direction)
                     await HandleGo(words);
                     break;
 
@@ -703,10 +744,10 @@ namespace Forest
                     break;
 
                 case "read":
-                    // TODO not needed yet
+                    HandleRead(words);
                     break;
 
-                // Interacting verbs
+                // Interacting verbs.
                 case "eat":
                     HandleEat(words);
                     break;
@@ -739,30 +780,28 @@ namespace Forest
 
                 // Quit.
                 case "quit":
-                case "q":
                 case "end":
                 case "exit":
-                    // TODO ask if the player really wants to quit and if they want to save "do you really want to quit all your progress will be lost" 
-                    {
-                        Reply("Thanks for playing!");
-                        quitGame = true;
-                    }
+                    AskIfPlayerWantToQuit();
                     break;
 
-                // Save and load.
+                // Help.
+                case "help":
+                    DisplayInstructions();
+                    break;
+
+                /*// Save and load.
                 case "save":
-                    // TODO
                     // SaveCurrentGameState();
                     break;
                 case "load":
-                    // TODO
                     // LoadSavedGameState();
-                    break;
+                    break;*/
 
                 // Unvalid verb.
                 default:
-                    // TODO change text?
-                    Reply("I don't understand ");
+                    // Says "I don't understand what you want to do." (if not changed)
+                    Reply(eventAndGoalExtraText[206]);
                     break;
             }
         }
@@ -984,14 +1023,13 @@ namespace Forest
                     // Special case for dropping leaves in the leafy forest.
                     if (thingId == ThingId.OldLeaves || thingId == ThingId.OkLeaves || thingId == ThingId.SoftLeaves)
                     {
-                        // TODO Could make it so the correct type of leafs is dropped if specified, othervise the whole pile. Also need to know if player writes pile of leaf
                         DropPileOfLeavesOutsideOfDen();
 
                         return;
                     }
 
                     // Thing is not in players inventory and can't be dropped.
-                    if (!HaveThing(thingId))
+                    if (!HaveThing(thingId) && thingId != ThingId.OldStick && thingId != ThingId.LongStick)
                     {
                         // You don't have that in the inventory.
                         Reply(ThingsData[thingId].Answers[7]);
@@ -1023,6 +1061,11 @@ namespace Forest
 
                         case ThingId.Flower:
                             DropFlower();
+                            break;
+
+                        case ThingId.LongStick:
+                        case ThingId.OldStick:
+                            DropStick(words);
                             break;
 
                         // Player is trying to drop something that they can't drop here.
@@ -1084,48 +1127,80 @@ namespace Forest
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
 
-            // Getting a list of things as they are written in the entered command.
-            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
-
-            foreach (string word in words)
+            if (HaveThing(ThingId.Necklace) && GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
-                // Check if the word is a shape.
-                if (ShapesByName.ContainsKey(word))
+                foreach (string word in words)
                 {
-                    // If player is trying to change into what they already are.
-                    if (CurrentShape == ShapesByName[word])
+                    // Check if the word is a shape.
+                    if (ShapesByName.ContainsKey(word))
                     {
-                        // Message about that you already are that shape.
-                        Reply(eventAndGoalExtraText[179]);
-                    }
-                    // Player changes into something else.
-                    else
-                    {
-                        CurrentShape = ShapesByName[word];
-                        // Clear the screen, show message about flash of light and new shape, clear the screen and show the location description (because it might be different with w different shape).
-                        Console.Clear();
-                        Print(eventAndGoalExtraText[178]);
-                        Reply(ThingsData[ShapesByName[word]].Description);
-                        await PressEnterToContinue();
+                        // If player is trying to change into what they already are.
+                        if (CurrentShape == ShapesByName[word])
+                        {
+                            // Message about that you already are that shape.
+                            Reply(eventAndGoalExtraText[179]);
+                        }
+                        // Player changes into something else.
+                        else
+                        {
+                            CurrentShape = ShapesByName[word];
+                            // Clear the screen, show message about flash of light and new shape, clear the screen and show the location description (because it might be different with w different shape).
+                            Console.Clear();
+                            Print(eventAndGoalExtraText[178]);
+                            Reply(ThingsData[ShapesByName[word]].Description);
+                            await PressEnterToContinue();
 
-                        DisplayNewLocation();
-                    }
+                            DisplayNewLocation();
+                        }
 
-                    return;
+                        return;
+                    }
                 }
-                // Check if there even is any more words.
-                else if (words.Length < 2)
+
+                foreach (string word in words)
                 {
-                    // Ask for a new input.
-                    // Says "What do you want to change into?" (if not changed).
-                    string[] newWords = await AskForInput(eventAndGoalExtraText[180]);
-                    await ShiftShape(newWords);
-                    return;
+                    // Check if there even is any more words.
+                    if ((word == "" && words.Length < 3) || words.Length < 2)
+                    {
+                        // Ask for a new input.
+                        ThingId choosenShape = await AskWitchShape();
+
+                        // If player is trying to change into what they already are.
+                        if (choosenShape == CurrentShape)
+                        {
+                            // Message about that you already are that shape.
+                            Reply(eventAndGoalExtraText[179]);
+                        }
+                        // Player changes into something else.
+                        else if (choosenShape != ThingId.Placeholder)
+                        {
+                            CurrentShape = choosenShape;
+                            // Clear the screen, show message about flash of light and new shape, clear the screen and show the location description (because it might be different with w different shape).
+                            Console.Clear();
+                            Print(eventAndGoalExtraText[178]);
+                            Reply(ThingsData[CurrentShape].Description);
+                            await PressEnterToContinue();
+
+                            DisplayNewLocation();
+                        }
+                        else
+                        {
+                            // Says "You don't know how to change into that" (if not changed).
+                            Reply(eventAndGoalExtraText[181]);
+                        }
+
+                        return;
+                    }
                 }
+
+                // Says "You don't know how to change into that" (if not changed).
+                Reply(eventAndGoalExtraText[181]);
             }
-
-            // Says "You don't know how to change into that" (if not changed).
-            Reply(eventAndGoalExtraText[181]);
+            else
+            {
+                // Says "I don't understand."  (if not changed).
+                Reply(eventAndGoalExtraText[208]);
+            }
         }
 
         static async Task HandleLook(string[] words)
@@ -1223,7 +1298,7 @@ namespace Forest
                         return;
                     }
                     // Special case for looking at fish and puzzle about fishing is not started.
-                    else if (thingId == ThingId.Fish)
+                    else if (thingId == ThingId.Fish && ThingIsAvailable(ThingId.Fish))
                     {
                         if (HaveThing(ThingId.Fish))
                         {
@@ -1234,11 +1309,18 @@ namespace Forest
                             // Trigger the event for starting the fishing puzzle.
                             await StartFishingPuzzle();
                         }
-                        else if (FishingPuzzleStarted)
+                        else if (ListOfEatenThings.Contains(ThingId.Fish))
+                        {
+                            // Text about the fishes in the dam and that you ate one.
+                            Reply(eventAndGoalExtraText[210]);
+                        }
+                        else
                         {
                             // Description about how player is trying to catch the fish.
                             Reply(eventAndGoalExtraText[99]);
                         }
+
+                        return;
                     }
                     else
                     {
@@ -1263,19 +1345,47 @@ namespace Forest
             // If the player only writes look, display information about the location.
             else if (words.Count() == 1)
             {
+                // Clears and redisplays the same location.
                 DisplayNewLocation();
-                // Changed it, so now it clears and redisplays the same location.
-                // LookAtLocation();
+            }
+            // The player can look at the view at the cliffs, the view point and the waterfall.
+            else if (words.Contains("view"))
+            {
+                if (CurrentLocationId == LocationId.Cliffs || CurrentLocationId == LocationId.ViewPoint || CurrentLocationId == LocationId.Waterfall)
+                {
+                    // Says "The view is absolutely breathtaking! The trees and the far away mountains look so small from up here, it all fills you with wonder." (if not changed)
+                    Reply(eventAndGoalExtraText[214]);
+                }
+                else
+                {
+                    // Says "There is no view to look at from this part of the forest." (if not changed)
+                    Reply(eventAndGoalExtraText[215]);
+                }
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // Says "There is no such thing to look at." (if not changed).
+                // If the player wants to look at one of the searchable things at the viewpoint.
+                if (CurrentLocationId == LocationId.ViewPoint)
+                {
+                    foreach (string word in words)
+                    {
+                        if (ThingsToSearch.Contains(word))
+                        {
+                            // Says "If you search thoroughly you might find something useful." (if not changed)
+                            Reply(eventAndGoalExtraText[216]);
+
+                            return;
+                        }
+                    }
+                }
+
+                // Says "There is nothing to be said about that." (if not changed).
                 Reply(eventAndGoalExtraText[46]);
             }
         }
 
-        static void HandleTalk(string[] words)
+        /* static void HandleTalk(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
             List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
@@ -1298,23 +1408,21 @@ namespace Forest
                         switch (thingId)
                         {
                             case ThingId.Owl:
-                                // TODO
+                                TalkToOwl();
                                 break;
 
                             case ThingId.Frog:
-                                // TODO
+                                TalkToFrog();
                                 break;
                         }
                     }
                     else if (!ThingIsHere(thingId) && ThingIsNpc(thingId))
                     {
-                        // TODO text
                         Reply($"{Capitalize(thing)} is not here.");
                     }
                     // Thing is not something you can talk to.
                     else
                     {
-                        // TODO text
                         Reply($"You can't talk to {thing}.");
                     }
                 }
@@ -1322,10 +1430,10 @@ namespace Forest
             // If there was no matching words and keys then the thing doesn't exist.
             else
             {
-                // TODO text
                 Reply($"You can't talk to that.");
             }
         }
+        */
 
         static async Task HandleClean(string[] words)
         {
@@ -1395,8 +1503,8 @@ namespace Forest
             // If there was no direction.
             else
             {
-                // TODO text
-                Reply($"I don't understand.");
+                // Says "I don't understand where you want to go." (if not changed)
+                Reply(eventAndGoalExtraText[207]);
             }
         }
 
@@ -1498,6 +1606,35 @@ namespace Forest
             }
         }
 
+        static async void HandleRead(string[] words)
+        {
+            // Getting a list of all ThingIds from words found in the command.
+            List<ThingId> thingIdsFromCommand = GetThingIdsFromWords(words);
+
+            // Getting a list of things as they are written in the entered command.
+            List<string> thingKeysFromCommand = GetThingKeysFromWords(words, thingIdsFromCommand);
+
+            // If there is any words that match any Thing IDs.
+            if (thingKeysFromCommand.Count > 0)
+            {
+                // Output the correct response depending on if the location of the thing matches the location of the player and if it is a pickable thing.
+                // Checking every thing found in the command.
+                foreach (string thing in thingKeysFromCommand)
+                {
+                    ThingId thingId = ThingIdsByName[thing];
+
+                    if (thingId == ThingId.Notes)
+                    {
+                        await HandleLook(words);
+                        return;
+                    }
+                }
+            }
+
+            // Says "You can't read that." (if not changed)
+            Reply(eventAndGoalExtraText[213]);
+        }
+
         static void HandleEat(string[] words)
         {
             // Getting a list of all ThingIds from words found in the command.
@@ -1514,14 +1651,6 @@ namespace Forest
                 {
                     ThingId thingId = ThingIdsByName[thing];
 
-                    // Thing is not in this location or in the inventory.
-                    if (!ThingIsAvailable(thingId))
-                    {
-                        // Not here.
-                        Reply(ThingsData[thingId].Answers[2]);
-                        return;
-                    }
-
                     // Thing is available.
                     switch (thingId)
                     {
@@ -1531,7 +1660,16 @@ namespace Forest
                         case ThingId.Mushrooms:
                         case ThingId.Nuts:
                         case ThingId.Trash:
-                            EatTheThing(thingId);
+                            if (ThingIsAvailable(thingId))
+                            {
+                                EatTheThing(thingId);
+                            }
+                            else
+                            {
+                                // Not here.
+                                string[] keyWord = new string[] { ThingsData[thingId].Name.ToLower() };
+                                InsertKeyWordAndDisplay(eventAndGoalExtraText[211], keyWord);
+                            }
                             return;
 
                         case ThingId.Flowers:
@@ -1559,19 +1697,19 @@ namespace Forest
                             return;
 
                         default:
-                            if (words.Length > 1)
                             {
                                 // Says "Better not eat that." (if not changed).
                                 Reply(eventAndGoalExtraText[114]);
                             }
-                            else
-                            {
-                                // Says "Maybe you should find something to eat." (if not changed).
-                                Reply(eventAndGoalExtraText[117]);
-                            }
                             return;
                     }
                 }
+            }
+            // If player only writes eat.
+            else if (words.Length < 2)
+            {
+                // Says "That's a good idea! You should find something to eat." (if not changed).
+                Reply(eventAndGoalExtraText[117]);
             }
             // If there was no matching words and keys then the thing doesn't exist.
             else
@@ -1647,14 +1785,53 @@ namespace Forest
             }
         }
 
-        static void TalkToOwl()
+        /* static void TalkToOwl()
         {
-            // TODO
+            // Ended up not using this, but I will keep it here for the future.
         }
 
         static void TalkToFrog()
         {
-            // TODO
+            // Ended up not using this, but I will keep it here for the future.
+        }
+        */
+
+        static async void AskIfPlayerWantToQuit()
+        {
+            // Ask if the player really wants to quit. Says "Do you want to quit the game? Your progress will not be saved." (if not changed)
+            Console.WriteLine();
+            string[] askIfPlayerWantsToQuit = await AskForInput(eventAndGoalExtraText[203]);
+
+            if (askIfPlayerWantsToQuit.Contains("yes"))
+            {
+                // Quit game.
+                Reply(eventAndGoalExtraText[204]);
+                quitGame = true;
+            }
+            else
+            {
+                // Continue playing.
+                Reply(eventAndGoalExtraText[205]);
+            }
+        }
+
+        /// <summary>
+        /// Clears the console and displays instructions about how to play. Then clears the console and displays the current location again.
+        /// </summary>
+        static async void DisplayInstructions()
+        {
+            Console.Clear();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[6]);
+            await PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[7]);
+            await PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[8]);
+            await PressEnterToContinueAndClear();
+
+            DisplayNewLocation();
         }
         #endregion
 
@@ -2099,12 +2276,20 @@ namespace Forest
         {
             if (!FishingPuzzleStarted)
             {
+                Console.Clear();
                 // Start instructions for fishing puzzle.
                 FishingPuzzleStarted = true;
                 Reply(eventAndGoalExtraText[97]);
                 await PressEnterToContinue();
                 Reply(eventAndGoalExtraText[98]);
                 await PressEnterToContinue();
+
+                DisplayNewLocation();
+            }
+            else if (ListOfEatenThings.Contains(ThingId.Fish))
+            {
+                // Says "You dont need more fish." (if not changed)
+                Reply(eventAndGoalExtraText[212]);
             }
             else
             {
@@ -2280,16 +2465,21 @@ namespace Forest
             if (!HaveThing(ThingId.Trash))
             {
                 GetThing(ThingId.Trash);
-                Reply(ThingsData[ThingId.Trash].Answers[0]);
+                var random = new Random();
+                int randomTrash = random.Next(0, TypesOfTrash.Count());
+                string[] typeOfTrash = { TypesOfTrash[randomTrash] };
+                InsertKeyWordAndDisplay(ThingsData[ThingId.Trash].Answers[0], typeOfTrash);
             }
             // If the player already had trash, display the message about picking up more trash.
             else
             {
-                // Amount of trash.
-                string[] number = new string[] { PileOfTrash.Count().ToString() };
+                // Type and amount of trash.
+                var random = new Random();
+                int randomTrash = random.Next(0, TypesOfTrash.Count());
+                string[] typeAndAmountOfTrash = new string[] { TypesOfTrash[randomTrash], PileOfTrash.Count().ToString() };
 
                 // Text about how much trash the player have.
-                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], number);
+                InsertKeyWordAndDisplay(eventAndGoalExtraText[41], typeAndAmountOfTrash);
             }
 
             // If the player is picking up trash from any other location the view point, remove the trash from that location.
@@ -2348,12 +2538,13 @@ namespace Forest
             if (words.Length > 1)
             {
                 // The player wrote what to search but it was not a searchable thing.
-                // Says "What you are trying to search through is not here." (if not changed).
+                // Says "There is nothing to find there." (if not changed).
                 Reply(eventAndGoalExtraText[39]);
             }
             // If there was no more words than "search".
             else
             {
+                Console.WriteLine();
                 // Ask for new input. Says "What do you want to search through?" (if not changed).
                 string[] newWords = await AskForInput(eventAndGoalExtraText[37]);
                 // Search again.
@@ -2374,7 +2565,7 @@ namespace Forest
             {
                 // Chance of getting rope.
                 var random = new Random();
-                int chanceForRope = random.Next(0, 10 - Math.Min(PileOfTrash.Count(), 9));
+                int chanceForRope = random.Next(0, 8 - Math.Min(PiecesOfTrashCollected, 7));
 
                 if (chanceForRope == 0)
                 {
@@ -2530,7 +2721,6 @@ namespace Forest
                     // Text about the hidden path.
                     Reply(eventAndGoalExtraText[66]);
                 }
-                // TODO add extra description to old tree and waterfall about hidden path
 
                 // Clear the entered arrows.
                 EnteredArrows.Clear();
@@ -2609,7 +2799,7 @@ namespace Forest
             await PressEnterToContinueAndClear();
 
             // Text about combinin nail and rope.
-            Reply(eventAndGoalExtraText[79]);
+            Print(eventAndGoalExtraText[79]);
 
             // Use the nail and rope.
             LoseThing(ThingId.Nail);
@@ -2627,7 +2817,7 @@ namespace Forest
                     // Extra text for choosing again.
                     if (choosenStick == ThingId.Placeholder)
                     {
-                        Reply(eventAndGoalExtraText[127]);
+                        Print(eventAndGoalExtraText[127]);
                     }
                 }
             }
@@ -2683,8 +2873,16 @@ namespace Forest
                 }
                 else
                 {
-                    // Look at long stick.
-                    Reply(ThingsData[ThingId.LongStick].Description);
+                    if (HaveThing(ThingId.LongStick))
+                    {
+                        // Look at long stick in inventory. Says "It's a long stick." (if not changed)
+                        Reply(eventAndGoalExtraText[209]);
+                    }
+                    else
+                    {
+                        // Look at long stick on the ground.
+                        Reply(ThingsData[ThingId.LongStick].Description);
+                    }
                 }
             }
             // If both sticks are around, ask witch one they mean.
@@ -2694,10 +2892,28 @@ namespace Forest
 
                 if (choosenStick == ThingId.Placeholder)
                 {
+                    // Text about it is displayed from the AskWitchStick method.
                     return;
                 }
 
-                Reply(ThingsData[choosenStick].Description);
+                if (choosenStick == ThingId.OldStick)
+                {
+                    // Look at old stick.
+                    Reply(ThingsData[ThingId.OldStick].Description);
+                }
+                else
+                {
+                    if (HaveThing(ThingId.LongStick))
+                    {
+                        // Look at long stick in inventory. Says "It's a long stick." (if not changed)
+                        Reply(eventAndGoalExtraText[209]);
+                    }
+                    else
+                    {
+                        // Look at long stick on the ground.
+                        Reply(ThingsData[ThingId.LongStick].Description);
+                    }
+                }
             }
             else if (ThingIsAvailable(ThingId.OldStick))
             {
@@ -2706,14 +2922,82 @@ namespace Forest
             }
             else if (ThingIsAvailable(ThingId.LongStick))
             {
-                // Look at long stick.
-                Reply(ThingsData[ThingId.LongStick].Description);
+                if (HaveThing(ThingId.LongStick))
+                {
+                    // Look at long stick in inventory. Says "It's a long stick." (if not changed)
+                    Reply(eventAndGoalExtraText[209]);
+                }
+                else
+                {
+                    // Look at long stick on the ground.
+                    Reply(ThingsData[ThingId.LongStick].Description);
+                }
             }
             else
             {
-                // Says "There is no such thing to look at." (if not changed).
+                // Says "There is nothing to be said about that." (if not changed).
                 Reply(eventAndGoalExtraText[46]);
             }
+        }
+
+        static async void DropStick(string[] words)
+        {
+            // If player already specified witch stick to drop and that stick is here.
+            if ((words.Contains("old stick") && HaveThing(ThingId.OldStick)) || (words.Contains("long stick") && HaveThing(ThingId.LongStick)))
+            {
+                if (words.Contains("old stick"))
+                {
+                    // Drop old stick.
+                    LoseThing(ThingId.OldStick);
+                    Reply(ThingsData[ThingId.OldStick].Answers[6]);
+                }
+                else
+                {
+                    // Drop long stick.
+                    LoseThing(ThingId.LongStick);
+                    Reply(ThingsData[ThingId.LongStick].Answers[6]);
+                }
+
+                return;
+            }
+            // If both sticks are around, ask witch one they mean.
+            else if (HaveThing(ThingId.OldStick) || HaveThing(ThingId.LongStick))
+            {
+                if (HaveThing(ThingId.OldStick) && HaveThing(ThingId.LongStick))
+                {
+                    ThingId choosenStick = await AskWitchStick();
+
+                    if (choosenStick == ThingId.Placeholder)
+                    {
+                        // Text about it is displayed from the AskWitchStick method.
+                        return;
+                    }
+
+                    // Drop choosen stick.
+                    LoseThing(choosenStick);
+                    Reply(ThingsData[choosenStick].Answers[6]);
+
+                    return;
+                }
+
+                if (HaveThing(ThingId.OldStick))
+                {
+                    // Drop old stick.
+                    LoseThing(ThingId.OldStick);
+                    Reply(ThingsData[ThingId.OldStick].Answers[6]);
+                }
+                else
+                {
+                    // Drop long stick.
+                    LoseThing(ThingId.LongStick);
+                    Reply(ThingsData[ThingId.LongStick].Answers[6]);
+                }
+
+                return;
+            }
+
+            // Says "You don't have that, so you can't drop it." (if not changed).
+            Reply(eventAndGoalExtraText[36]);
         }
 
         // Events about honey and bees.
@@ -2871,11 +3155,21 @@ namespace Forest
         static void EatTheThing(ThingId thingId)
         {
             // Check if the thing was already eaten or not.
-            if (ListOfEatenThings.Contains(thingId))
+            if (ListOfEatenThings.Contains(thingId) && thingId != ThingId.Fish)
             {
-                // Text about player eating some more of that that.
+                // Text about player eating some more of that thing.
                 string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
                 InsertKeyWordAndDisplay(eventAndGoalExtraText[130], thing);
+
+                if (thingId == ThingId.Trash)
+                {
+                    PileOfTrash.Remove(ThingId.Trash);
+
+                    if (PileOfTrash.Count < 1)
+                    {
+                        LoseThing(ThingId.Trash);
+                    }
+                }
             }
             else
             {
@@ -2885,13 +3179,29 @@ namespace Forest
                     ListOfEatenThings.Add(thingId);
                     string[] thing = new string[] { ThingsData[thingId].Name.ToLower() };
                     InsertKeyWordAndDisplay(eventAndGoalExtraText[129], thing);
+
+                    if (thingId == ThingId.Fish)
+                    {
+                        LoseThing(thingId);
+                    }
+
+                    if (thingId == ThingId.Trash)
+                    {
+                        PileOfTrash.Remove(ThingId.Trash);
+
+                        if (PileOfTrash.Count < 1)
+                        {
+                            LoseThing(ThingId.Trash);
+                        }
+                    }
                 }
                 else
                 {
+                    // No eat.
                     // Need to catch fish before eating it.
                     Reply(ThingsData[ThingId.Fish].Answers[7]);
+                    return;
                 }
-
             }
 
             // If the player has eaten more then one thing, tell the player all the things they already ate.
@@ -2923,6 +3233,17 @@ namespace Forest
         // Events about necklace.
         static async Task Relax()
         {
+            ThingIdsByName.Add("necklace", ThingId.Necklace);
+            ThingIdsByName.Add("dazzle", ThingId.Necklace);
+            ThingIdsByName.Add("glow", ThingId.Necklace);
+            ThingIdsByName.Add("something", ThingId.Necklace);
+            ThingIdsByName.Add("thing", ThingId.Necklace);
+            ThingIdsByName.Add("bush", ThingId.Necklace);
+            ThingIdsByName.Add("bushes", ThingId.Necklace);
+            ThingIdsByName.Add("reflection", ThingId.Necklace);
+            ThingIdsByName.Add("light", ThingId.Necklace);
+            ThingIdsByName.Add("jewelry", ThingId.Necklace);
+
             GoalCompleted[Goal.HaveRelaxed] = true;
 
             // You are at the old tree, time to relax!
@@ -3086,7 +3407,7 @@ namespace Forest
             Console.WriteLine();
 
             /*
-            // TODO For testing purposes vvvvvvvv
+            // For testing purposes vvvvvvvv
 
             // Array with strings of directions.
             string[] allDirections = Enum.GetNames(typeof(Direction));
@@ -3116,7 +3437,7 @@ namespace Forest
                 Console.WriteLine();
             }
 
-            // TODO For testing purposes ^^^^^^^^
+            // For testing purposes ^^^^^^^^
             */
         }
 
@@ -3139,7 +3460,6 @@ namespace Forest
             // Check for extra text for Den.
             if (CurrentLocationId == LocationId.Den)
             {
-                // TODO color
                 Console.WriteLine();
 
                 // If den is cleaned and ready to be made cozy.
@@ -3160,7 +3480,6 @@ namespace Forest
 
                 if (ThingIsHere(ThingId.Honey))
                 {
-                    // TODO color
                     Console.WriteLine();
 
                     Print(eventAndGoalExtraText[118]);
@@ -3170,7 +3489,6 @@ namespace Forest
             // Add extra text if the hidden path is found. At location waterfall.
             if (!NailFound && CurrentLocationId == LocationId.Waterfall)
             {
-                // TODO color
                 Console.WriteLine();
 
                 // When hidden path is not found.
@@ -3188,7 +3506,6 @@ namespace Forest
             // Hidden path is walked on.
             else if (NailFound && (CurrentLocationId == LocationId.Waterfall || CurrentLocationId == LocationId.SouthEastForest))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Add text for description about connection between waterfall and old tree.
@@ -3207,7 +3524,6 @@ namespace Forest
             // About the bee and the flower.
             if (ThingIsHere(ThingId.Bee))
             {
-                // TODO color
                 Console.WriteLine();
 
                 if (CurrentLocationId == LocationId.BeeForest)
@@ -3248,7 +3564,6 @@ namespace Forest
                     // Don't have the flower.
                     else if (!HaveThing(ThingId.Flower))
                     {
-                        // TODO should this be print and not reply?
                         // Says "There is a lonely bee flying around, it looks lost." (if not changed)
                         Print(eventAndGoalExtraText[105]);
                     }
@@ -3257,7 +3572,6 @@ namespace Forest
             // Add extra description for flower on the ground in the bee forest.
             else if (CurrentLocationId == LocationId.BeeForest && ThingIsHere(ThingId.Flower))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Text about bees liking the flower on the ground.
@@ -3267,7 +3581,6 @@ namespace Forest
             // Description about idea about making honey.
             if (CurrentLocationId == LocationId.Glade && HoneyPuzzleStarted && !HaveTriedToEatFlower)
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Text about going to try to eat a flower.
@@ -3277,7 +3590,6 @@ namespace Forest
             // If the current location have any of these things.
             if (ThingIsHere(ThingId.Berries))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Berries.
@@ -3285,7 +3597,6 @@ namespace Forest
             }
             else if (ThingIsHere(ThingId.Mushrooms))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Mushrooms.
@@ -3293,7 +3604,6 @@ namespace Forest
             }
             else if (ThingIsHere(ThingId.Nuts))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Nuts.
@@ -3302,7 +3612,6 @@ namespace Forest
 
             if (ThingIsHere(ThingId.Necklace))
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Extra discription about necklace in the bushes.
@@ -3311,7 +3620,6 @@ namespace Forest
 
             if (CurrentLocationId == LocationId.Cliffs)
             {
-                // TODO color
                 Console.WriteLine();
 
                 if (CurrentShape == ThingId.ShapeBear)
@@ -3329,23 +3637,26 @@ namespace Forest
             // If the player has finished all other puzzles and they should go relax, displays a message about that.
             if (GoalCompleted[Goal.TimeToRelax] && !GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
-                // TODO color
-                Console.WriteLine();
-
                 // Message about relaxing added to all locations except the big tree.
                 if (!GoalCompleted[Goal.HaveRelaxed] && CurrentLocationId != LocationId.SouthEastForest)
                 {
+                    Console.WriteLine();
+
                     // It's getting late, should go relax a bit and then sleep.
                     Print(eventAndGoalExtraText[120]);
                 }
                 else if (GoalCompleted[Goal.HaveRelaxed] && !HaveThing(ThingId.Necklace) && CurrentLocationId != LocationId.SouthEastForest)
                 {
-                    // Text about being curious abot the glow.
+                    Console.WriteLine();
+
+                    // Text about being curious about the glow.
                     Print(eventAndGoalExtraText[200]);
                 }
                 // If the player have relaxed they should go sleep.
                 else if (!GoalCompleted[Goal.DreamtAboutShiftingShape] && HaveThing(ThingId.Necklace))
                 {
+                    Console.WriteLine();
+
                     // Player should sleep.
                     Print(eventAndGoalExtraText[196]);
                 }
@@ -3353,7 +3664,6 @@ namespace Forest
 
             if (GoalCompleted[Goal.DreamtAboutShiftingShape])
             {
-                // TODO color
                 Console.WriteLine();
 
                 // Extra description about what animal the player is.
@@ -3439,7 +3749,6 @@ namespace Forest
         /// <returns>True or false.</returns>
         static bool ThingIsAvailable(ThingId thingId)
         {
-            // TODO do this really work? Will it return true if any of them are true?
             return ThingIsHere(thingId) || HaveThing(thingId);
         }
 
@@ -3598,7 +3907,6 @@ namespace Forest
                 // Checking the property to decide where to store the value.
                 switch (property)
                 {
-                    // TODO
                     case "Notes":
                         line = fileData.Length;
                         break;
@@ -3871,13 +4179,23 @@ namespace Forest
             // Store all things starting locations into the dictionary of things current locations.
             InitializeThingsLocations();
 
-            // TODO Look what computer the player is using and display a square for size if mac or use Console.SetWindowSize(); if windows
-
-            // Display short instructions about how to play and credits (TODO add credits).
+            // Display info about the game and instructions about how to play.
+            Console.ForegroundColor = IntroColor;
             Reply(gameStory[5]);
+            await PressEnterToContinueAndClear();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[6]);
+            await PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[7]);
+            await PressEnterToContinue();
+            Console.ForegroundColor = IntroColor;
+            Reply(gameStory[8]);
+            Reply(gameStory[9]);
             await PressEnterToContinueAndClear();
 
             // Displaying title art.
+            Console.ForegroundColor = IntroColor;
             foreach (string line in titleAsciiArt)
             {
                 Console.WriteLine(line);
