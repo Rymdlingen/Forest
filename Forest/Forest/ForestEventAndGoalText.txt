@@ -76,7 +76,7 @@
 
 38What do you want to do?
 
-39What you are trying to search through is not here.
+39There is nothing to find there.
 
 40You didn't find anything.
 

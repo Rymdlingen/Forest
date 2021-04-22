@@ -1,6 +1,6 @@
 ID: 1Den
 Name: Bears Den
-Description: You are in the small opening in the forest where your den is.\nIt is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree.
+Description: You are in the small opening in the forest where your den is. It is in the middle of the old forest, to the north the forest is dark and dense, to the west is a path to the bright birch forest, to the south is the river, to the northwest the forest get sparser and opens up in a glade and to the southeast is a the biggest and oldest tree in the whole forest. Even in the ancient stories about the forest it is called the oldest tree.
 Directions:
     North: 2NorthForest
     Northwest: 7SparseForest
@@ -123,7 +123,7 @@ Directions:
 
 ID: 19ViewPoint
 Name: Viewpoint
-Description: This is a popular viewpoint where the humans like to come for picnics and watching the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view.\nAnother fun activity is to search through the left behind blankets, the trash cans, around the tables and all the other things the humans leave behind after having a picnic. You can often find something useful!\nThe viewpoint is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
+Description: This is a popular viewpoint where the humans like to come for picnics and to watch the magnificent view over the big forest below the cliffs and the far away rocky mountains. In the summer it is fun to hide nearby and watch what they do. Since it is the beginning of spring they rarely come here and it's safe to take a look at the view.\nAnother fun activity is to search through the left behind blankets, the trash cans, around the tables and all the other things the humans leave behind after having a picnic. You can often find something useful!\nThe viewpoint is fenced off towards the cliff and follows the edge towards the waterfall in the southwest.
 Directions:
     Southwest: 18Waterfall
 

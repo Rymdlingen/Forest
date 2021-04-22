@@ -2531,7 +2531,7 @@ namespace Forest
             if (words.Length > 1)
             {
                 // The player wrote what to search but it was not a searchable thing.
-                // Says "What you are trying to search through is not here." (if not changed).
+                // Says "There is nothing to find there." (if not changed).
                 Reply(eventAndGoalExtraText[39]);
             }
             // If there was no more words than "search".
@@ -2558,7 +2558,7 @@ namespace Forest
             {
                 // Chance of getting rope.
                 var random = new Random();
-                int chanceForRope = random.Next(0, 8 - Math.Min(PileOfTrash.Count(), 7));
+                int chanceForRope = random.Next(0, 8 - Math.Min(PiecesOfTrashCollected, 7));
 
                 if (chanceForRope == 0)
                 {
